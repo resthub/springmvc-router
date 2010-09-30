@@ -163,6 +163,12 @@ public class RouterHandlerAdapterTest {
         Assert.assertNotNull(mv);
         Assert.assertEquals("specific", mv.getModel().get("host"));
 
+        request = new MockHttpServletRequest("GET", "/bind/specifichost");
+        request.addHeader("host", "myotherhost.com");
+
+        HandlerExecutionChain chain = this.hm.getHandler(request);
+
+        Assert.assertNull("No handler should match this request", chain);
     }
 
      /**
