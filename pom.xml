@@ -1,0 +1,199 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.springframework</groupId>
+    <artifactId>springmvc-router</artifactId>
+    <packaging>jar</packaging>
+    <version>0.1-SNAPSHOT</version>
+    <name>springmvc-router</name>
+    <description></description>
+    <url>http://bitbucket.org/bclozel/springmvc-router/</url>
+
+    <properties>
+        <junit.version>4.7</junit.version>
+        <spring-version>3.0.4.RELEASE</spring-version>
+        <spring-security-version>3.0.2.RELEASE</spring-security-version>
+        <apache-commons-io-version>1.3.2</apache-commons-io-version>
+        <velocity-version>1.7-beta1</velocity-version>
+        <javassist-version>3.9.0.GA</javassist-version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+
+    <licenses>
+        <license>
+            <name>LGPL</name>
+            <url>http://www.gnu.org/licenses/lgpl.html</url>
+            <comments>This project's main license</comments>
+        </license>
+        <license>
+            <name>Apache 2 License</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <comments>PlayFramework Router implementation</comments>
+        </license>
+        <license>
+            <name>BSD License</name>
+            <url>http://jregex.sourceforge.net/license.txt</url>
+            <comments>JRegex system dependency</comments>
+        </license>
+    </licenses>
+
+    <inceptionYear>2010</inceptionYear>
+    <developers>
+        <developer>
+            <id>bclozel</id>
+            <name>Brian Clozel</name>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:hg:https://bitbucket.org/bclozel/springmvc-router/</connection>
+        <url>http://bitbucket.org/bclozel/springmvc-router/src/</url>
+    </scm>
+    <issueManagement>
+        <system>Spring MVC Router issue tracker</system>
+        <url>https://bitbucket.org/bclozel/springmvc-router/issues</url>
+    </issueManagement>
+
+    <dependencies>
+        <!-- Spring Framework Web MVC-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring-version}</version>
+        </dependency>
+
+        <!--  
+            JRegex Engine http://jregex.sourceforge.net/
+            No Maven repo available?
+        -->
+        <dependency>
+            <groupId>jregex</groupId>
+            <artifactId>jregex</artifactId>
+            <version>1.2_01</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/jregex-1.2_01.jar</systemPath>
+        </dependency>
+
+        <!-- Apache commons io -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${apache-commons-io-version}</version>
+        </dependency>
+
+        <!-- Javassist -->
+        <dependency>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>${javassist-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+        </dependency>
+
+        <!-- Velocity template engine -->
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>${velocity-version}</version>
+        </dependency>
+
+        <!-- Serlvet dependency provided -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Spring Test -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring-version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+            Testing against Spring Security 3.0 AOP
+        -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>${spring-security-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring-security-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-acl</artifactId>
+            <version>${spring-security-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${spring-security-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>2.2</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.3.1</version>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+ 
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

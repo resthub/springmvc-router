@@ -1,0 +1,4 @@
+syntax: regexp
+^target$
+syntax: regexp
+^catalog.xml$
