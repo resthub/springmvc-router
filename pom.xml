@@ -58,33 +58,37 @@
     </issueManagement>
 
     <dependencies>
-        <!-- Spring Framework Web MVC-->
+        <!-- 
+            Spring Framework Web MVC
+            marked as optional, but mandatory in your app!
+        -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <version>${spring-version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
             <version>${spring-version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>${spring-version}</version>
+            <optional>true</optional>
         </dependency>
 
         <!--  
             JRegex Engine http://jregex.sourceforge.net/
-            No Maven repo available?
+            from Atlassian repo
         -->
         <dependency>
             <groupId>jregex</groupId>
             <artifactId>jregex</artifactId>
             <version>1.2_01</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/jregex-1.2_01.jar</systemPath>
         </dependency>
 
         <!-- Apache commons io -->
@@ -112,7 +116,6 @@
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
             <version>${velocity-version}</version>
-            <scope>compile</scope>
             <optional>true</optional>
         </dependency>
 
@@ -198,4 +201,16 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>atlassian</id>
+            <name>Atlassian repository</name>
+            <layout>default</layout>
+            <url>https://maven.atlassian.com/content/groups/public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+  
 </project>
