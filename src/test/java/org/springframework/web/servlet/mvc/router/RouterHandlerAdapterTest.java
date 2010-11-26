@@ -29,17 +29,15 @@ public class RouterHandlerAdapterTest {
     private XmlWebApplicationContext wac;
     @Inject
     @Named("bindTestController")
-
     private BindTestController bindController;
     private String handlerName = "bindTestController";
-
     private HandlerMapping hm;
     private HandlerAdapter ha;
     private static final String TEST_STRING = "test";
     private static final Long TEST_LONG = 42L;
     private static final String TEST_SLUG = "my-slug-number-1";
     private static final String TEST_SLUG_HASH = "slughash";
-    private static final String TEST_HOST = "mairie-test.fr";
+    private static final String TEST_HOST = "example.org";
 
     /**
      * Setup a MockServletContext configured by routerTestContext.xml
@@ -145,9 +143,17 @@ public class RouterHandlerAdapterTest {
         Assert.assertNotNull(mv);
         Assert.assertEquals(TEST_HOST, mv.getModel().get("host"));
 
+        request = new MockHttpServletRequest("GET", "/bind/host");
+        request.addHeader("host", "www."+TEST_HOST);
+
+        mv = handleRequest(request);
+
+        Assert.assertNotNull(mv);
+        Assert.assertEquals("www."+TEST_HOST, mv.getModel().get("host"));
+        
     }
 
-     /**
+    /**
      * Test route handling:
      * GET     myhost.com/bind/specifichost     bindTestController.bindSpecificHostAction
      * @throws Exception
@@ -171,7 +177,7 @@ public class RouterHandlerAdapterTest {
         Assert.assertNull("No handler should match this request", chain);
     }
 
-     /**
+    /**
      * Test route handling:
      * GET     {host}.domain.org/bind/regexphost    bindTestController.bindRegexpHostAction
      * @throws Exception
@@ -185,21 +191,21 @@ public class RouterHandlerAdapterTest {
         ModelAndView mv = handleRequest(request);
 
         Assert.assertNotNull(mv);
-        Assert.assertEquals("myhost", mv.getModel().get("host"));
+        Assert.assertEquals("myhost", mv.getModel().get("subdomain"));
 
     }
 
-        /**
-	 * Test route:
-	 * GET   /security/{name}         bindTestController.securityAction
-	 * @throws Exception
-	 */
-	@Test(expected=AuthenticationCredentialsNotFoundException.class)
-	public void testBindSecurity() throws Exception {
+    /**
+     * Test route:
+     * GET   /security/{name}         bindTestController.securityAction
+     * @throws Exception
+     */
+    @Test(expected = AuthenticationCredentialsNotFoundException.class)
+    public void testBindSecurity() throws Exception {
 
-            MockHttpServletRequest request = new MockHttpServletRequest("GET", "/security/test");
-            request.addHeader("host", "myhost.domain.org");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/security/test");
+        request.addHeader("host", "myhost.domain.org");
 
-            ModelAndView mv = handleRequest(request);
-	}
+        ModelAndView mv = handleRequest(request);
+    }
 }
