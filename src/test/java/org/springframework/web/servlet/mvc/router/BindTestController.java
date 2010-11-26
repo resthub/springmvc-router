@@ -55,14 +55,14 @@ public class BindTestController {
         return mav;
     }
 
-    //public ModelAndView bindRegexpHostAction(@PathVariable(value = "host") String myHost) {
-    public ModelAndView bindRegexpHostAction() {
+    public ModelAndView bindRegexpHostAction(@PathVariable(value = "subdomain") String subdomain) {
+    //public ModelAndView bindRegexpHostAction() {
         ModelAndView mav = new ModelAndView("testView");
-        mav.addObject("host", "myhost");
+        mav.addObject("subdomain", subdomain);
 
         return mav;
     }
-
+    
     @Secured("ROLE_ADMIN")
     public ModelAndView securityAction(@PathVariable(value = "name") String name) {
 
