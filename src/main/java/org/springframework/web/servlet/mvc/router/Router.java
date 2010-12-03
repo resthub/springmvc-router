@@ -264,9 +264,7 @@ public class Router {
     }
 
     public static ActionDefinition reverse(String action, Map<String, Object> args) {
-        if (action.startsWith("controllers.")) {
-            action = action.substring(12);
-        }
+
         Map<String, Object> argsbackup = args;
         for (Route route : routes) {
             args = new HashMap<String, Object>(argsbackup);
@@ -293,7 +291,7 @@ public class Router {
                             String host = route.host.replaceAll("\\{", "").replaceAll("\\}", "");
                             if (host.equals(arg.name) || host.matches(arg.name)) {
                                 args.remove(arg.name);
-                                route.host = HTTPRequestAdapter.current.get().domain;
+                                //route.host = HTTPRequestAdapter.current.get().domain;
                                 break;
                             } else {
                                 allRequiredArgsAreHere = false;
@@ -475,6 +473,22 @@ public class Router {
     }
 
     public static class Route {
+
+        public String getAction() {
+            return action;
+        }
+
+        public String getHost() {
+            return host;
+        }
+
+        public String getMethod() {
+            return method;
+        }
+
+        public String getPath() {
+            return path;
+        }
 
         /**
          * HTTP method, e.g. "GET".
