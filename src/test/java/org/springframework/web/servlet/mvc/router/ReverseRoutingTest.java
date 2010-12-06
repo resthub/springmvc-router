@@ -63,7 +63,7 @@ public class ReverseRoutingTest {
         @Test
         public void testRegexpParamReverse() {
             Map<String,Object> params = new HashMap<String, Object>();
-            params.put("slug","slug01");
+            params.put("slug","slug_01");
             ActionDefinition action = Router.reverse("bindTestController.bindSlugAction",params);
             
             Assert.assertNotNull(action);
