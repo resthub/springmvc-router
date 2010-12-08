@@ -133,6 +133,25 @@ public class RouterHandlerAdapterTest {
      * @throws Exception
      */
     @Test
+    public void testBindHostSlug() throws Exception {
+
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/bind/hostslug/" + TEST_SLUG);
+        request.addHeader("host", TEST_HOST);
+
+        ModelAndView mv = handleRequest(request);
+
+        Assert.assertNotNull(mv);
+        Assert.assertEquals(TEST_HOST, mv.getModel().get("hostname"));
+        Assert.assertEquals(TEST_SLUG, mv.getModel().get("slug"));
+
+    }    
+    
+    /**
+     * Test route handling:
+     * GET     /bind/host                bindTestController.bindHostAction
+     * @throws Exception
+     */
+    @Test
     public void testBindHost() throws Exception {
 
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/bind/host");

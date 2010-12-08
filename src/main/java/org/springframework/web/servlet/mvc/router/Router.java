@@ -287,12 +287,11 @@ public class Router {
                         if (value == null) {
                             // This is a hack for reverting on hostname that are a regex expression.
                             // See [#344] for more into. This is not optimal and should retough. However,
-                            // it allows us to do things like {(.*}}.domain.com
+                            // it allows us to do things like {(.*)}.domain.com
                             String host = route.host.replaceAll("\\{", "").replaceAll("\\}", "");
                             if (host.equals(arg.name) || host.matches(arg.name)) {
-                                args.remove(arg.name);
-                                //route.host = HTTPRequestAdapter.current.get().domain;
-                                break;
+                                args.put(arg.name,"");
+                                value="";
                             } else {
                                 allRequiredArgsAreHere = false;
                                 break;

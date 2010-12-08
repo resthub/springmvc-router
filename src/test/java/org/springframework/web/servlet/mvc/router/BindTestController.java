@@ -38,6 +38,16 @@ public class BindTestController {
 
         return mav;
     }
+    
+    public ModelAndView bindHostSlugAction(@PathVariable(value = "slug") String mySlug,
+            @PathVariable(value = "hostname") String hostname) {
+
+        ModelAndView mav = new ModelAndView("testView");
+        mav.addObject("slug", mySlug);
+        mav.addObject("hostname", hostname);
+
+        return mav;
+    }
 
     public ModelAndView bindHostAction(@PathVariable(value = "host") String myHost) {
 

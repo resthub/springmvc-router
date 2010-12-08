@@ -89,5 +89,17 @@ public class ReverseRoutingTest {
             Assert.assertEquals("/bind/regexphost",action.url);
             Assert.assertEquals("sub.domain.org",action.host);
         }
+
+        @Test
+        public void testHostSlugReverse() {
+            Map<String,Object> params = new HashMap<String, Object>();
+            params.put("slug","slug1");
+            ActionDefinition action = Router.reverse("bindTestController.bindHostSlugAction",params);
+            
+            Assert.assertNotNull(action);
+            Assert.assertNotNull(action.host);
+            Assert.assertEquals("/bind/hostslug/slug1",action.url);
+            
+        }
         
 }
