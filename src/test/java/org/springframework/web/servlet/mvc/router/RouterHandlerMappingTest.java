@@ -67,6 +67,26 @@ public class RouterHandlerMappingTest {
 		Assert.assertNotNull(route);
 		Assert.assertEquals(this.handlerName+".simpleAction", route.action);
 	}
+        
+	/**
+	 * Test route with HTTP method overriding (HEAD -> GET):
+	 * GET     /simpleaction    myTestController.simpleAction
+	 * @throws Exception
+	 */
+	@Test
+	public void testHeadMethod() throws Exception {
+
+		MockHttpServletRequest request = new MockHttpServletRequest("HEAD", "/simpleaction");
+		request.addHeader("host", "mairie-test.fr");
+		HandlerExecutionChain chain = this.hm.getHandler(request);
+		
+		RouterHandler handler = (RouterHandler)chain.getHandler();
+		Assert.assertNotNull(handler);
+		
+		Route route = handler.getRoute();
+		Assert.assertNotNull(route);
+		Assert.assertEquals(this.handlerName+".simpleAction", route.action);
+	}
 	
 	/**
 	 * Test route:
