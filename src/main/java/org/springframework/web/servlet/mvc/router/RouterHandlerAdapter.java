@@ -1,6 +1,6 @@
 package org.springframework.web.servlet.mvc.router;
 
-import org.springframework.web.servlet.mvc.router.exceptions.ActionNotFoundException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.springframework.aop.support.AopUtils;
 
 import javassist.CtClass;
 
@@ -25,6 +24,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -89,6 +92,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.support.WebContentGenerator;
 import org.springframework.web.util.UrlPathHelper;
 import org.springframework.web.util.WebUtils;
+import org.springframework.web.servlet.mvc.router.exceptions.ActionNotFoundException;
 
 /**
  * Implementation of the {@link org.springframework.web.servlet.HandlerAdapter} interface
@@ -128,6 +132,7 @@ public class RouterHandlerAdapter extends WebContentGenerator implements
     private ConfigurableBeanFactory beanFactory;
     private BeanExpressionContext expressionContext;
     private Map<String, Object> cachedControllers;
+    private final Logger logger = LoggerFactory.getLogger(RouterHandlerAdapter.class); 
 
     public RouterHandlerAdapter() {
         // no restriction of HTTP methods by default
@@ -274,8 +279,6 @@ public class RouterHandlerAdapter extends WebContentGenerator implements
 
         //load controllers from application context
         this.cachedControllers = getApplicationContext().getBeansWithAnnotation(Controller.class);
-
-        logger.debug(cachedControllers.size() + " controllers loaded by RouterHandlerAdapter");
     }
 
     /**
