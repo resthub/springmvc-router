@@ -15,8 +15,8 @@ import jregex.Matcher;
 import jregex.Pattern;
 import jregex.REFlags;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.mvc.router.exceptions.RouteFileParsingException;
 
 /**
@@ -38,7 +38,7 @@ public class Router {
      * Timestamp the routes file was last loaded at.
      */
     public static long lastLoading = -1;
-    private static final Log logger = LogFactory.getLog(Router.class);
+    private static final Logger logger = LoggerFactory.getLogger(RouterHandlerAdapter.class); 
 
     /**
      * Parse the routes file. This is called at startup.
