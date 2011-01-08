@@ -30,6 +30,8 @@ public class RouterHandlerMappingTest {
 	private MyTestController testController;
 	
 	private String handlerName = "myTestController";
+        
+        private String sampleHost = "samplehost.org";
 	
 	private HandlerMapping hm;
 	
@@ -57,7 +59,7 @@ public class RouterHandlerMappingTest {
 	public void testSimpleRoute() throws Exception {
 
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/simpleaction");
-		request.addHeader("host", "mairie-test.fr");
+		request.addHeader("host", sampleHost);
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
@@ -77,7 +79,7 @@ public class RouterHandlerMappingTest {
 	public void testHeadMethod() throws Exception {
 
 		MockHttpServletRequest request = new MockHttpServletRequest("HEAD", "/simpleaction");
-		request.addHeader("host", "mairie-test.fr");
+		request.addHeader("host", sampleHost);
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
@@ -97,7 +99,7 @@ public class RouterHandlerMappingTest {
 	public void testDefaultParamAction() throws Exception {
 
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/param");
-		request.addHeader("host", "mairie-test.fr");
+		request.addHeader("host", sampleHost);
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
@@ -121,7 +123,7 @@ public class RouterHandlerMappingTest {
 	public void testParamAction() throws Exception {
 
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/param/myparam");
-		request.addHeader("host", "mairie-test.fr");
+		request.addHeader("host", sampleHost);
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
@@ -145,7 +147,7 @@ public class RouterHandlerMappingTest {
 	public void testGETHTTPAction() throws Exception {
 
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/http");
-		request.addHeader("host", "mairie-test.fr");
+		request.addHeader("host", sampleHost);
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
@@ -169,7 +171,7 @@ public class RouterHandlerMappingTest {
 	public void testPUTHTTPAction() throws Exception {
 
 		MockHttpServletRequest request = new MockHttpServletRequest("PUT", "/http");
-		request.addHeader("host", "mairie-test.fr");
+		request.addHeader("host", sampleHost);
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
@@ -194,7 +196,7 @@ public class RouterHandlerMappingTest {
 	public void testPOSTHTTPAction() throws Exception {
 
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/http");
-		request.addHeader("host", "mairie-test.fr");
+		request.addHeader("host", sampleHost);
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
@@ -219,7 +221,7 @@ public class RouterHandlerMappingTest {
 	public void testDELETEHTTPAction() throws Exception {
 
 		MockHttpServletRequest request = new MockHttpServletRequest("DELETE", "/http");
-		request.addHeader("host", "mairie-test.fr");
+		request.addHeader("host", sampleHost);
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
@@ -234,6 +236,58 @@ public class RouterHandlerMappingTest {
 		Assert.assertEquals(req.routeArgs.get("type"), "DELETE");
 	}
 
+        /**
+	 * Test route:
+	 * PUT     /http       myTestController.httpAction(type:'PUT')
+         * with a GET request and a "x-http-method-override" header
+	 * @throws Exception
+	 */
+	@Test
+	public void testOverrideHeaderHTTPAction() throws Exception {
+
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/http");
+		request.addHeader("host", sampleHost);
+                request.addHeader("x-http-method-override","PUT");
+		HandlerExecutionChain chain = this.hm.getHandler(request);
+		
+		RouterHandler handler = (RouterHandler)chain.getHandler();
+		Assert.assertNotNull(handler);
+		
+		Route route = handler.getRoute();
+		Assert.assertNotNull(route);
+		Assert.assertEquals(this.handlerName+".httpAction", route.action);
+		
+		HTTPRequestAdapter req = handler.getRequest();
+		Assert.assertNotNull(req);
+		Assert.assertEquals(req.routeArgs.get("type"), "PUT");
+	}
+        
+        /**
+	 * Test route:
+	 * PUT     /http       myTestController.httpAction(type:'PUT')
+         * with a GET request and a "x-http-method-override" argument in queryString
+	 * @throws Exception
+	 */
+	@Test
+	public void testOverrideQueryStringHTTPAction() throws Exception {
+
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/http");
+                request.setQueryString("x-http-method-override=PUT");
+                request.addHeader("host", sampleHost);
+		HandlerExecutionChain chain = this.hm.getHandler(request);
+		
+		RouterHandler handler = (RouterHandler)chain.getHandler();
+		Assert.assertNotNull(handler);
+		
+		Route route = handler.getRoute();
+		Assert.assertNotNull(route);
+		Assert.assertEquals(this.handlerName+".httpAction", route.action);
+		
+		HTTPRequestAdapter req = handler.getRequest();
+		Assert.assertNotNull(req);
+		Assert.assertEquals(req.routeArgs.get("type"), "PUT");
+	}        
+        
 	
 	/**
 	 * Test route:
@@ -244,7 +298,7 @@ public class RouterHandlerMappingTest {
 	public void testregexNumberAction() throws Exception {
 
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/regex/42");
-		request.addHeader("host", "mairie-test.fr");
+		request.addHeader("host", sampleHost);
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
@@ -268,7 +322,7 @@ public class RouterHandlerMappingTest {
 	public void testregexStringAction() throws Exception {
 
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/regex/marvin");
-		request.addHeader("host", "mairie-test.fr");
+		request.addHeader("host", sampleHost);
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
@@ -293,7 +347,7 @@ public class RouterHandlerMappingTest {
 	public void testhostAction() throws Exception {
 
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/host");
-		request.addHeader("host", "mairie-test.fr");
+		request.addHeader("host", sampleHost);
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
@@ -305,7 +359,7 @@ public class RouterHandlerMappingTest {
 		
 		HTTPRequestAdapter req = handler.getRequest();
 		Assert.assertNotNull(req);
-		Assert.assertEquals(req.host, "mairie-test.fr");
+		Assert.assertEquals(req.host, sampleHost);
 	}
 
 }
