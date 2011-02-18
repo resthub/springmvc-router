@@ -5,7 +5,7 @@
     <groupId>org.springframework</groupId>
     <artifactId>springmvc-router</artifactId>
     <packaging>jar</packaging>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
     <name>springmvc-router</name>
     <description></description>
     <url>http://bitbucket.org/bclozel/springmvc-router/</url>
