@@ -1,6 +1,9 @@
 package org.springframework.web.servlet.mvc.router;
 
+import java.io.InputStream;
 import java.util.Arrays;
+
+import org.apache.commons.io.IOUtils;
 import org.springframework.web.servlet.mvc.router.exceptions.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.router.exceptions.NoRouteFoundException;
 import java.io.File;
@@ -45,9 +48,9 @@ public class Router {
      *
      * @param prefix The prefix that the path of all routes in this route file start with. This prefix should not end with a '/' character.
      */
-    public static void load(File routeFile, String prefix) throws IOException {
+    public static void load(InputStream routeIS, String prefix) throws IOException {
         routes.clear();
-        parse(routeFile, prefix);
+        parse(routeIS, prefix);
         lastLoading = System.currentTimeMillis();
         // TODO: load multiple route files
     }
@@ -149,16 +152,17 @@ public class Router {
      * If an action starts with <i>"plugin:name"</i>, replace that route by the ones declared
      * in the plugin route file denoted by that <i>name</i>, if found.
      *
+     *
      * @param routeFile
      * @param prefix    The prefix that the path of all routes in this route file start with. This prefix should not
      *                  end with a '/' character.
      * @throws IOException 
      */
-    static void parse(File routeFile, String prefix) throws IOException {
-        String fileAbsolutePath = routeFile.getAbsolutePath();
+    static void parse(InputStream routeFile, String prefix) throws IOException {
+        
         int lineNumber = 0;
 
-        String content = FileUtils.readFileToString(routeFile);
+        String content = IOUtils.toString(routeFile);
 
         for (String line : content.split("\n")) {
             lineNumber++;
@@ -174,19 +178,13 @@ public class Router {
                 String path = prefix + matcher.group("path");
                 String params = matcher.group("params");
                 String headers = matcher.group("headers");
-                appendRoute(method, path, action, params, headers, fileAbsolutePath, lineNumber);
+                appendRoute(method, path, action, params, headers, "", lineNumber);
             } else {
                 logger.error("Invalid route definition : " + line);
             }
         }
     }
 
-    public static void detectChanges(File routeFile, String prefix) throws IOException {
-
-        if (FileUtils.isFileNewer(routeFile, lastLoading)) {
-            load(routeFile, prefix);
-        }
-    }
     public static List<Route> routes = new ArrayList<Route>(500);
 
     public static Route route(HTTPRequestAdapter request) {

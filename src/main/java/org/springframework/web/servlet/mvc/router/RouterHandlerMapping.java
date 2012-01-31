@@ -1,9 +1,11 @@
 package org.springframework.web.servlet.mvc.router;
 
+import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.mvc.router.exceptions.RouteFileParsingException;
 import org.springframework.web.servlet.mvc.router.exceptions.NoRouteFoundException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -137,16 +139,14 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
         super.initApplicationContext();
 
         try {
-            // load routes configuration file and parse all routes
-            File file = new File(this.getClass().getClassLoader().getResource(
-                    routeFile).toURI());
+          Resource resource = getApplicationContext().getResource(routeFile);
 
-            Router.load(file, this.servletPrefix);
+            // load routes configuration file and parse all routes
+            InputStream is = resource.getInputStream();
+
+            Router.load(is, this.servletPrefix);
 
         } catch (IOException e) {
-            throw new RouteFileParsingException(
-                    "Cannot parse route file routes.conf", e);
-        } catch (URISyntaxException e) {
             throw new RouteFileParsingException(
                     "Cannot parse route file routes.conf", e);
         }
