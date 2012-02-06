@@ -1,22 +1,18 @@
 package org.springframework.web.servlet.mvc.router;
 
-import java.util.Arrays;
-import org.springframework.web.servlet.mvc.router.exceptions.NoHandlerFoundException;
-import org.springframework.web.servlet.mvc.router.exceptions.NoRouteFoundException;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import jregex.Matcher;
 import jregex.Pattern;
 import jregex.REFlags;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.servlet.mvc.router.exceptions.NoHandlerFoundException;
+import org.springframework.web.servlet.mvc.router.exceptions.NoRouteFoundException;
 import org.springframework.web.servlet.mvc.router.exceptions.RouteFileParsingException;
 
 /**
