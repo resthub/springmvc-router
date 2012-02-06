@@ -8,7 +8,7 @@
     <version>0.3</version>
     <name>springmvc-router</name>
     <description></description>
-    <url>http://bitbucket.org/bclozel/springmvc-router/</url>
+    <url>https://github.com/bclozel/springmvc-router/</url>
 
     <properties>
         <junit.version>4.10</junit.version>
@@ -51,12 +51,12 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:hg:https://bitbucket.org/bclozel/springmvc-router/</connection>
-        <url>http://bitbucket.org/bclozel/springmvc-router/src/</url>
+        <connection>scm:git:https://github.com/bclozel/springmvc-router.git</connection>
+        <url>https://github.com/bclozel/springmvc-router</url>
     </scm>
     <issueManagement>
         <system>Spring MVC Router issue tracker</system>
-        <url>https://bitbucket.org/bclozel/springmvc-router/issues</url>
+        <url>https://github.com/bclozel/springmvc-router/issues</url>
     </issueManagement>
 
     <dependencies>
