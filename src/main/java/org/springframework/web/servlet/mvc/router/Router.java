@@ -133,7 +133,10 @@ public class Router {
         route.addFormat(headers);
         route.addParams(params);
         route.compute();
-        logger.trace("Adding [" + route.toString() + "] with params [" + params + "] and headers [" + headers + "]");
+        if(logger.isTraceEnabled()) {
+            logger.debug("Adding [" + route.toString() + "] with params [" + params + "] and headers [" + headers + "]");
+        }
+        
         return route;
     }
 
@@ -146,8 +149,6 @@ public class Router {
 
     /**
      * Parse a route file.
-     * If an action starts with <i>"plugin:name"</i>, replace that route by the ones declared
-     * in the plugin route file denoted by that <i>name</i>, if found.
      *
      * @param routeFile
      * @param prefix    The prefix that the path of all routes in this route file start with. This prefix should not
@@ -156,10 +157,12 @@ public class Router {
      */
     static void parse(File routeFile, String prefix) throws IOException {
         String fileAbsolutePath = routeFile.getAbsolutePath();
-        int lineNumber = 0;
-
         String content = FileUtils.readFileToString(routeFile);
+        parse(content, prefix, fileAbsolutePath);
+    }
 
+    static void parse(String content, String prefix, String fileAbsolutePath) throws IOException {
+        int lineNumber = 0;
         for (String line : content.split("\n")) {
             lineNumber++;
             line = line.trim().replaceAll("\\s+", " ");
@@ -170,11 +173,11 @@ public class Router {
             if (matcher.matches()) {
                 String action = matcher.group("action");
 
-                String method = matcher.group("method");
-                String path = prefix + matcher.group("path");
-                String params = matcher.group("params");
-                String headers = matcher.group("headers");
-                appendRoute(method, path, action, params, headers, fileAbsolutePath, lineNumber);
+                    String method = matcher.group("method");
+                    String path = prefix + matcher.group("path");
+                    String params = matcher.group("params");
+                    String headers = matcher.group("headers");
+                    appendRoute(method, path, action, params, headers, fileAbsolutePath, lineNumber);
             } else {
                 logger.error("Invalid route definition : " + line);
             }
@@ -188,15 +191,18 @@ public class Router {
         }
     }
     public static List<Route> routes = new ArrayList<Route>(500);
-
+    
     public static Route route(HTTPRequestAdapter request) {
-
-        logger.trace("Route: " + request.path + " - " + request.querystring);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Route: " + request.path + " - " + request.querystring);
+        }
         // request method may be overriden if a x-http-method-override parameter is given
         if (request.querystring != null && methodOverride.matches(request.querystring)) {
             Matcher matcher = methodOverride.matcher(request.querystring);
             if (matcher.matches()) {
-                logger.trace("request method " + request.method + " overriden to " + matcher.group("method"));
+                if (logger.isTraceEnabled()) {
+                    logger.trace("request method %s overriden to %s ", request.method, matcher.group("method"));
+                }
                 request.method = matcher.group("method");
             }
         }
@@ -256,7 +262,7 @@ public class Router {
 
     public static String getFullUrl(String action, Map<String, Object> args) {
         return HTTPRequestAdapter.current.get().getBase() + reverse(action, args);
-    }
+        }
 
     public static String getFullUrl(String action) {
         // Note the map is not <code>Collections.EMPTY_MAP</code> because it will be copied and changed.
@@ -265,9 +271,8 @@ public class Router {
 
     public static ActionDefinition reverse(String action, Map<String, Object> args) {
 
-        Map<String, Object> argsbackup = args;
+        Map<String, Object> argsbackup = new HashMap<String, Object>(args);
         for (Route route : routes) {
-            args = new HashMap<String, Object>(argsbackup);
             if (route.actionPattern != null) {
                 Matcher matcher = route.actionPattern.matcher(action);
                 if (matcher.matches()) {
@@ -278,7 +283,7 @@ public class Router {
                         }
                         args.put(group, v.toLowerCase());
                     }
-                    List<String> inPathArgs = new ArrayList<String>();
+                    List<String> inPathArgs = new ArrayList<String>(16);
                     boolean allRequiredArgsAreHere = true;
                     // les noms de parametres matchent ils ?
                     for (Route.Arg arg : route.args) {
@@ -348,7 +353,7 @@ public class Router {
                                         host = host.replaceAll("\\{(<[^>]+>)?" + key + "\\}", URLEncoder.encode(value.toString().replace("$", "\\$"), "utf-8"));
                                     } catch (UnsupportedEncodingException e) {
                                         throw new RouteFileParsingException("RouteFile encoding exception", e);
-                                    }
+                                }
                                 }
                             } else if (route.staticArgs.containsKey(key)) {
                                 // Do nothing -> The key is static
@@ -395,7 +400,7 @@ public class Router {
                         actionDefinition.method = route.method == null || route.method.equals("*") ? "GET" : route.method.toUpperCase();
                         actionDefinition.star = "*".equals(route.method);
                         actionDefinition.action = action;
-                        actionDefinition.args = args;
+                        actionDefinition.args = argsbackup;
                         actionDefinition.host = host;
                         return actionDefinition;
                     }
@@ -456,11 +461,11 @@ public class Router {
             if (!url.startsWith("http")) {
                 if (host == null || host.isEmpty()) {
                     url = HTTPRequestAdapter.current.get().getBase() + url;
-                } else {
+                    } else {
                     url = (HTTPRequestAdapter.current.get().secure ? "https://" : "http://") + host + url;
+                    }
                 }
-            }
-        }
+                }
 
         public ActionDefinition secure() {
             if (!url.contains("http://") && !url.contains("https://")) {
@@ -518,60 +523,67 @@ public class Router {
             this.hostPattern = new Pattern(".*");
 
 
-            // URL pattern
-            // Is there is a host argument, append it.
-            if (!path.startsWith("/")) {
-                String p = this.path;
-                this.path = p.substring(p.indexOf("/"));
-                this.host = p.substring(0, p.indexOf("/"));
-                String pattern = host.replaceAll("\\.", "\\\\.").replaceAll("\\{.*\\}", "(.*)");
+                // URL pattern
+                // Is there is a host argument, append it.
+                if (!path.startsWith("/")) {
+                    String p = this.path;
+                    this.path = p.substring(p.indexOf("/"));
+                    this.host = p.substring(0, p.indexOf("/"));
+                    String pattern = host.replaceAll("\\.", "\\\\.").replaceAll("\\{.*\\}", "(.*)");
 
-                logger.trace("pattern [" + pattern + "]");
-                logger.trace("host [" + host + "]");
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("pattern [" + pattern + "]");
+                        logger.trace("host [" + host + "]");
+                    }
 
-                Matcher m = new Pattern(pattern).matcher(host);
-                this.hostPattern = new Pattern(pattern);
+                    Matcher m = new Pattern(pattern).matcher(host);
+                    this.hostPattern = new Pattern(pattern);
 
-                if (m.matches()) {
-                    if (this.host.contains("{")) {
-                        String name = m.group(1).replace("{", "").replace("}", "");
-                        hostArg = new Arg();
-                        hostArg.name = name;
-                        logger.trace("hostArg name [" + name + "]");
-                        // The default value contains the route version of the host ie {client}.bla.com
-                        // It is temporary and it indicates it is an url route.
-                        // TODO Check that default value is actually used for other cases.
-                        hostArg.defaultValue = host;
-                        hostArg.constraint = new Pattern(".*");
-                        logger.trace("adding hostArg [" + hostArg + "]");
+                    if (m.matches()) {
+                        if (this.host.contains("{")) {
+                            String name = m.group(1).replace("{", "").replace("}", "");
+                                hostArg = new Arg();
+                                hostArg.name = name;
+                                if (logger.isTraceEnabled()) {
+                                    logger.trace("hostArg name [" + name + "]");
+                                }
+                                // The default value contains the route version of the host ie {client}.bla.com
+                                // It is temporary and it indicates it is an url route.
+                                // TODO Check that default value is actually used for other cases.
+                                hostArg.defaultValue = host;
+                                hostArg.constraint = new Pattern(".*");
 
-                        args.add(hostArg);
+                                if (logger.isTraceEnabled()) {
+                                    logger.trace("adding hostArg [" + hostArg + "]");
+                                }
+
+                                args.add(hostArg);
+                            }
+                        }
+                    }
+                String patternString = path;
+                patternString = customRegexPattern.replacer("\\{<[^/]+>$1\\}").replace(patternString);
+                Matcher matcher = argsPattern.matcher(patternString);
+                while (matcher.find()) {
+                    Arg arg = new Arg();
+                    arg.name = matcher.group(2);
+                    arg.constraint = new Pattern(matcher.group(1));
+                    args.add(arg);
+                }
+
+                patternString = argsPattern.replacer("({$2}$1)").replace(patternString);
+                this.pattern = new Pattern(patternString);
+                // Action pattern
+                patternString = action;
+                patternString = patternString.replace(".", "[.]");
+                for (Arg arg : args) {
+                    if (patternString.contains("{" + arg.name + "}")) {
+                        patternString = patternString.replace("{" + arg.name + "}", "({" + arg.name + "}" + arg.constraint.toString() + ")");
+                        actionArgs.add(arg.name);
                     }
                 }
+                actionPattern = new Pattern(patternString, REFlags.IGNORE_CASE);
             }
-            String patternString = path;
-            patternString = customRegexPattern.replacer("\\{<[^/]+>$1\\}").replace(patternString);
-            Matcher matcher = argsPattern.matcher(patternString);
-            while (matcher.find()) {
-                Arg arg = new Arg();
-                arg.name = matcher.group(2);
-                arg.constraint = new Pattern(matcher.group(1));
-                args.add(arg);
-            }
-
-            patternString = argsPattern.replacer("({$2}$1)").replace(patternString);
-            this.pattern = new Pattern(patternString);
-            // Action pattern
-            patternString = action;
-            patternString = patternString.replace(".", "[.]");
-            for (Arg arg : args) {
-                if (patternString.contains("{" + arg.name + "}")) {
-                    patternString = patternString.replace("{" + arg.name + "}", "({" + arg.name + "}" + arg.constraint.toString() + ")");
-                    actionArgs.add(arg.name);
-                }
-            }
-            actionPattern = new Pattern(patternString, REFlags.IGNORE_CASE);
-        }
 
         public void addParams(String params) {
             if (params == null || params.length() < 1) {
@@ -583,7 +595,7 @@ public class Router {
                 if (matcher.matches()) {
                     staticArgs.put(matcher.group(1), matcher.group(2));
                 } else {
-                    logger.warn("Ignoring " + params + " (static params must be specified as key:'value',...)");
+                    logger.warn("Ignoring %s (static params must be specified as key:'value',...)", params);
                 }
             }
         }
@@ -600,7 +612,7 @@ public class Router {
         private boolean contains(String accept) {
             boolean contains = (accept == null);
             if (accept != null) {
-                if (this.formats.size() == 0) {
+                if (this.formats.isEmpty()) {
                     return true;
                 }
                 for (String format : this.formats) {
@@ -630,37 +642,37 @@ public class Router {
          * @param host   AKA the domain.
          * @return ???
          */
-        public Map<String, String> matches(String method, String path, String accept, String host) {
+        public Map<String, String> matches(String method, String path, String accept, String domain) {
             // If method is HEAD and we have a GET
             if (method == null || this.method.equals("*") || method.equalsIgnoreCase(this.method) || (method.equalsIgnoreCase("head") && ("get").equalsIgnoreCase(this.method))) {
 
                 Matcher matcher = pattern.matcher(path);
 
-                boolean hostMatches = (host == null);
-                if (host != null) {
-                    Matcher hostMatcher = hostPattern.matcher(host);
+                boolean hostMatches = (domain == null);
+                if (domain != null) {
+                    Matcher hostMatcher = hostPattern.matcher(domain);
                     hostMatches = hostMatcher.matches();
                 }
                 // Extract the host variable
                 if (matcher.matches() && contains(accept) && hostMatches) {
-                    Map<String, String> localArgs = new HashMap<String, String>();
-                    for (Arg arg : args) {
-                        // FIXME: Careful with the arguments that are not matching as they are part of the hostname
-                        // Defaultvalue indicates it is a one of these urls. This is a trick and should be changed.
-                        if (arg.defaultValue == null) {
-                            localArgs.put(arg.name, matcher.group(arg.name));
+                        Map<String, String> localArgs = new HashMap<String, String>();
+                        for (Arg arg : args) {
+                            // FIXME: Careful with the arguments that are not matching as they are part of the hostname
+                            // Defaultvalue indicates it is a one of these urls. This is a trick and should be changed.
+                            if (arg.defaultValue == null) {
+                               localArgs.put(arg.name, matcher.group(arg.name));
+                            }
                         }
+                        if (hostArg != null && domain != null) {
+                            // Parse the hostname and get only the part we are interested in
+                            String routeValue = hostArg.defaultValue.replaceAll("\\{.*}", "");
+                            domain = domain.replace(routeValue, "");
+                            localArgs.put(hostArg.name, domain);
+                        }
+                        localArgs.putAll(staticArgs);
+                        return localArgs;
                     }
-                    if (hostArg != null && host != null) {
-                        // Parse the hostname and get only the part we are interested in
-                        String routeValue = hostArg.defaultValue.replaceAll("\\{.*}", "");
-                        host = host.replace(routeValue, "");
-                        localArgs.put(hostArg.name, host);
-                    }
-                    localArgs.putAll(staticArgs);
-                    return localArgs;
                 }
-            }
             return null;
         }
 
