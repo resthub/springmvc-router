@@ -11,15 +11,15 @@
     <url>http://bitbucket.org/bclozel/springmvc-router/</url>
 
     <properties>
-        <junit.version>4.7</junit.version>
+        <junit.version>4.10</junit.version>
         <spring-version>3.1.0.RELEASE</spring-version>
-        <spring-security-version>3.0.5.RELEASE</spring-security-version>
-        <cglib-version>2.2</cglib-version>
+        <spring-security-version>3.1.0.RELEASE</spring-security-version>
+        <cglib-version>2.2.2</cglib-version>
         <apache-commons-io-version>1.3.2</apache-commons-io-version>
         <velocity-version>1.7</velocity-version>
-        <javassist-version>3.9.0.GA</javassist-version>
+        <javassist-version>3.12.1.GA</javassist-version>
         <log4j.version>1.2.16</log4j.version>
-        <slf4j.version>1.6.0</slf4j.version>
+        <slf4j.version>1.6.4</slf4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -240,6 +240,12 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
+        </repository>
+        <repository>
+            <id>maven-europe</id>
+            <name>Maven Europe Mirror</name>
+            <layout>default</layout>
+            <url>http://uk.maven.org/maven2/</url>
         </repository>
     </repositories>
   
