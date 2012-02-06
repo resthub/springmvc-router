@@ -1,6 +1,5 @@
 package org.springframework.web.servlet.mvc.router;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -9,8 +8,10 @@ import jregex.Matcher;
 import jregex.Pattern;
 import jregex.REFlags;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.mvc.router.exceptions.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.router.exceptions.NoRouteFoundException;
 import org.springframework.web.servlet.mvc.router.exceptions.RouteFileParsingException;
@@ -34,16 +35,16 @@ public class Router {
      * Timestamp the routes file was last loaded at.
      */
     public static long lastLoading = -1;
-    private static final Logger logger = LoggerFactory.getLogger(RouterHandlerAdapter.class); 
+    private static final Logger logger = LoggerFactory.getLogger(Router.class); 
 
     /**
      * Parse the routes file. This is called at startup.
      *
      * @param prefix The prefix that the path of all routes in this route file start with. This prefix should not end with a '/' character.
      */
-    public static void load(File routeFile, String prefix) throws IOException {
+    public static void load(Resource fileResource, String prefix) throws IOException {
         routes.clear();
-        parse(routeFile, prefix);
+        parse(fileResource, prefix);
         lastLoading = System.currentTimeMillis();
         // TODO: load multiple route files
     }
@@ -146,14 +147,16 @@ public class Router {
     /**
      * Parse a route file.
      *
-     * @param routeFile
+     * @param fileResource
      * @param prefix    The prefix that the path of all routes in this route file start with. This prefix should not
      *                  end with a '/' character.
      * @throws IOException 
      */
-    static void parse(File routeFile, String prefix) throws IOException {
-        String fileAbsolutePath = routeFile.getAbsolutePath();
-        String content = FileUtils.readFileToString(routeFile);
+    static void parse(Resource fileResource, String prefix) throws IOException {
+        
+        String fileAbsolutePath = fileResource.getFile().getAbsolutePath();
+        String content = IOUtils.toString(fileResource.getInputStream());
+        
         parse(content, prefix, fileAbsolutePath);
     }
 
@@ -180,10 +183,10 @@ public class Router {
         }
     }
 
-    public static void detectChanges(File routeFile, String prefix) throws IOException {
+    public static void detectChanges(Resource fileResource, String prefix) throws IOException {
 
-        if (FileUtils.isFileNewer(routeFile, lastLoading)) {
-            load(routeFile, prefix);
+        if (FileUtils.isFileNewer(fileResource.getFile(), lastLoading)) {
+            load(fileResource, prefix);
         }
     }
     public static List<Route> routes = new ArrayList<Route>(500);
