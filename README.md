@@ -226,8 +226,6 @@ Then use the #route directive within your .vm file:
 Tools
 -----
 
-Routing requests to actions is one thing. But refactoring routes can be a real pain if all your URLs are hard coded in your template views. Reverse routing is the solution.
-
 
 ### Embedded resources maven plugin
 
