@@ -17,17 +17,19 @@ public class RouterModelAttribute extends HandlerInterceptorAdapter {
 
   private String attributeName = DEFAULT_ATTRIBUTE_NAME;
 
-  public void setAttributeName(String attributeName) {
-    this.attributeName = attributeName;
-  }
+  private final Router router = new Router();
 
   @Override
   public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
       ModelAndView mav) throws Exception {
 
     if (mav != null && mav.getModelMap() != null) {
-      mav.getModelMap().addAttribute(attributeName, new Router());
+      mav.getModelMap().addAttribute(attributeName, router);
     }
   }
-  
+
+  public void setAttributeName(String attributeName) {
+    this.attributeName = attributeName;
+  }
+
 }
