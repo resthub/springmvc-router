@@ -1,17 +1,6 @@
 package org.springframework.web.servlet.mvc.router;
 
-<<<<<<< HEAD
-import org.springframework.core.io.Resource;
-import org.springframework.web.servlet.mvc.router.exceptions.RouteFileParsingException;
-import org.springframework.web.servlet.mvc.router.exceptions.NoRouteFoundException;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-
-=======
-import java.io.IOException;
->>>>>>> e4270319fd079a7d5aeaa35a20630480a3efef98
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,91 +54,82 @@ import org.springframework.web.servlet.mvc.router.exceptions.RouteFileParsingExc
  */
 public class RouterHandlerMapping extends AbstractHandlerMapping {
 
-    private static final Logger logger = LoggerFactory.getLogger(RouterHandlerAdapter.class);
-    private String routeFile;
-    private String servletPrefix;
+  private static final Logger logger = LoggerFactory.getLogger(RouterHandlerAdapter.class);
+  private String routeFile;
+  private String servletPrefix;
 
-    /**
-     * Servlet Prefix to be added in front of all routes Injected by bean
-     * configuration (in servlet.xml)
-     */
-    public String getServletPrefix() {
-        return servletPrefix;
+  /**
+   * Servlet Prefix to be added in front of all routes Injected by bean
+   * configuration (in servlet.xml)
+   */
+  public String getServletPrefix() {
+    return servletPrefix;
+  }
+
+  public void setServletPrefix(String servletPrefix) {
+    this.servletPrefix = servletPrefix;
+  }
+
+  /**
+   * Routes configuration File name< Injected by bean configuration (in
+   * servlet.xml)
+   */
+  public String getRouteFile() {
+    return routeFile;
+  }
+
+  public void setRouteFile(String routeFile) {
+    this.routeFile = routeFile;
+  }
+
+  /**
+   *
+   * @param request the HTTP Servlet request
+   * @return a RouterHandler, containing matching route + wrapped request
+   */
+  @Override
+  protected Object getHandlerInternal(HttpServletRequest request)
+      throws Exception {
+
+    RouterHandler handler;
+    try {
+      // Route request and resolve format
+
+      // Adapt HTTPServletRequest for Router
+      HTTPRequestAdapter rq = HTTPRequestAdapter.parseRequest(request);
+
+      Router.Route route = Router.route(rq);
+      rq.resolveFormat();
+
+      handler = new RouterHandler();
+      handler.setRequest(rq);
+      handler.setRoute(route);
+
+    } catch (NoRouteFoundException nrfe) {
+      handler = null;
+      logger.trace("no route found for method[" + nrfe.method
+          + "] and path[" + nrfe.path + "]");
     }
 
-    public void setServletPrefix(String servletPrefix) {
-        this.servletPrefix = servletPrefix;
+    return handler;
+  }
+
+  /**
+   * Inits Routes from route configuration file
+   */
+  @Override
+  protected void initApplicationContext() throws BeansException {
+
+    super.initApplicationContext();
+
+    try {
+      Resource resource = getApplicationContext().getResource(routeFile);
+
+      Router.load(resource, this.servletPrefix);
+
+    } catch (IOException e) {
+      throw new RouteFileParsingException(
+          "Cannot parse route file routes.conf", e);
     }
-
-    /**
-     * Routes configuration File name< Injected by bean configuration (in
-     * servlet.xml)
-     */
-    public String getRouteFile() {
-        return routeFile;
-    }
-
-    public void setRouteFile(String routeFile) {
-        this.routeFile = routeFile;
-    }
-
-    /**
-     *
-     * @param request the HTTP Servlet request
-     * @return a RouterHandler, containing matching route + wrapped request
-     */
-    @Override
-    protected Object getHandlerInternal(HttpServletRequest request)
-            throws Exception {
-
-        RouterHandler handler;
-        try {
-            // Route request and resolve format
-
-            // Adapt HTTPServletRequest for Router
-            HTTPRequestAdapter rq = HTTPRequestAdapter.parseRequest(request);
-
-            Router.Route route = Router.route(rq);
-            rq.resolveFormat();
-
-            handler = new RouterHandler();
-            handler.setRequest(rq);
-            handler.setRoute(route);
-
-        } catch (NoRouteFoundException nrfe) {
-            handler = null;
-            logger.trace("no route found for method[" + nrfe.method
-                    + "] and path[" + nrfe.path + "]");
-        }
-
-        return handler;
-    }
-
-    /**
-     * Inits Routes from route configuration file
-     */
-    @Override
-    protected void initApplicationContext() throws BeansException {
-
-        super.initApplicationContext();
-
-        try {
-<<<<<<< HEAD
-          Resource resource = getApplicationContext().getResource(routeFile);
-
-            // load routes configuration file and parse all routes
-            InputStream is = resource.getInputStream();
-
-            Router.load(is, this.servletPrefix);
-=======
-            Resource resource = getApplicationContext().getResource(routeFile);
-
-            Router.load(resource, this.servletPrefix);
->>>>>>> e4270319fd079a7d5aeaa35a20630480a3efef98
-
-        } catch (IOException e) {
-            throw new RouteFileParsingException(
-                    "Cannot parse route file routes.conf", e);
-        }
-    }
+  }
 }
