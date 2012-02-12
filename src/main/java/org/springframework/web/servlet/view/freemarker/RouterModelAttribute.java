@@ -22,8 +22,8 @@ public class RouterModelAttribute extends HandlerInterceptorAdapter {
   }
 
   @Override
-  public void postHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler, 
-      final ModelAndView mav) throws Exception {
+  public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+      ModelAndView mav) throws Exception {
 
     if (mav != null && mav.getModelMap() != null) {
       mav.getModelMap().addAttribute(attributeName, new Router());
