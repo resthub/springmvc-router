@@ -493,6 +493,10 @@ public class Router {
             return path;
         }
 
+        public List<Arg> getArgs() {
+          return args;
+        }
+
         /**
          * HTTP method, e.g. "GET".
          */
@@ -675,12 +679,20 @@ public class Router {
             return null;
         }
 
-        static class Arg {
+        public static class Arg {
 
             String name;
             Pattern constraint;
             String defaultValue;
             Boolean optional = false;
+
+            public String getName() {
+              return name;
+            }
+
+            public String getDefaultValue() {
+              return defaultValue;
+            }
         }
 
         @Override
