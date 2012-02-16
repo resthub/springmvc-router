@@ -25,7 +25,7 @@ Define your application routes like this!
 Configuring the SpringMVC Router for your project
 -------------------------------------------------
 
-### Add the dependency to your maven pom.xml ===
+### Add the dependency to your maven pom.xml
 
 Warning: **this project is not hosted yet on any public maven repository** - so before adding the dependency to your pom.xml, you have to upload it on your maven repo.
 
