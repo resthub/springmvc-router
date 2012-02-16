@@ -250,6 +250,9 @@ Then use the Router instance within your .ftl files:
 Tools
 -----
 
+### Autocomplete reverse routing in your IDE
+
+[springmvc-router-ide](https://github.com/bradhouse/springmvc-router-ide) is a Maven plugin to generate template files that assist IDEs in autocompleting reverse routing with this project.
 
 ### Embedded resources maven plugin
 
