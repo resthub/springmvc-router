@@ -223,6 +223,30 @@ Then use the #route directive within your .vm file:
     <a href="#route("userController.listAll")">List all users</a>
     <a href="#route("userController.showUser(id:'42')")">Show user 42</a>
 
+### Integrating with FreeMarker
+
+In your Spring MVC context add the following:
+
+    <mvc:interceptors>
+        <bean class="org.springframework.web.servlet.view.freemarker.RouterModelAttribute"/>
+    </mvc:interceptors>
+
+This will inject a model attribute called "route" to every model. The attribute name can be modified by setting the
+property "attributeName".
+
+    <mvc:interceptors>
+        <bean class="org.springframework.web.servlet.view.freemarker.RouterModelAttribute">
+            <property name="attributeName" value="myAttributeName"/>
+        </bean>
+    </mvc:interceptors>
+
+Then use the Router instance within your .ftl files:
+
+    <a href="${route.reverse('userController.listAll')}">List all users</a>
+
+    <#assign params = {"id":42}/>
+    <a href="${route.reverse('userController.showUser', params)}">Show user 42</a>
+
 Tools
 -----
 
