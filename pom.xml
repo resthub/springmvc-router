@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <version>0.5-SNAPSHOT</version>
     <name>springmvc-router</name>
-    <description></description>
+    <description>Adds route mapping capacity to any "Spring MVC based" webapp.</description>
     <url>https://github.com/bclozel/springmvc-router/</url>
 
     <properties>
@@ -100,12 +100,9 @@
             <version>${slf4j.version}</version>
         </dependency>
 
-        <!--  
-            JRegex Engine http://jregex.sourceforge.net/
-            from Atlassian repo
-        -->
+        <!--  JRegex Engine http://jregex.sourceforge.net/ -->
         <dependency>
-            <groupId>jregex</groupId>
+            <groupId>net.sourceforge.jregex</groupId>
             <artifactId>jregex</artifactId>
             <version>1.2_01</version>
         </dependency>
@@ -229,23 +226,5 @@
             </plugin>
         </plugins>
     </reporting>
-
-    <repositories>
-        <repository>
-            <id>atlassian</id>
-            <name>Atlassian repository</name>
-            <layout>default</layout>
-            <url>https://maven.atlassian.com/content/groups/public/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>maven-europe</id>
-            <name>Maven Europe Mirror</name>
-            <layout>default</layout>
-            <url>http://uk.maven.org/maven2/</url>
-        </repository>
-    </repositories>
   
 </project>
