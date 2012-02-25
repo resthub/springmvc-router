@@ -54,7 +54,7 @@ Other Warning: **this project currently depends on Spring 3.1.0.RELEASE ++**, an
       </dependency>
     ...
       <dependency>
-        <groupId>org.springframework</groupId>
+        <groupId>org.resthub.web</groupId>
         <artifactId>springmvc-router</artifactId>
         <version>0.4</version>
       </dependency>
@@ -99,7 +99,7 @@ in your *-servlet.xml file, add the following beans:
     		Still gets @RequestParam, @SessionAttributes, @CookieValue ... annotations
     		-->
     	<bean id="handlerAdapter"
-    		class="org.springframework.web.servlet.mvc.router.RouterHandlerAdapter" />
+    		class="org.resthub.web.springmvc.router.RouterHandlerAdapter" />
     	
     	
     	<!-- 
@@ -115,7 +115,7 @@ in your *-servlet.xml file, add the following beans:
     	-->
     		 
     	<bean id="handlerMapping"
-              class="org.springframework.web.servlet.mvc.router.RouterHandlerMapping">
+              class="org.resthub.web.springmvc.router.RouterHandlerMapping">
     		<property name="routeFile" value="routes.conf" />
     		<property name="servletPrefix" value="" />
         </bean>
@@ -183,7 +183,7 @@ Example route file:
 
 Reverse routing in your Java class:
 
-    import org.springframework.web.servlet.mvc.router.Router;
+    import org.resthub.web.springmvc.router.Router;
     
     public class MyClass {
       public void myMethod() {
@@ -215,7 +215,7 @@ First, add the RouteDirective to your Velocity Engine configuration:
       <property name="preferFileSystemAccess" value="false"/>
       <property name="velocityProperties">
         <props>
-          <prop key="userdirective">org.springframework.web.servlet.view.velocity.RouteDirective</prop>
+          <prop key="userdirective">org.resthub.web.springmvc.view.velocity.RouteDirective</prop>
         </props>
       </property>
     </bean>
@@ -230,14 +230,14 @@ Then use the #route directive within your .vm file:
 In your Spring MVC context add the following:
 
     <mvc:interceptors>
-        <bean class="org.springframework.web.servlet.view.freemarker.RouterModelAttribute"/>
+        <bean class="org.resthub.web.springmvc.view.freemarker.RouterModelAttribute"/>
     </mvc:interceptors>
 
 This will inject a model attribute called "route" to every model. The attribute name can be modified by setting the
 property "attributeName".
 
     <mvc:interceptors>
-        <bean class="org.springframework.web.servlet.view.freemarker.RouterModelAttribute">
+        <bean class="org.resthub.web.springmvc.view.freemarker.RouterModelAttribute">
             <property name="attributeName" value="myAttributeName"/>
         </bean>
     </mvc:interceptors>

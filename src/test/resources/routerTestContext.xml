@@ -24,7 +24,7 @@
 		Package to scan for Controllers.
 		All Controllers with @Controller annotation are loaded as such.
 	-->
-	<context:component-scan base-package="org.springframework.web.servlet.mvc.router" />
+	<context:component-scan base-package="org.resthub.web.springmvc.router" />
 
 	<!--
 		HandlerAdapter
@@ -32,7 +32,7 @@
 		Still gets @RequestParam annotations
 		-->
 	<bean id="handlerAdapter"
-		class="org.springframework.web.servlet.mvc.router.RouterHandlerAdapter" />
+		class="org.resthub.web.springmvc.router.RouterHandlerAdapter" />
 	
 	
 	<!-- 
@@ -48,7 +48,7 @@
 	-->
 		 
 	<bean id="handlerMapping"
-          class="org.springframework.web.servlet.mvc.router.RouterHandlerMapping">
+          class="org.resthub.web.springmvc.router.RouterHandlerMapping">
 		<property name="routeFile" value="routes.conf" />
 		<property name="servletPrefix" value="" />
     </bean>
