@@ -54,7 +54,7 @@ Other Warning: **this project currently depends on Spring 3.1.0.RELEASE ++**, an
       </dependency>
     ...
       <dependency>
-        <groupId>org.resthub.web</groupId>
+        <groupId>org.resthub</groupId>
         <artifactId>springmvc-router</artifactId>
         <version>0.4</version>
       </dependency>
