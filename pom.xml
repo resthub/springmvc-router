@@ -32,8 +32,8 @@
 
     <licenses>
         <license>
-            <name>LGPL</name>
-            <url>http://www.gnu.org/licenses/lgpl.html</url>
+            <name>Apache License, Version 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
             <comments>This project's main license</comments>
         </license>
         <license>
