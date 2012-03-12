@@ -209,7 +209,25 @@ public class RouterHandlerAdapterTest {
 
         Assert.assertNotNull(mv);
         Assert.assertEquals("myhost", mv.getModel().get("subdomain"));
+    }
+    
+    /**
+     * Test route handling:
+     * GET     /bind/modelattribute        bindTestController.bindModelAttributeOnMethodsAction
+     * @throws Exception
+     */
+    @Test
+    public void bindModelAttributeOnMethodsAction() throws Exception {
 
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/bind/modelattribute");
+        request.addHeader("host", "myhost.domain.org");
+
+        ModelAndView mv = handleRequest(request);
+
+        Assert.assertNotNull(mv);
+        Assert.assertEquals(true, mv.getModel().get("simpleModelAttributeOnMethod"));
+        Assert.assertEquals(true, mv.getModel().get("firstModelAttributeOnMethod"));
+        Assert.assertEquals(true, mv.getModel().get("secondModelAttributeOnMethod"));
     }
 
     /**

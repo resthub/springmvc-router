@@ -3,6 +3,8 @@ package org.resthub.web.springmvc.router;
 import javax.inject.Named;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -11,6 +13,17 @@ import org.springframework.web.servlet.ModelAndView;
 @Named("bindTestController")
 public class BindTestController {
 
+    @ModelAttribute("simpleModelAttributeOnMethod")
+    public boolean simpleModelAttribute() {
+        return true;
+    }
+
+    @ModelAttribute
+    public void multipleModelAttribute(Model model) {
+        model.addAttribute("firstModelAttributeOnMethod", true);
+        model.addAttribute("secondModelAttributeOnMethod", true);
+    }
+    
     public ModelAndView bindNameAction(@PathVariable(value = "myName") String myName) {
 
         ModelAndView mav = new ModelAndView("testView");
@@ -25,7 +38,6 @@ public class BindTestController {
         mav.addObject("id", myId);
 
         return mav;
-
     }
 
     public ModelAndView bindSlugAction(@PathVariable(value = "slug") String mySlug,
@@ -69,6 +81,13 @@ public class BindTestController {
         ModelAndView mav = new ModelAndView("testView");
         mav.addObject("subdomain", subdomain);
 
+        return mav;
+    }
+    
+    public ModelAndView bindModelAttributeOnMethodsAction() {
+        
+        ModelAndView mav = new ModelAndView("testView");
+        
         return mav;
     }
     
