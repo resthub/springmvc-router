@@ -22,6 +22,4 @@ public class RouterHandler {
 		this.request = request;
 	}
 	
-	
-	
 }

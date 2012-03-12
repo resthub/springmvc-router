@@ -13,6 +13,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.transform.Source;
 import org.resthub.web.springmvc.router.exceptions.ActionNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +100,7 @@ public class RouterHandlerAdapter extends WebContentGenerator implements
     private ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
     private WebArgumentResolver[] customArgumentResolvers;
     private ModelAndViewResolver[] customModelAndViewResolvers;
-    private HttpMessageConverter<?>[] messageConverters;
+    private List<HttpMessageConverter<?>> messageConverters;
     private ConfigurableBeanFactory beanFactory;
     private BeanExpressionContext expressionContext;
     private Map<String, Object> cachedControllers;
@@ -109,12 +110,14 @@ public class RouterHandlerAdapter extends WebContentGenerator implements
         // no restriction of HTTP methods by default
         super(false);
 
-        // See SPR-7316
         StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter();
-        stringHttpMessageConverter.setWriteAcceptCharset(false);
-        messageConverters = new HttpMessageConverter[]{
-                    new ByteArrayHttpMessageConverter(), stringHttpMessageConverter,
-                    new SourceHttpMessageConverter(), new XmlAwareFormHttpMessageConverter()};
+        stringHttpMessageConverter.setWriteAcceptCharset(false); // See SPR-7316
+
+        this.messageConverters = new ArrayList<HttpMessageConverter<?>>();
+        this.messageConverters.add(new ByteArrayHttpMessageConverter());
+        this.messageConverters.add(stringHttpMessageConverter);
+        this.messageConverters.add(new SourceHttpMessageConverter<Source>());
+        this.messageConverters.add(new XmlAwareFormHttpMessageConverter());
     }
 
     /**
@@ -171,20 +174,21 @@ public class RouterHandlerAdapter extends WebContentGenerator implements
         this.customModelAndViewResolvers = customModelAndViewResolvers;
     }
 
-    /**
-     * Set the message body converters to use.
-     * <p>These converters are used to convert from and to HTTP requests and responses.
-     */
-    public void setMessageConverters(HttpMessageConverter<?>[] messageConverters) {
-        this.messageConverters = messageConverters;
-    }
+	/**
+	 * Provide the converters to use in argument resolvers and return value 
+	 * handlers that support reading and/or writing to the body of the 
+	 * request and response.
+	 */
+	public void setMessageConverters(List<HttpMessageConverter<?>> messageConverters) {
+		this.messageConverters = messageConverters;
+	}
 
-    /**
-     * Return the message body converters that this adapter has been configured with.
-     */
-    public HttpMessageConverter<?>[] getMessageConverters() {
-        return messageConverters;
-    }
+	/**
+	 * Return the configured message body converters.
+	 */
+	public List<HttpMessageConverter<?>> getMessageConverters() {
+		return messageConverters;
+	}
 
     /**
      * Template method for creating a new ServletRequestDataBinder instance.
@@ -465,7 +469,7 @@ public class RouterHandlerAdapter extends WebContentGenerator implements
 
         private RouterhandlerMethodInvoker(HandlerMethodResolver resolver) {
             super(resolver, webBindingInitializer, sessionAttributeStore, parameterNameDiscoverer,
-                    customArgumentResolvers, messageConverters);
+                    customArgumentResolvers, messageConverters.toArray(new HttpMessageConverter[0]));
         }
 
         @Override
