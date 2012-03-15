@@ -29,12 +29,9 @@ Configuring the SpringMVC Router for your project
 
 ### Add the dependency to your maven pom.xml
 
-Warning: **this project is not hosted yet on any public maven repository** - so before adding the dependency to your pom.xml, you have to upload it on your maven repo.
-
-Other Warning: **this project currently depends on Spring 3.1.0.RELEASE ++**, and is not using version range in its POM [because of this bug](https://jira.springsource.org/browse/SPR-7287) - your project needs these dependencies.
-
-
+Warning: **this project is currently tested on Spring 3.1.0.RELEASE ++**, and is not using version range in its POM [because of this bug](https://jira.springsource.org/browse/SPR-7287) - your project needs these dependencies.
   
+
     <dependencies>
     ...
       <dependency>
@@ -56,15 +53,31 @@ Other Warning: **this project currently depends on Spring 3.1.0.RELEASE ++**, an
       <dependency>
         <groupId>org.resthub</groupId>
         <artifactId>springmvc-router</artifactId>
-        <version>0.4</version>
+        <version>0.5</version>
       </dependency>
     ...
     </dependencies>
 
+If you want to use SNAPSHOTs, add oss.sonatype.org as a repository.
 
-### Add the Router to Spring MVC configuration
+    <repositories>
+      <repository>
+        <id>sonatype.oss.snapshots</id>
+          <name>Sonatype OSS Snapshot Repository</name>
+          <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+      </repository> 
+    </repositories>
 
-in your *-servlet.xml file, add the following beans:
+
+### Add the Router to your Spring MVC configuration
+
+In your *-servlet.xml file, add the following beans:
 
 
     <?xml version="1.0" encoding="UTF-8"?>
@@ -81,10 +94,10 @@ in your *-servlet.xml file, add the following beans:
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
     
-        <!--
-                Enable bean declaration by annotations, update base package according to your project
-         -->
-        <context:annotation-config/>
+      <!--
+        Enable bean declaration by annotations, update base package according to your project
+      -->
+      <context:annotation-config/>
     
     
     	<!--
@@ -126,7 +139,7 @@ in your *-servlet.xml file, add the following beans:
 ### Create your route configuration file
 
 
-The example above will load the configuration file using the classloader - so create a new file in your project `src/main/resources/routes.conf`.
+The example above will load the configuration file using Spring ResourceLoader - so create a new file in your project `src/main/resources/routes.conf`.
 
 Routes configuration
 --------------------
