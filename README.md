@@ -53,7 +53,7 @@ Warning: **this project is currently tested on Spring 3.1.0.RELEASE ++**, and is
       <dependency>
         <groupId>org.resthub</groupId>
         <artifactId>springmvc-router</artifactId>
-        <version>0.5</version>
+        <version>0.6</version>
       </dependency>
     ...
     </dependencies>
