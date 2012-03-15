@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import jregex.Matcher;
 import jregex.Pattern;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.context.InternalContextAdapter;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
@@ -15,6 +13,8 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.directive.Directive;
 import org.apache.velocity.runtime.parser.node.Node;
 import org.resthub.web.springmvc.router.Router;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * #route directive for the Velocity engine.
@@ -39,7 +39,7 @@ public class RouteDirective extends Directive {
      */
     private static Pattern paramPattern = new Pattern("([a-zA-Z_0-9]+)\\s*:\\s*'(.*)'");
 
-    private static Log logger = LogFactory.getLog(RouteDirective.class);
+    private static Logger logger = LoggerFactory.getLogger(RouteDirective.class);
 
 
     /**
