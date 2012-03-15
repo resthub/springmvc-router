@@ -4,7 +4,7 @@
     <groupId>org.resthub</groupId>
     <artifactId>springmvc-router</artifactId>
     <packaging>jar</packaging>
-    <version>0.6-SNAPSHOT</version>
+    <version>0.6</version>
     <name>springmvc-router</name>
     <description>Adds route mapping capacity to any "Spring MVC based" webapp.</description>
     <url>https://github.com/bclozel/springmvc-router/</url>
