@@ -1,4 +1,4 @@
-package org.resthub.web.springmvc.router;
+package org.resthub.web.springmvc.router.support;
 
 import java.util.ArrayList;
 import java.util.List;
