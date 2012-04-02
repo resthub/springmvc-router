@@ -13,7 +13,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.transform.Source;
 import org.resthub.web.springmvc.router.exceptions.ActionNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,11 +26,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.*;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.*;
-import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.xml.SourceHttpMessageConverter;
-import org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
@@ -100,7 +95,7 @@ public class RouterHandlerAdapter extends WebContentGenerator implements
     private ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
     private WebArgumentResolver[] customArgumentResolvers;
     private ModelAndViewResolver[] customModelAndViewResolvers;
-    private List<HttpMessageConverter<?>> messageConverters;
+    private MessageConverterHolder messageConverterHolder;
     private ConfigurableBeanFactory beanFactory;
     private BeanExpressionContext expressionContext;
     private Map<String, Object> cachedControllers;
@@ -110,14 +105,7 @@ public class RouterHandlerAdapter extends WebContentGenerator implements
         // no restriction of HTTP methods by default
         super(false);
 
-        StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter();
-        stringHttpMessageConverter.setWriteAcceptCharset(false); // See SPR-7316
-
-        this.messageConverters = new ArrayList<HttpMessageConverter<?>>();
-        this.messageConverters.add(new ByteArrayHttpMessageConverter());
-        this.messageConverters.add(stringHttpMessageConverter);
-        this.messageConverters.add(new SourceHttpMessageConverter<Source>());
-        this.messageConverters.add(new XmlAwareFormHttpMessageConverter());
+        this.messageConverterHolder = new MessageConverterHolder();
     }
 
     /**
@@ -180,14 +168,14 @@ public class RouterHandlerAdapter extends WebContentGenerator implements
 	 * request and response.
 	 */
 	public void setMessageConverters(List<HttpMessageConverter<?>> messageConverters) {
-		this.messageConverters = messageConverters;
+		this.messageConverterHolder.setMessageConverters(messageConverters);
 	}
 
 	/**
 	 * Return the configured message body converters.
 	 */
 	public List<HttpMessageConverter<?>> getMessageConverters() {
-		return messageConverters;
+		return this.messageConverterHolder.getMessageConverters();
 	}
 
     /**
@@ -469,7 +457,7 @@ public class RouterHandlerAdapter extends WebContentGenerator implements
 
         private RouterhandlerMethodInvoker(HandlerMethodResolver resolver) {
             super(resolver, webBindingInitializer, sessionAttributeStore, parameterNameDiscoverer,
-                    customArgumentResolvers, messageConverters.toArray(new HttpMessageConverter[0]));
+                    customArgumentResolvers, messageConverterHolder.getMessageConverters().toArray(new HttpMessageConverter[0]));
         }
 
         @Override
@@ -724,7 +712,7 @@ public class RouterHandlerAdapter extends WebContentGenerator implements
                         }
                     }
                 }
-                for (HttpMessageConverter messageConverter : messageConverters) {
+                for (HttpMessageConverter messageConverter : messageConverterHolder.getMessageConverters()) {
                     allSupportedMediaTypes.addAll(messageConverter.getSupportedMediaTypes());
                 }
             }
