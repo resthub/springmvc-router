@@ -68,6 +68,26 @@ public class RouterHandlerMappingTest {
 		Assert.assertEquals(this.handlerName+".simpleAction", route.action);
 	}
         
+        /**
+	 * Test route:
+	 * GET     /additionalroute       myTestController.additionalRouteFile
+	 * @throws Exception
+	 */
+	@Test
+	public void additionalRouteFile() throws Exception {
+
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/additionalroute");
+		request.addHeader("host", sampleHost);
+		HandlerExecutionChain chain = this.hm.getHandler(request);
+		
+		RouterHandler handler = (RouterHandler)chain.getHandler();
+		Assert.assertNotNull(handler);
+		
+		Route route = handler.getRoute();
+		Assert.assertNotNull(route);
+		Assert.assertEquals(this.handlerName+".additionalRouteFile", route.action);
+	}
+        
 	/**
 	 * Test route with HTTP method overriding (HEAD -> GET):
 	 * GET     /simpleaction    myTestController.simpleAction

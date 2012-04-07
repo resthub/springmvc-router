@@ -49,7 +49,12 @@
 		 
 	<bean id="handlerMapping"
           class="org.resthub.web.springmvc.router.RouterHandlerMapping">
-		<property name="routeFile" value="routes.conf" />
+		<property name="routeFiles">
+                    <list>
+                        <value>routes.conf</value>
+                        <value>addroutes.conf</value>
+                    </list>
+                </property>
 		<property name="servletPrefix" value="" />
     </bean>
 
