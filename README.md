@@ -6,7 +6,7 @@ SpringMVC Router
 Route mapping with SpringMVC Router
 -----------------------------------
 
-Spring MVC 3.1 [handles requests mapping](http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/mvc.html) with `AnnotationMethodHandlerAdapter` and `DefaultAnnotationHandlerMapping` beans (that's the "out-of-the-box" configuration that comes with your springmvc application).
+Spring MVC 3.1 [handles requests mapping](http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/mvc.html) with `RequestMappingHandlerAdapter` and `DefaultAnnotationHandlerMapping` beans (that's the "out-of-the-box" configuration that comes with your springmvc application).
 
 But you may want to use a request Router for your application:
 
