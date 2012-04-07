@@ -42,9 +42,12 @@ public class Router {
      *
      * @param prefix The prefix that the path of all routes in this route file start with. This prefix should not end with a '/' character.
      */
-    public static void load(Resource fileResource, String prefix) throws IOException {
+    public static void load(List<Resource> fileResources, String prefix) throws IOException {
         routes.clear();
-        parse(fileResource, prefix);
+        for(Resource res : fileResources) {
+            parse(res, prefix);
+        }
+
         lastLoading = System.currentTimeMillis();
         // TODO: load multiple route files
     }
@@ -183,10 +186,17 @@ public class Router {
         }
     }
 
-    public static void detectChanges(Resource fileResource, String prefix) throws IOException {
+    public static void detectChanges(List<Resource> fileResources, String prefix) throws IOException {
 
-        if (FileUtils.isFileNewer(fileResource.getFile(), lastLoading)) {
-            load(fileResource, prefix);
+        boolean hasChanged = false;
+        
+        for(Resource res: fileResources) {
+            FileUtils.isFileNewer(res.getFile(), lastLoading);
+            hasChanged = true;
+        }
+        
+        if(hasChanged) {
+            load(fileResources, prefix);
         }
     }
     public static List<Route> routes = new ArrayList<Route>(500);
