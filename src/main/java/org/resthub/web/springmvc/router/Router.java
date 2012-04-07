@@ -502,9 +502,6 @@ public class Router {
          */
         public String method;
         public String path;
-        /**
-         * @todo - what is this?
-         */
         public String action;
         Pattern actionPattern;
         List<String> actionArgs = new ArrayList<String>(3);
