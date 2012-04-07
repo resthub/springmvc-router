@@ -7,20 +7,17 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
- * Adapter class for HTTP class defined in Play! Framework
- * Maps HTTPServletRequest to HTTP.Request and HTTP.Header
- * 
+ * Adapter class for HTTP class defined in Play! Framework Maps
+ * HTTPServletRequest to HTTP.Request and HTTP.Header
+ *
  * @author Brian Clozel
  * @see org.resthub.web.springmvc.router.Router
  */
 public class HTTPRequestAdapter {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(HTTPRequestAdapter.class);
-
-	
+    private static final Logger logger = LoggerFactory.getLogger(HTTPRequestAdapter.class);
+    
     /**
      * Server host
      */
@@ -101,187 +98,179 @@ public class HTTPRequestAdapter {
      * is HTTPS ?
      */
     public Boolean secure = false;
-	/**
-	 * Bind to thread
-	 */
-	public static ThreadLocal<HTTPRequestAdapter> current = new ThreadLocal<HTTPRequestAdapter>();
+    /**
+     * Bind to thread
+     */
+    public static ThreadLocal<HTTPRequestAdapter> current = new ThreadLocal<HTTPRequestAdapter>();
 
-	
-	public HTTPRequestAdapter(HttpServletRequest _request) {
+    public HTTPRequestAdapter(HttpServletRequest _request) {
 
-		this.headers = new HashMap<String, Header>();
-	}
+        this.headers = new HashMap<String, Header>();
+    }
 
-	public void setFormat(String _format) {
+    public void setFormat(String _format) {
 
-		this.format = _format;
-	}
+        this.format = _format;
+    }
 
-	public boolean isSecure() {
-		return secure;
-	}
+    public boolean isSecure() {
+        return secure;
+    }
 
-	public void setSecure(boolean secure) {
-		this.secure = secure;
-	}
+    public void setSecure(boolean secure) {
+        this.secure = secure;
+    }
 
-	public String getContentType() {
-		return contentType;
-	}
+    public String getContentType() {
+        return contentType;
+    }
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
 
-	public String getQueryString() {
-		return querystring;
-	}
+    public String getQueryString() {
+        return querystring;
+    }
 
-	public void setQueryString(String queryString) {
-		this.querystring = queryString;
-	}
+    public void setQueryString(String queryString) {
+        this.querystring = queryString;
+    }
 
-	/**
-	 * Get the request base (ex: http://localhost:9000
-	 * 
-	 * @return the request base of the url (protocol, host and port)
-	 */
-	public String getBase() {
-		if (port == 80 || port == 443) {
-			return String.format("%s://%s", secure ? "https" : "http", domain)
-					.intern();
-		}
-		return String.format("%s://%s:%s", secure ? "https" : "http", domain,
-				port).intern();
-	}
+    /**
+     * Get the request base (ex: http://localhost:9000
+     *
+     * @return the request base of the url (protocol, host and port)
+     */
+    public String getBase() {
+        if (port == 80 || port == 443) {
+            return String.format("%s://%s", secure ? "https" : "http", domain).intern();
+        }
+        return String.format("%s://%s:%s", secure ? "https" : "http", domain,
+                port).intern();
+    }
 
-	public static HTTPRequestAdapter parseRequest(
-			HttpServletRequest httpServletRequest) throws Exception {
-		HTTPRequestAdapter request = new HTTPRequestAdapter(httpServletRequest);
+    public static HTTPRequestAdapter parseRequest(
+            HttpServletRequest httpServletRequest) throws Exception {
+        HTTPRequestAdapter request = new HTTPRequestAdapter(httpServletRequest);
 
-		HTTPRequestAdapter.current.set(request);
+        HTTPRequestAdapter.current.set(request);
 
-		URI uri = new URI(httpServletRequest.getRequestURI());
-		request.method = httpServletRequest.getMethod().intern();
-		request.path = uri.getPath();
-		request.setQueryString(httpServletRequest.getQueryString() == null ? ""
-				: httpServletRequest.getQueryString());
+        URI uri = new URI(httpServletRequest.getRequestURI());
+        request.method = httpServletRequest.getMethod().intern();
+        request.path = uri.getPath();
+        request.setQueryString(httpServletRequest.getQueryString() == null ? ""
+                : httpServletRequest.getQueryString());
 
-		logger.trace("httpServletRequest.getContextPath(): "
-				+ httpServletRequest.getContextPath());
-		logger.trace("request.path: " + request.path
-				+ ", request.querystring: " + request.getQueryString());
+        logger.trace("httpServletRequest.getContextPath(): "
+                + httpServletRequest.getContextPath());
+        logger.trace("request.path: " + request.path
+                + ", request.querystring: " + request.getQueryString());
 
-		if (httpServletRequest.getHeader("Content-Type") != null) {
-			request.contentType = httpServletRequest.getHeader("Content-Type")
-					.split(";")[0].trim().toLowerCase().intern();
-		} else {
-			request.contentType = "text/html".intern();
-		}
+        if (httpServletRequest.getHeader("Content-Type") != null) {
+            request.contentType = httpServletRequest.getHeader("Content-Type").split(";")[0].trim().toLowerCase().intern();
+        } else {
+            request.contentType = "text/html".intern();
+        }
 
-		if (httpServletRequest.getHeader("X-HTTP-Method-Override") != null) {
-			request.method = httpServletRequest.getHeader(
-					"X-HTTP-Method-Override").intern();
-		}
+        if (httpServletRequest.getHeader("X-HTTP-Method-Override") != null) {
+            request.method = httpServletRequest.getHeader(
+                    "X-HTTP-Method-Override").intern();
+        }
 
-		request.setSecure(httpServletRequest.isSecure());
+        request.setSecure(httpServletRequest.isSecure());
 
-		request.url = uri.toString();
-		request.host = httpServletRequest.getHeader("host");
-		if (request.host.contains(":")) {
-			request.port = Integer.parseInt(request.host.split(":")[1]);
-			request.domain = request.host.split(":")[0];
-		} else {
-			request.port = 80;
-			request.domain = request.host;
-		}
+        request.url = uri.toString();
+        request.host = httpServletRequest.getHeader("host");
+        if (request.host.contains(":")) {
+            request.port = Integer.parseInt(request.host.split(":")[1]);
+            request.domain = request.host.split(":")[0];
+        } else {
+            request.port = 80;
+            request.domain = request.host;
+        }
 
-		request.remoteAddress = httpServletRequest.getRemoteAddr();
+        request.remoteAddress = httpServletRequest.getRemoteAddr();
 
-		Enumeration headersNames = httpServletRequest.getHeaderNames();
-		while (headersNames.hasMoreElements()) {
-			HTTPRequestAdapter.Header hd = request.new Header();
-			hd.name = (String) headersNames.nextElement();
-			hd.values = new ArrayList<String>();
-			Enumeration enumValues = httpServletRequest.getHeaders(hd.name);
-			while (enumValues.hasMoreElements()) {
-				String value = (String) enumValues.nextElement();
-				hd.values.add(value);
-			}
-			request.headers.put(hd.name.toLowerCase(), hd);
-		}
+        Enumeration headersNames = httpServletRequest.getHeaderNames();
+        while (headersNames.hasMoreElements()) {
+            HTTPRequestAdapter.Header hd = request.new Header();
+            hd.name = (String) headersNames.nextElement();
+            hd.values = new ArrayList<String>();
+            Enumeration enumValues = httpServletRequest.getHeaders(hd.name);
+            while (enumValues.hasMoreElements()) {
+                String value = (String) enumValues.nextElement();
+                hd.values.add(value);
+            }
+            request.headers.put(hd.name.toLowerCase(), hd);
+        }
 
-		request.resolveFormat();
+        request.resolveFormat();
 
-		return request;
-	}
+        return request;
+    }
 
-	/**
-	 * Automatically resolve request format from the Accept header (in this
-	 * order : html > xml > json > text)
-	 */
-	public void resolveFormat() {
+    /**
+     * Automatically resolve request format from the Accept header (in this
+     * order : html > xml > json > text)
+     */
+    public void resolveFormat() {
 
-		if (format != null) {
-			return;
-		}
+        if (format != null) {
+            return;
+        }
 
-		if (headers.get("accept") == null) {
-			format = "html".intern();
-			return;
-		}
+        if (headers.get("accept") == null) {
+            format = "html".intern();
+            return;
+        }
 
-		String accept = headers.get("accept").value();
+        String accept = headers.get("accept").value();
 
-		if (accept.indexOf("application/xhtml") != -1
-				|| accept.indexOf("text/html") != -1
-				|| accept.startsWith("*/*")) {
-			format = "html".intern();
-			return;
-		}
+        if (accept.indexOf("application/xhtml") != -1
+                || accept.indexOf("text/html") != -1
+                || accept.startsWith("*/*")) {
+            format = "html".intern();
+            return;
+        }
 
-		if (accept.indexOf("application/xml") != -1
-				|| accept.indexOf("text/xml") != -1) {
-			format = "xml".intern();
-			return;
-		}
+        if (accept.indexOf("application/xml") != -1
+                || accept.indexOf("text/xml") != -1) {
+            format = "xml".intern();
+            return;
+        }
 
-		if (accept.indexOf("text/plain") != -1) {
-			format = "txt".intern();
-			return;
-		}
+        if (accept.indexOf("text/plain") != -1) {
+            format = "txt".intern();
+            return;
+        }
 
-		if (accept.indexOf("application/json") != -1
-				|| accept.indexOf("text/javascript") != -1) {
-			format = "json".intern();
-			return;
-		}
+        if (accept.indexOf("application/json") != -1
+                || accept.indexOf("text/javascript") != -1) {
+            format = "json".intern();
+            return;
+        }
 
-		if (accept.endsWith("*/*")) {
-			format = "html".intern();
-			return;
-		}
-	}
+        if (accept.endsWith("*/*")) {
+            format = "html".intern();
+        }
+    }
 
-	public class Header {
+    public class Header {
 
-		public String name;
+        public String name;
+        public List<String> values;
 
-		public List<String> values;
+        public Header() {
+        }
 
-		public Header() {
-
-		}
-
-		/**
-		 * First value
-		 * 
-		 * @return The first value
-		 */
-		public String value() {
-			return values.get(0);
-		}
-
-	}
-
+        /**
+         * First value
+         *
+         * @return The first value
+         */
+        public String value() {
+            return values.get(0);
+        }
+    }
 }
