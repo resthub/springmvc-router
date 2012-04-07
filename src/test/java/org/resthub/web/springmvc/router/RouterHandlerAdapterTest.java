@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.context.support.XmlWebApplicationContext;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
@@ -61,7 +62,7 @@ public class RouterHandlerAdapterTest {
         HandlerExecutionChain chain = this.hm.getHandler(request);
         Assert.assertNotNull("No handler found for this request", chain);
 
-        RouterHandler handler = (RouterHandler) chain.getHandler();
+        HandlerMethod handler = (HandlerMethod) chain.getHandler();
 
         // handle request using handleradapter
         mv = ha.handle(request, new MockHttpServletResponse(), handler);

@@ -30,9 +30,9 @@
 		HandlerAdapter
 		RouterHandlerAdapter use routes defined by RouterHandlerMapping.
 		Still gets @RequestParam annotations
-		-->
+	-->	
 	<bean id="handlerAdapter"
-		class="org.resthub.web.springmvc.router.RouterHandlerAdapter" />
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter" />
 	
 	
 	<!-- 

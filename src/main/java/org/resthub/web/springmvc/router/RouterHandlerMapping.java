@@ -4,12 +4,15 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import org.resthub.web.springmvc.router.exceptions.NoRouteFoundException;
 import org.resthub.web.springmvc.router.exceptions.RouteFileParsingException;
+import org.resthub.web.springmvc.router.support.RouterHandlerResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 
 /**
@@ -54,9 +57,15 @@ import org.springframework.web.servlet.handler.AbstractHandlerMapping;
  */
 public class RouterHandlerMapping extends AbstractHandlerMapping {
 
-    private static final Logger logger = LoggerFactory.getLogger(RouterHandlerAdapter.class);
+    private static final Logger logger = LoggerFactory.getLogger(RouterHandlerMapping.class);
     private String routeFile;
     private String servletPrefix;
+    private RouterHandlerResolver methodResolver;
+    
+    
+    public RouterHandlerMapping() {
+       this.methodResolver = new RouterHandlerResolver();
+    }
 
     /**
      * Servlet Prefix to be added in front of all routes Injected by bean
@@ -83,7 +92,9 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
     }
 
     /**
-     *
+     * Resolves a HandlerMethod (of type RouterHandler) given the current
+     * HTTP request, using the Router instance.
+     * 
      * @param request the HTTP Servlet request
      * @return a RouterHandler, containing matching route + wrapped request
      */
@@ -91,20 +102,16 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
     protected Object getHandlerInternal(HttpServletRequest request)
             throws Exception {
 
-        RouterHandler handler;
+        HandlerMethod handler;
         try {
-            // Route request and resolve format
-
             // Adapt HTTPServletRequest for Router
             HTTPRequestAdapter rq = HTTPRequestAdapter.parseRequest(request);
-
+            // Route request and resolve format
             Router.Route route = Router.route(rq);
-            rq.resolveFormat();
-
-            handler = new RouterHandler();
-            handler.setRequest(rq);
-            handler.setRoute(route);
-
+            handler = this.methodResolver.resolveHandler(route, rq.action, rq);
+            // Add resolved route arguments to the request
+            request.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, rq.routeArgs);
+            
         } catch (NoRouteFoundException nrfe) {
             handler = null;
             logger.trace("no route found for method[" + nrfe.method
@@ -122,9 +129,11 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
 
         super.initApplicationContext();
 
+        // Scan beans for Controllers
+        this.methodResolver.setCachedControllers(getApplicationContext().getBeansWithAnnotation(Controller.class));
+        
         try {
             Resource resource = getApplicationContext().getResource(routeFile);
-
             Router.load(resource, this.servletPrefix);
 
         } catch (IOException e) {
