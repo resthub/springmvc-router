@@ -61,10 +61,9 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
     private String routeFile;
     private String servletPrefix;
     private RouterHandlerResolver methodResolver;
-    
-    
+
     public RouterHandlerMapping() {
-       this.methodResolver = new RouterHandlerResolver();
+        this.methodResolver = new RouterHandlerResolver();
     }
 
     /**
@@ -92,9 +91,43 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
     }
 
     /**
-     * Resolves a HandlerMethod (of type RouterHandler) given the current
-     * HTTP request, using the Router instance.
-     * 
+     * Reload routes configuration at runtime.
+     * No-op if configuration files didn't change since last reload.
+     */
+    public void reloadRoutesConfiguration() {
+        try {
+            Router.detectChanges(getApplicationContext().getResource(routeFile), servletPrefix);
+        } catch (IOException e) {
+            throw new RouteFileParsingException(
+                    "Cannot parse route file " + routeFile, e);
+        }
+    }
+
+    /**
+     * Inits Routes from route configuration file
+     */
+    @Override
+    protected void initApplicationContext() throws BeansException {
+
+        super.initApplicationContext();
+
+        // Scan beans for Controllers
+        this.methodResolver.setCachedControllers(getApplicationContext().getBeansWithAnnotation(Controller.class));
+
+        try {
+            Resource resource = getApplicationContext().getResource(routeFile);
+            Router.load(resource, this.servletPrefix);
+
+        } catch (IOException e) {
+            throw new RouteFileParsingException(
+                    "Cannot parse route file " + routeFile, e);
+        }
+    }
+
+    /**
+     * Resolves a HandlerMethod (of type RouterHandler) given the current HTTP
+     * request, using the Router instance.
+     *
      * @param request the HTTP Servlet request
      * @return a RouterHandler, containing matching route + wrapped request
      */
@@ -111,7 +144,7 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
             handler = this.methodResolver.resolveHandler(route, rq.action, rq);
             // Add resolved route arguments to the request
             request.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, rq.routeArgs);
-            
+
         } catch (NoRouteFoundException nrfe) {
             handler = null;
             logger.trace("no route found for method[" + nrfe.method
@@ -119,26 +152,5 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
         }
 
         return handler;
-    }
-
-    /**
-     * Inits Routes from route configuration file
-     */
-    @Override
-    protected void initApplicationContext() throws BeansException {
-
-        super.initApplicationContext();
-
-        // Scan beans for Controllers
-        this.methodResolver.setCachedControllers(getApplicationContext().getBeansWithAnnotation(Controller.class));
-        
-        try {
-            Resource resource = getApplicationContext().getResource(routeFile);
-            Router.load(resource, this.servletPrefix);
-
-        } catch (IOException e) {
-            throw new RouteFileParsingException(
-                    "Cannot parse route file routes.conf", e);
-        }
     }
 }
