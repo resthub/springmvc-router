@@ -120,7 +120,15 @@ In your *-servlet.xml file, add the following beans:
     		 
     	<bean id="handlerMapping"
               class="org.resthub.web.springmvc.router.RouterHandlerMapping">
-    		<property name="routeFile" value="routes.conf" />
+                <property name="routeFiles">
+                    <list>
+                        <value>routes.conf</value>
+                    <!--
+                        Router will *append* routes declared in additional files
+                        <value>addroutes.conf</value>
+                    -->
+                    </list>
+                </property>
     		<property name="servletPrefix" value="" />
         </bean>
     

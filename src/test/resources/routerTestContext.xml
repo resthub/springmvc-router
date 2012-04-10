@@ -15,9 +15,8 @@
                         http://www.springframework.org/schema/security
                         http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
-    <!-- Enable bean declaration by annotations, update base package according to your project
--->
-    <context:annotation-config/>
+        <!-- Enable bean declaration by annotations, update base package according to your project -->
+        <context:annotation-config/>
 
 
 	<!--
@@ -27,9 +26,8 @@
 	<context:component-scan base-package="org.resthub.web.springmvc.router" />
 
 	<!--
-		HandlerAdapter
-		RouterHandlerAdapter use routes defined by RouterHandlerMapping.
-		Still gets @RequestParam annotations
+		Using Spring's RequestMappingHandlerAdapter helps us testing
+                our HandlerMapping class
 	-->	
 	<bean id="handlerAdapter"
 		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter" />
