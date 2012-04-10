@@ -6,7 +6,7 @@ SpringMVC Router
 Route mapping with SpringMVC Router
 -----------------------------------
 
-Spring MVC 3.1 [handles requests mapping](http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/mvc.html) with `RequestMappingHandlerAdapter` and `DefaultAnnotationHandlerMapping` beans (that's the "out-of-the-box" configuration that comes with your springmvc application).
+Spring MVC 3.1 [handles requests mapping](http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/mvc.html) with `RequestMappingHandlerMapping` and `RequestMappingHandlerAdapter` beans (that's the "out-of-the-box" configuration that comes with your springmvc application).
 
 But you may want to use a request Router for your application:
 
@@ -29,7 +29,7 @@ Configuring the SpringMVC Router for your project
 
 ### Add the dependency to your maven pom.xml
 
-Warning: **this project is currently tested on Spring 3.1.0.RELEASE ++**, and is not using version range in its POM [because of this bug](https://jira.springsource.org/browse/SPR-7287) - your project needs these dependencies.
+Warning: **this project is currently tested on Spring 3.1.x**, and is not compatible with Spring 3.0.x - your project needs these dependencies.
   
 
     <dependencies>
@@ -106,15 +106,6 @@ In your *-servlet.xml file, add the following beans:
     	-->
     	<context:component-scan base-package="com.example.yourproject.controllers" />
     
-    	<!--
-    		HandlerAdapter
-    		RouterHandlerAdapter use routes defined by RouterHandlerMapping.
-    		Still gets @RequestParam, @SessionAttributes, @CookieValue ... annotations
-    		-->
-    	<bean id="handlerAdapter"
-    		class="org.resthub.web.springmvc.router.RouterHandlerAdapter" />
-    	
-    	
     	<!-- 
     		Choose HandlerMapping.
     		RouterHandlerMapping loads routes configuration from a file.
@@ -148,7 +139,7 @@ The router maps HTTP request to a specific action (i.e. a public method of a Con
 
 ### Get your first Controller ready!
 
-Controllers can use [Spring MVC annotations and conventions](http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/mvc.html) - only the `@RequestParam` annotation is made useless.
+Controllers can use [Spring MVC annotations and conventions](http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/mvc.html) - only the `@RequestParam` annotation is useless.
 
 
     @Controller
