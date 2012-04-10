@@ -77,7 +77,6 @@ public class BindTestController {
     }
 
     public ModelAndView bindRegexpHostAction(@PathVariable(value = "subdomain") String subdomain) {
-    //public ModelAndView bindRegexpHostAction() {
         ModelAndView mav = new ModelAndView("testView");
         mav.addObject("subdomain", subdomain);
 

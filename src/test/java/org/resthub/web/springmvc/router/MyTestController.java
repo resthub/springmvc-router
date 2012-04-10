@@ -11,7 +11,11 @@ public class MyTestController {
 	public void simpleAction() {
 		
 	}
-	
+
+      	public void additionalRouteFile() {
+		
+	}
+        
 	public void paramAction(@PathVariable(value = "param") String param) {
 	
 	}

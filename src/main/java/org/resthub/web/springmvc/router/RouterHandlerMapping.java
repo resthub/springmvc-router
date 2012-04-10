@@ -1,6 +1,8 @@
 package org.resthub.web.springmvc.router;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.resthub.web.springmvc.router.exceptions.NoRouteFoundException;
 import org.resthub.web.springmvc.router.exceptions.RouteFileParsingException;
@@ -58,7 +60,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 public class RouterHandlerMapping extends AbstractHandlerMapping {
 
     private static final Logger logger = LoggerFactory.getLogger(RouterHandlerMapping.class);
-    private String routeFile;
+    private List<String> routeFiles;
     private String servletPrefix;
     private RouterHandlerResolver methodResolver;
 
@@ -79,27 +81,33 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
     }
 
     /**
-     * Routes configuration File name< Injected by bean configuration (in
+     * Routes configuration Files names< Injected by bean configuration (in
      * servlet.xml)
      */
-    public String getRouteFile() {
-        return routeFile;
+    public List<String> getRouteFiles() {
+        return routeFiles;
     }
 
-    public void setRouteFile(String routeFile) {
-        this.routeFile = routeFile;
+    public void setRouteFiles(List<String> routeFiles) {
+        this.routeFiles = routeFiles;
     }
 
     /**
-     * Reload routes configuration at runtime.
-     * No-op if configuration files didn't change since last reload.
+     * Reload routes configuration at runtime. No-op if configuration files
+     * didn't change since last reload.
      */
     public void reloadRoutesConfiguration() {
+         List<Resource> fileResources = new ArrayList<Resource>();
+
+        for (String fileName : this.routeFiles) {
+            fileResources.add(getApplicationContext().getResource(fileName));
+        }
+        
         try {
-            Router.detectChanges(getApplicationContext().getResource(routeFile), servletPrefix);
-        } catch (IOException e) {
+            Router.detectChanges(fileResources, servletPrefix);
+        } catch (IOException ex) {
             throw new RouteFileParsingException(
-                    "Cannot parse route file " + routeFile, e);
+                    "Could not read route configuration files", ex);
         }
     }
 
@@ -114,13 +122,19 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
         // Scan beans for Controllers
         this.methodResolver.setCachedControllers(getApplicationContext().getBeansWithAnnotation(Controller.class));
 
+        List<Resource> fileResources = new ArrayList<Resource>();
+
         try {
-            Resource resource = getApplicationContext().getResource(routeFile);
-            Router.load(resource, this.servletPrefix);
+
+            for (String fileName : this.routeFiles) {
+                fileResources.add(getApplicationContext().getResource(fileName));
+            }
+
+            Router.load(fileResources, this.servletPrefix);
 
         } catch (IOException e) {
             throw new RouteFileParsingException(
-                    "Cannot parse route file " + routeFile, e);
+                    "Could not read route configuration files", e);
         }
     }
 
