@@ -2,6 +2,7 @@ package org.resthub.web.springmvc.router;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.resthub.web.springmvc.router.exceptions.NoRouteFoundException;
@@ -126,11 +127,9 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
         List<Resource> fileResources = new ArrayList<Resource>();
         
         try {
-            
             for(String fileName : this.routeFiles) {
-                fileResources.add(getApplicationContext().getResource(fileName));
+                fileResources.addAll(Arrays.asList(getApplicationContext().getResources(fileName)));
             }
-            
             Router.load(fileResources, this.servletPrefix);
 
         } catch (IOException e) {

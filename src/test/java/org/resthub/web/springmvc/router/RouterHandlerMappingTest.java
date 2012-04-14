@@ -88,6 +88,38 @@ public class RouterHandlerMappingTest {
 		Assert.assertEquals(this.handlerName+".additionalRouteFile", route.action);
 	}
         
+        /**
+	 * Test routes:
+	 * GET     /wildcard-a       myTestController.wildcardA
+         * GET     /wildcard-b       myTestController.wildcardB
+	 * @throws Exception
+	 */
+	@Test
+	public void wildcardRouteFiles() throws Exception {
+
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/wildcard-a");
+		request.addHeader("host", sampleHost);
+		HandlerExecutionChain chain = this.hm.getHandler(request);
+		
+		RouterHandler handler = (RouterHandler)chain.getHandler();
+		Assert.assertNotNull(handler);
+		
+		Route route = handler.getRoute();
+		Assert.assertNotNull(route);
+		Assert.assertEquals(this.handlerName+".wildcardA", route.action);
+                
+		request = new MockHttpServletRequest("GET", "/wildcard-b");
+		request.addHeader("host", sampleHost);
+		chain = this.hm.getHandler(request);
+		
+		handler = (RouterHandler)chain.getHandler();
+		Assert.assertNotNull(handler);
+		
+		route = handler.getRoute();
+		Assert.assertNotNull(route);
+		Assert.assertEquals(this.handlerName+".wildcardB", route.action);                
+	}        
+        
 	/**
 	 * Test route with HTTP method overriding (HEAD -> GET):
 	 * GET     /simpleaction    myTestController.simpleAction
