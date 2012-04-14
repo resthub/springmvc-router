@@ -51,6 +51,7 @@
                     <list>
                         <value>routes.conf</value>
                         <value>addroutes.conf</value>
+                        <value>classpath:wildcard-*.conf</value>
                     </list>
                 </property>
 		<property name="servletPrefix" value="" />
