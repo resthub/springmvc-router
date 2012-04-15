@@ -20,6 +20,9 @@ public class MyTestController {
     public void wildcardB() {
     }
 
+    public void caseInsensitive() {
+    }
+
     public void paramAction(@PathVariable(value = "param") String param) {
     }
 

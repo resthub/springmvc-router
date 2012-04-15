@@ -19,12 +19,15 @@ import org.springframework.web.method.HandlerMethod;
  */
 public class RouterHandlerResolver {
     
-    private Map<String, Object> cachedControllers;
+    private Map<String, Object> cachedControllers = new LinkedHashMap<String, Object>();
     
     private final Map<String, HandlerMethod> cachedHandlers = new LinkedHashMap<String, HandlerMethod>();
     
-    public void setCachedControllers(Map<String, Object> cachedControllers) {
-        this.cachedControllers = cachedControllers;
+    public void setCachedControllers(Map<String, Object> controllers) {
+        
+        for(String key : controllers.keySet()) {
+            this.cachedControllers.put(key.toLowerCase(), controllers.get(key));            
+        }
     }
 
     /**
@@ -54,7 +57,7 @@ public class RouterHandlerResolver {
         Method actionMethod;
         Object controllerObject;
 
-        String controller = fullAction.substring(0, fullAction.lastIndexOf("."));
+        String controller = fullAction.substring(0, fullAction.lastIndexOf(".")).toLowerCase();
         String action = fullAction.substring(fullAction.lastIndexOf(".") + 1);
         controllerObject = cachedControllers.get(controller);
 

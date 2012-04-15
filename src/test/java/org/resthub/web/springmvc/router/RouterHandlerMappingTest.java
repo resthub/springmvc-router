@@ -90,6 +90,26 @@ public class RouterHandlerMappingTest {
 	}
         
         /**
+	 * Test route:
+	 * GET     /caseinsensitive            MyTestCONTROLLER.caseInsensitive
+	 * @throws Exception
+	 */
+	@Test
+	public void caseInsensitiveRoute() throws Exception {
+
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/caseinsensitive");
+		request.addHeader("host", sampleHost);
+		HandlerExecutionChain chain = this.hm.getHandler(request);
+		
+		RouterHandler handler = (RouterHandler)chain.getHandler();
+		Assert.assertNotNull(handler);
+		
+		Route route = handler.getRoute();
+		Assert.assertNotNull(route);
+		Assert.assertTrue((this.handlerName+".caseInsensitive").equalsIgnoreCase(route.action));
+	}
+        
+        /**
 	 * Test routes:
 	 * GET     /wildcard-a       myTestController.wildcardA
          * GET     /wildcard-b       myTestController.wildcardB
