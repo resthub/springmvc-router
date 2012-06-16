@@ -1,8 +1,15 @@
 package org.resthub.web.springmvc.router;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import junit.framework.Assert;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +19,8 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerAdapter;
@@ -37,7 +46,7 @@ public class RouterHandlerAdapterTest {
     private static final String TEST_SLUG = "my-slug-number-1";
     private static final String TEST_SLUG_HASH = "slughash";
     private static final String TEST_HOST = "example.org";
-
+    
     /**
      * Setup a MockServletContext configured by routerTestContext.xml
      */
@@ -244,4 +253,192 @@ public class RouterHandlerAdapterTest {
 
         ModelAndView mv = handleRequest(request);
     }
+    
+    
+    //--------------------------------
+    // querystring params tests
+    
+    
+    /**
+     * Test route handling:
+     * GET     /qsparampresence [qsParamA=abc%20def]       bindTestController.qsParamSimpleBind
+     * @throws Exception
+     */
+    @Test
+    public void qsParamSimpleBind() throws Exception {
+
+        String TEST_VALUE = "abc def";
+        
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparamsimplebind");
+        request.addHeader("host", TEST_HOST);
+
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamA", TEST_VALUE);
+        params.add(param);
+        request.addParameter("qsParamA", TEST_VALUE);
+        
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+        
+        ModelAndView mv = handleRequest(request);
+
+        Assert.assertNotNull(mv);
+        Assert.assertEquals(TEST_VALUE, mv.getModel().get("qsParamA"));
+    }
+    
+    
+    /**
+     * Test route handling:
+     * GET     /qsparamAnddifferentkeystaticparam [qsParamA=abc]         bindTestController.qsParamAndDifferentKeyStaticParam(myStaticArg:'someStaticVal')
+     * @throws Exception
+     */
+    @Test
+    public void qsParamAndDifferentKeyStaticParam() throws Exception {
+
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparamanddifferentkeystaticparam");
+        request.addHeader("host", TEST_HOST);
+
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamA", "abc");
+        params.add(param);
+        request.addParameter("qsParamA", "abc");
+        
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+        
+        ModelAndView mv = handleRequest(request);
+
+        Assert.assertNotNull(mv);
+        
+        Assert.assertEquals("abc", mv.getModel().get("qsParamA"));
+        Assert.assertEquals("someStaticVal", mv.getModel().get("myStaticArg")); 
+    }
+    
+    /**
+     * Test route handling:
+     * GET     /qsparamAndsamekeystaticparam [qsParamA=abc]             bindTestController.qsParamAndSameKeyStaticParam(qsParamA:'someStaticVal')
+     * @throws Exception
+     */
+    @Test
+    public void qsParamAndSameKeyStaticParam() throws Exception {
+
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparamandsamekeystaticparam");
+        request.addHeader("host", TEST_HOST);
+
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamA", "abc");
+        params.add(param);
+        request.addParameter("qsParamA", "abc");
+        
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+        
+        ModelAndView mv = handleRequest(request);
+
+        Assert.assertNotNull(mv);
+        
+        // Both should be available!
+        // qsParamA as : @RequestParam(value = "qsParamA") String qsParamA
+        // myStaticArg as : @PathVariable(value = "qsParamA") String qsParamAStaticArg
+        Assert.assertEquals("abc", mv.getModel().get("qsParamA"));
+        Assert.assertEquals("someStaticVal", mv.getModel().get("qsParamAStaticArg"));
+    }
+    
+    /**
+     * Test route handling:
+     * GET     /qsparamemptyandsamekeystaticparam         [qsParamA=]             bindTestController.qsParamEmptyAndSameKeyStaticParam(qsParamA:'someStaticVal')
+     * @throws Exception
+     */
+    @Test
+    public void qsParamEmptyAndSameKeyStaticParam() throws Exception {
+
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparamemptyandsamekeystaticparam");
+        request.addHeader("host", TEST_HOST);
+
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamA", "");
+        params.add(param);
+        request.addParameter("qsParamA", "");
+        
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+        
+        ModelAndView mv = handleRequest(request);
+
+        Assert.assertNotNull(mv);
+        
+        // Both should be available!
+        // qsParamA as : @RequestParam(value = "qsParamA") String qsParamA
+        // myStaticArg as : @PathVariable(value = "qsParamA") String qsParamAStaticArg
+        Assert.assertEquals("", mv.getModel().get("qsParamA"));
+        Assert.assertEquals("someStaticVal", mv.getModel().get("qsParamAStaticArg"));
+    }
+    
+    /**
+     * Test route handling:
+     * GET     /qsparamnullAndsamekeystaticparam         [qsParamA]                 bindTestController.qsParamNullAndSameKeyStaticParam(qsParamA:'someStaticVal')
+     * @throws Exception
+     */
+    @Test
+    public void qsParamNullAndSameKeyStaticParam() throws Exception {
+
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparamnullandsamekeystaticparam");
+        request.addHeader("host", TEST_HOST);
+
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamA", "abc");
+        params.add(param);
+        request.addParameter("qsParamA", "abc");
+        
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+        
+        ModelAndView mv = handleRequest(request);
+
+        Assert.assertNotNull(mv);
+        
+        // Both should be available!
+        // qsParamA as : @RequestParam(value = "qsParamA") String qsParamA
+        // myStaticArg as : @PathVariable(value = "qsParamA") String qsParamAStaticArg
+        Assert.assertEquals("abc", mv.getModel().get("qsParamA"));
+        Assert.assertEquals("someStaticVal", mv.getModel().get("qsParamAStaticArg"));
+    }
+    
+    /**
+     * Test route handling:
+     * GET     /qsparambindencodedvalueandrandomspaces [   qsParamA=%20   qsParamB=a+b   qsParamC=%C3%A9t%C3%A9    ] bindTestController.qsParamBindEncodedValueAndRandomSpaces
+     * @throws Exception
+     */
+    @Test
+    public void qsParamBindEncodedValueAndRandomSpaces() throws Exception {
+
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparambindencodedvalueandrandomspaces");
+        request.addHeader("host", TEST_HOST);
+
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        
+        NameValuePair param = new BasicNameValuePair("qsParamA", " ");
+        params.add(param);
+        request.addParameter("qsParamA", " ");
+        
+        param = new BasicNameValuePair("qsParamB", "a b");
+        params.add(param);
+        request.addParameter("qsParamB", "a b");
+        
+        param = new BasicNameValuePair("qsParamC", "été");
+        params.add(param);
+        request.addParameter("qsParamC", "été");
+        
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+        
+        ModelAndView mv = handleRequest(request);
+
+        Assert.assertNotNull(mv);
+        
+        Assert.assertEquals(" ", mv.getModel().get("qsParamA"));
+        Assert.assertEquals("a b", mv.getModel().get("qsParamB"));
+        Assert.assertEquals("été", mv.getModel().get("qsParamC")); 
+    }
+    
 }

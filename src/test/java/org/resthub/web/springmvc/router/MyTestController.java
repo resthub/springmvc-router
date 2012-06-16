@@ -37,4 +37,35 @@ public class MyTestController {
 
     public void hostAction(@PathVariable(value = "host") String host) {
     }
+    
+    
+    // querystring params tests
+    
+    public void qsParamPresence() {
+    }
+    
+    public void qsParamNegatePresence() {
+    }
+    
+    public void qsParamEmptyValueRequired() {
+    }
+    
+    public void qsParamSpecificValueRequired() {
+    }
+    
+    public void qsParamSpecificValueRequiredPost() {
+    }
+    
+    public void qsParamNegateSpecificValue() {
+    }
+    
+    public void qsParamTwoParamsRequired() {
+    }
+    
+    public void qsParamEncodedValueAndRandomSpaces() {
+    }
+    
+    public void qsParamPlayNiceWithOtherRoutingFeatures(@PathVariable(value = "myName") String myName) {
+    }
+    
 }

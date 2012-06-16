@@ -98,4 +98,60 @@ public class BindTestController {
 
         return mav;
     }
+    
+    //--------------------------------
+    // querystring params tests
+    
+    public ModelAndView qsParamSimpleBind(@RequestParam(value = "qsParamA") String qsParamA) {
+
+        ModelAndView mav = new ModelAndView("testView");
+        mav.addObject("qsParamA", qsParamA);
+
+        return mav;
+    }
+    
+    public ModelAndView qsParamAndDifferentKeyStaticParam(@PathVariable(value = "myStaticArg") String myStaticArg, @RequestParam(value = "qsParamA") String qsParamA) {
+
+        ModelAndView mav = new ModelAndView("testView");
+        mav.addObject("myStaticArg", myStaticArg);
+        mav.addObject("qsParamA", qsParamA);
+
+        return mav;
+    }
+    
+    public ModelAndView qsParamAndSameKeyStaticParam(@PathVariable(value = "qsParamA") String qsParamAStaticArg, @RequestParam(value = "qsParamA") String qsParamA) {
+
+        ModelAndView mav = new ModelAndView("testView");
+        mav.addObject("qsParamA", qsParamA);
+        mav.addObject("qsParamAStaticArg", qsParamAStaticArg);
+        return mav;
+    }
+    
+    public ModelAndView qsParamEmptyAndSameKeyStaticParam(@PathVariable(value = "qsParamA") String qsParamAStaticArg, @RequestParam(value = "qsParamA") String qsParamA) {
+
+        ModelAndView mav = new ModelAndView("testView");
+        mav.addObject("qsParamA", qsParamA);
+        mav.addObject("qsParamAStaticArg", qsParamAStaticArg);
+        return mav;
+    }
+    
+    public ModelAndView qsParamNullAndSameKeyStaticParam(@PathVariable(value = "qsParamA") String qsParamAStaticArg, @RequestParam(value = "qsParamA") String qsParamA) {
+
+        ModelAndView mav = new ModelAndView("testView");
+        mav.addObject("qsParamA", qsParamA);
+        mav.addObject("qsParamAStaticArg", qsParamAStaticArg);
+        return mav;
+    }
+    
+    
+    public ModelAndView qsParamBindEncodedValueAndRandomSpaces(@RequestParam(value = "qsParamA") String qsParamA, 
+                                                               @RequestParam(value = "qsParamB") String qsParamB,
+                                                               @RequestParam(value = "qsParamC") String qsParamC) {
+        ModelAndView mav = new ModelAndView("testView");
+        mav.addObject("qsParamA", qsParamA);
+        mav.addObject("qsParamB", qsParamB);
+        mav.addObject("qsParamC", qsParamC);
+        return mav;
+    } 
+    
 }
