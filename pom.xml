@@ -116,7 +116,7 @@
 
         <!-- Apache commons io -->
         <dependency>
-            <groupId>org.apache.commons</groupId>
+            <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${apache-commons-io-version}</version>
         </dependency>
