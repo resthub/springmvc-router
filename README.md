@@ -3,6 +3,8 @@ SpringMVC Router
 
 [![Build Status](https://secure.travis-ci.org/bclozel/springmvc-router.png?branch=master)](http://travis-ci.org/bclozel/springmvc-router)
 
+Developers mailing list: resthub-dev@googlegroups.com
+
 Route mapping with SpringMVC Router
 -----------------------------------
 
