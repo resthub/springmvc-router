@@ -2,13 +2,24 @@ package org.resthub.web.springmvc.router;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import jregex.Matcher;
 import jregex.Pattern;
 import jregex.REFlags;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.resthub.web.springmvc.router.exceptions.NoHandlerFoundException;
 import org.resthub.web.springmvc.router.exceptions.NoRouteFoundException;
 import org.resthub.web.springmvc.router.exceptions.RouteFileParsingException;
@@ -26,7 +37,7 @@ import org.springframework.core.io.Resource;
  */
 public class Router {
 
-    static Pattern routePattern = new Pattern("^({method}GET|POST|PUT|DELETE|OPTIONS|HEAD|\\*)[(]?({headers}[^)]*)(\\))?\\s+({path}.*/[^\\s]*)\\s+({action}[^\\s(]+)({params}.+)?(\\s*)$");
+    static Pattern routePattern = new Pattern("^({method}GET|POST|PUT|DELETE|OPTIONS|HEAD|\\*)[(]?({headers}[^)]*)(\\))?\\s+({path}.*/[^\\s]*)\\s+({qsParams}\\[.*\\]\\s+)?({action}[^\\s(]+)({params}.+)?(\\s*)$");
     /**
      * Pattern used to locate a method override instruction in
      * request.querystring
@@ -121,7 +132,16 @@ public class Router {
      * list.
      */
     public static void appendRoute(String method, String path, String action, String params, String headers, String sourceFile, int line) {
-        routes.add(getRoute(method, path, action, params, headers, sourceFile, line));
+        routes.add(getRoute(method, path, action, params, headers, sourceFile, line, null));
+    }
+
+    /**
+     * This is used internally when reading the route file. The order the routes
+     * are added matters and we want the method to append the routes to the
+     * list.
+     */
+    public static void appendRoute(String method, String path, String action, String params, String headers, String sourceFile, int line, String qsParams) {
+        routes.add(getRoute(method, path, action, params, headers, sourceFile, line, qsParams));
     }
 
     public static Route getRoute(String method, String path, String action, String params, String headers) {
@@ -129,6 +149,10 @@ public class Router {
     }
 
     public static Route getRoute(String method, String path, String action, String params, String headers, String sourceFile, int line) {
+    	return getRoute(method, path, action, params, headers, sourceFile, line, null);
+    }
+    
+    public static Route getRoute(String method, String path, String action, String params, String headers, String sourceFile, int line, String qsParams) {
         Route route = new Route();
         route.method = method;
         route.path = path.replace("//", "/");
@@ -137,6 +161,7 @@ public class Router {
         route.routesFileLine = line;
         route.addFormat(headers);
         route.addParams(params);
+        route.addQsParams(qsParams);
         route.compute();
         if (logger.isTraceEnabled()) {
             logger.debug("Adding [" + route.toString() + "] with params [" + params + "] and headers [" + headers + "]");
@@ -178,13 +203,14 @@ public class Router {
             }
             Matcher matcher = routePattern.matcher(line);
             if (matcher.matches()) {
+            	
                 String action = matcher.group("action");
-
                 String method = matcher.group("method");
                 String path = prefix + matcher.group("path");
                 String params = matcher.group("params");
                 String headers = matcher.group("headers");
-                appendRoute(method, path, action, params, headers, fileAbsolutePath, lineNumber);
+                String qsParams = matcher.group("qsParams");
+                appendRoute(method, path, action, params, headers, fileAbsolutePath, lineNumber, qsParams);
             } else {
                 logger.error("Invalid route definition : " + line);
             }
@@ -222,10 +248,21 @@ public class Router {
                 request.method = matcher.group("method");
             }
         }
+        
+        // extract query params
+        List<NameValuePair> queryParams;
+        try {
+	        URI uri = new URI("?" + request.querystring);
+	        queryParams = URLEncodedUtils.parse(uri, "utf-8");
+		}
+		catch(Exception ex) {
+			throw new RouteFileParsingException("RouteFile exception while parsing querystring", ex);
+		}	
+        
         for (Route route : routes) {
             String format = request.format;
             String host = request.host;
-            Map<String, String> args = route.matches(request.method, request.path, format, host);
+            Map<String, String> args = route.matches(request.method, request.path, format, host, queryParams);
             if (args != null) {
                 request.routeArgs = args;
                 request.action = route.action;
@@ -262,7 +299,7 @@ public class Router {
 
     public static Map<String, String> route(String method, String path, String headers, String host) {
         for (Route route : routes) {
-            Map<String, String> args = route.matches(method, path, headers, host);
+            Map<String, String> args = route.matches(method, path, headers, host, null);
             if (args != null) {
                 args.put("action", route.action);
                 return args;
@@ -344,7 +381,41 @@ public class Router {
                             break;
                         }
                     }
+                    
+                    // Validate querystring parameters
+                    for(QueryStringParamInfo qsParamInfo : route.qsParams.values()) {
+                        
+                        // querystring param must be there
+                        if(!qsParamInfo.isNegatedKey()) {
+                            if(!args.containsKey(qsParamInfo.getKey())) {
+                                allRequiredArgsAreHere = false;
+                                break;
+                            }
+                            
+                            // values match? (null => any value is ok)
+                            if(qsParamInfo.getValue() != null) {
+                                if(qsParamInfo.getValue().equals(args.get(qsParamInfo.getKey()))) {
+                                    if(qsParamInfo.isNegatedValue()) {
+                                        allRequiredArgsAreHere = false;
+                                        break;        
+                                    }
+                                } else {
+                                    // value has to match except if the same key is also used as a staticArg
+                                    if(!qsParamInfo.isNegatedValue() && !route.staticArgs.containsKey(qsParamInfo.getKey())) {
+                                        allRequiredArgsAreHere = false;
+                                        break;        
+                                    }
+                                }
+                            }
+                        // querystring param must NOT be there
+                        } else if(args.containsKey(qsParamInfo.getKey())) {
+                            allRequiredArgsAreHere = false;
+                            break;    
+                        }
+                    }
+
                     if (allRequiredArgsAreHere) {
+
                         StringBuilder queryString = new StringBuilder();
                         String path = route.path;
                         String host = route.host;
@@ -374,39 +445,37 @@ public class Router {
                             } else if (route.staticArgs.containsKey(key)) {
                                 // Do nothing -> The key is static
                             } else if (value != null) {
-                                if (List.class.isAssignableFrom(value.getClass())) {
-                                    @SuppressWarnings("unchecked")
-                                    List<Object> vals = (List<Object>) value;
-                                    for (Object object : vals) {
-                                        try {
-                                            queryString.append(URLEncoder.encode(key, "utf-8"));
-                                            queryString.append("=");
-                                            if (object.toString().startsWith(":")) {
-                                                queryString.append(object.toString());
-                                            } else {
-                                                queryString.append(URLEncoder.encode(object.toString() + "", "utf-8"));
-                                            }
-                                            queryString.append("&");
-                                        } catch (UnsupportedEncodingException ex) {
-                                        }
-                                    }
-//                                } else if (value.getClass().equals(Default.class)) {
-//                                    // Skip defaults in queryString
-                                } else {
-                                    try {
-                                        queryString.append(URLEncoder.encode(key, "utf-8"));
-                                        queryString.append("=");
-                                        if (value.toString().startsWith(":")) {
-                                            queryString.append(value.toString());
-                                        } else {
-                                            queryString.append(URLEncoder.encode(value.toString() + "", "utf-8"));
-                                        }
-                                        queryString.append("&");
-                                    } catch (UnsupportedEncodingException ex) {
-                                    }
-                                }
+                            	// We prefere the qsParams over other parameters with the same key
+                            	// (and those qsParams will be added soon..)
+                            	if(!route.qsParams.containsKey(key)) {
+                            		addToQuerystring(queryString, key, value);
+                            	}
                             }
                         }
+                        
+                        // We add the qsParams to the querystring
+                        for(QueryStringParamInfo qsParamInfo : route.qsParams.values()) {
+                            
+                            if(qsParamInfo.isNegatedKey()) {
+                                continue;
+                            }
+
+                            String valueToUse;
+                            // If the same key is also used as a staticArgs, we use the value of the qsParam as specified
+                            // on the route itself. Except if any value is acceptable for the qsParam, then we'll use 
+                            // the staticArgs's value.
+                            if(route.staticArgs.containsKey(qsParamInfo.getKey()) && qsParamInfo.getValue() != null) {
+                                valueToUse = qsParamInfo.getValue();
+                            // Otherwise, we use the value specified by the caller so a qsParam
+                            // with no specific value required will use this value.
+                            } else {
+                                valueToUse = (String)args.get(qsParamInfo.getKey());
+                            }
+                            valueToUse = (valueToUse != null) ? valueToUse : "";
+                            
+                            addToQuerystring(queryString, qsParamInfo.getKey(), valueToUse);    
+                        }
+                        
                         String qs = queryString.toString();
                         if (qs.endsWith("&")) {
                             qs = qs.substring(0, qs.length() - 1);
@@ -424,6 +493,40 @@ public class Router {
             }
         }
         throw new NoHandlerFoundException(action, args);
+    }
+    
+    private static void addToQuerystring(StringBuilder queryString, String key, Object value) {
+        if (List.class.isAssignableFrom(value.getClass())) {
+            @SuppressWarnings("unchecked")
+            List<Object> vals = (List<Object>) value;
+            for (Object object : vals) {
+                try {
+                    queryString.append(URLEncoder.encode(key, "utf-8"));
+                    queryString.append("=");
+                    if (object.toString().startsWith(":")) {
+                        queryString.append(object.toString());
+                    } else {
+                        queryString.append(URLEncoder.encode(object.toString() + "", "utf-8"));
+                    }
+                    queryString.append("&");
+                } catch (UnsupportedEncodingException ex) {
+                }
+            }
+//        } else if (value.getClass().equals(Default.class)) {
+//            // Skip defaults in queryString
+        } else {
+            try {
+                queryString.append(URLEncoder.encode(key, "utf-8"));
+                queryString.append("=");
+                if (value.toString().startsWith(":")) {
+                    queryString.append(value.toString());
+                } else {
+                    queryString.append(URLEncoder.encode(value.toString() + "", "utf-8"));
+                }
+                queryString.append("&");
+            } catch (UnsupportedEncodingException ex) {
+            }
+        }	
     }
 
     public static class ActionDefinition {
@@ -526,6 +629,7 @@ public class Router {
         Pattern hostPattern;
         List<Arg> args = new ArrayList<Arg>(3);
         Map<String, String> staticArgs = new HashMap<String, String>(3);
+        Map<String, QueryStringParamInfo> qsParams = new HashMap<String, QueryStringParamInfo>(3);
         List<String> formats = new ArrayList<String>(1);
         String host;
         Arg hostArg = null;
@@ -602,6 +706,22 @@ public class Router {
             actionPattern = new Pattern(patternString, REFlags.IGNORE_CASE);
         }
 
+        public void addQsParams(String qsParams) {
+            if(qsParams == null || qsParams.length() < 1 || qsParams.matches("[\\s*]")) {
+                return;
+            }
+            
+            qsParams = qsParams.substring(1, qsParams.length() - 2);
+            for(String param : qsParams.split(" ")) { 
+                param = param.trim();
+                if(param.equals("")) {
+                    continue;
+                }
+                QueryStringParamInfo requestParamInfo = new QueryStringParamInfo(param);
+                this.qsParams.put(requestParamInfo.getKey(), requestParamInfo);
+            }
+        }
+        
         public void addParams(String params) {
             if (params == null || params.length() < 1) {
                 return;
@@ -643,11 +763,11 @@ public class Router {
         }
 
         public Map<String, String> matches(String method, String path) {
-            return matches(method, path, null, null);
+            return matches(method, path, null, null, null);
         }
 
         public Map<String, String> matches(String method, String path, String accept) {
-            return matches(method, path, accept, null);
+            return matches(method, path, accept, null, null);
         }
 
         /**
@@ -660,12 +780,12 @@ public class Router {
          * @param host AKA the domain.
          * @return ???
          */
-        public Map<String, String> matches(String method, String path, String accept, String domain) {
+        public Map<String, String> matches(String method, String path, String accept, String domain, List<NameValuePair> queryParams) {
             // If method is HEAD and we have a GET
             if (method == null || this.method.equals("*") || method.equalsIgnoreCase(this.method) || (method.equalsIgnoreCase("head") && ("get").equalsIgnoreCase(this.method))) {
 
                 Matcher matcher = pattern.matcher(path);
-
+                
                 boolean hostMatches = (domain == null);
                 if (domain != null) {
                     Matcher hostMatcher = hostPattern.matcher(domain);
@@ -673,6 +793,71 @@ public class Router {
                 }
                 // Extract the host variable
                 if (matcher.matches() && contains(accept) && hostMatches) {
+
+                    // Validate querystring params
+                    if(queryParams!= null && this.qsParams != null && this.qsParams.size() > 0) {
+                        for(String requiredParamKey : this.qsParams.keySet()) {
+                            QueryStringParamInfo requestParamInfo = this.qsParams.get(requiredParamKey);
+                            
+                            Boolean requiredParamValid = null;
+                            boolean paramKeyFoundInQuery = false;
+                            for(NameValuePair oneNameValuePair : queryParams) {
+                                if(requestParamInfo.getKey().equals(oneNameValuePair.getName())) {
+                                    paramKeyFoundInQuery = true;
+                                    
+                                    if(requestParamInfo.isNegatedKey()) {
+                                        requiredParamValid = false;
+                                        break;
+                                    }
+                                    
+                                    // any value is ok
+                                    if(requestParamInfo.getValue() == null) {
+                                        requiredParamValid = true;
+                                        break;
+                                    }
+                                    
+                                    // oneNameValuePair's NULL value (is it even possible?) is accepted if the qsParam has a "key=" form
+                                    if(oneNameValuePair.getValue() == null && (requestParamInfo.getValue().equals("") && !requestParamInfo.isNegatedValue())) {
+                                        requiredParamValid = true;
+                                        break;    
+                                    }
+
+                                    // regular cases
+                                    if(requestParamInfo.getValue().equals(oneNameValuePair.getValue())) {
+                                        if(requestParamInfo.isNegatedValue()) {
+                                            requiredParamValid = false;
+                                            break;
+                                        } else {
+                                            requiredParamValid = true;
+                                            break;
+                                        }
+                                    } else {
+                                        if(requestParamInfo.isNegatedValue()) {
+                                            requiredParamValid = true;
+                                            break;
+                                        } else {
+                                            requiredParamValid = false;
+                                            break;
+                                        }    
+                                    }
+                                }
+                            }
+                            
+                            // other cases to validate
+                            if(requiredParamValid == null) {
+                                if(!paramKeyFoundInQuery && requestParamInfo.isNegatedKey()) {
+                                    requiredParamValid = true;
+                                } else {
+                                    requiredParamValid = false;
+                                }
+                            }
+
+                            if(!requiredParamValid) {
+                                return null;
+                            }
+                        }
+                    }
+                	
                     Map<String, String> localArgs = new HashMap<String, String>();
                     for (Arg arg : args) {
                         // FIXME: Careful with the arguments that are not matching as they are part of the hostname
@@ -713,6 +898,84 @@ public class Router {
         @Override
         public String toString() {
             return method + " " + path + " -> " + action;
+        }
+    }
+    
+    private static class QueryStringParamInfo {
+        private String key = "";
+        // null => any value is ok
+        private String value = null;
+        private boolean negatedKey = false;
+        private boolean negatedValue = false;
+        
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        public boolean isNegatedKey() {
+            return negatedKey;
+        }
+
+        public void setNegatedKey(boolean negatedKey) {
+            this.negatedKey = negatedKey;
+        }
+
+        public boolean isNegatedValue() {
+            return negatedValue;
+        }
+
+        public void setNegatedValue(boolean negatedValue) {
+            this.negatedValue = negatedValue;
+        }
+
+        public QueryStringParamInfo(String rawParam) {
+            
+            rawParam = rawParam != null? rawParam.trim() : "";
+            
+            try {
+                rawParam = URLDecoder.decode(rawParam, "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RouteFileParsingException("qsparam encoding exception : " + rawParam , e);
+            }
+            
+            String paramKey = rawParam;
+            String paramValue = null;
+            
+            if(paramKey.startsWith("!")) {
+                paramKey = paramKey.substring(1);
+                this.setNegatedKey(true);    
+            }
+
+            int pos = rawParam.indexOf('=');
+            if(pos > -1) {
+                paramKey = rawParam.substring(0, pos);
+                paramValue = rawParam.substring(pos + 1);
+                this.setValue(paramValue);
+                
+                if(paramKey.endsWith("!")) {
+                    paramKey = paramKey.substring(0, paramKey.length() - 1);
+                    this.setNegatedValue(true);
+                }
+            }
+            
+            if(StringUtils.isBlank(paramKey)) {
+                throw new RouteFileParsingException("RouteFile exception, invalid query string param : " + rawParam);
+            }
+            
+            this.setKey(paramKey);
+            this.setValue(paramValue);    
         }
     }
 }

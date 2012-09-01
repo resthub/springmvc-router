@@ -1,8 +1,17 @@
 package org.resthub.web.springmvc.router;
 
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import junit.framework.Assert;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -388,5 +397,446 @@ public class RouterHandlerMappingTest {
 		Assert.assertNotNull(route);
 		Assert.assertEquals(this.handlerName+".hostAction", route.action);
 	}
+    
+    //--------------------------------
+    // querystring params tests
+    
+    /**
+     * Test route:
+     * GET     /qsparampresence [qsParamA]        myTestController.qsParamPresence
+     * @throws Exception
+     */
+    @Test
+    public void qsParamPresence() throws Exception {
+        
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparampresence");
+        request.addHeader("host", sampleHost);
+        
+        // No querystring at all
+        HandlerExecutionChain chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+        
+        // Wrong parameter name
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamWrongName", "abc");
+        params.add(param);
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+        
+        chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+    }
+    
+    /**
+     * Test route:
+     * GET     /qsparamnegatepresence [!qsParamA]                   myTestController.qsParamNegatePresence
+     * @throws Exception
+     */
+    @Test
+    public void qsParamNegatePresence() throws Exception {
+        
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparamnegatepresence");
+        request.addHeader("host", sampleHost);
+        
+        // param not there, ok
+        HandlerExecutionChain chain = this.hm.getHandler(request);
+        Assert.assertNotNull(chain);
+        
+        RouterHandler handler = (RouterHandler)chain.getHandler();
+        Assert.assertNotNull(handler);
+        
+        Route route = handler.getRoute();
+        Assert.assertNotNull(route);
+        Assert.assertEquals(this.handlerName+".qsParamNegatePresence", route.action);
+        
+        // param empty value
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamA", "");
+        params.add(param);
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+        
+        // param random value
+        params = new ArrayList<NameValuePair>();
+        param = new BasicNameValuePair("qsParamA", "abc");
+        params.add(param);
+        querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+    }
+    
+    /**
+     * Test route:
+     * GET     /qsparampresence [qsParamA]        myTestController.qsParamPresence
+     * @throws Exception
+     */
+    @Test
+    public void qsParamRequired() throws Exception {
+        
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparampresence");
+        request.addHeader("host", sampleHost);
+        
+        // Random value
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamA", "abc");
+        params.add(param);
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        HandlerExecutionChain chain = this.hm.getHandler(request);
+        Assert.assertNotNull(chain);
+        
+        RouterHandler handler = (RouterHandler)chain.getHandler();
+        Assert.assertNotNull(handler);
+        
+        Route route = handler.getRoute();
+        Assert.assertNotNull(route);
+        Assert.assertEquals(this.handlerName+".qsParamPresence", route.action);
+        
+        // Empty value should be OK too
+        params = new ArrayList<NameValuePair>();
+        param = new BasicNameValuePair("qsParamA", "");
+        params.add(param);
+        querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        chain = this.hm.getHandler(request);
+        Assert.assertNotNull(chain);
+        
+        handler = (RouterHandler)chain.getHandler();
+        Assert.assertNotNull(handler);
+        
+        route = handler.getRoute();
+        Assert.assertNotNull(route);
+        Assert.assertEquals(this.handlerName+".qsParamPresence", route.action);
+    }
+    
+    /**
+     * Test route:
+     * GET     /qsparamemptyvaluerequired [qsParamA=]      myTestController.qsParamEmptyValueRequired
+     * @throws Exception
+     */
+    @Test
+    public void qsParamValueMustBeEmpty() throws Exception {
+        
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparamemptyvaluerequired");
+        request.addHeader("host", sampleHost);
+        
+        // empty value shoudl be accepted
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamA", "");
+        params.add(param);
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        HandlerExecutionChain chain = this.hm.getHandler(request);
+        Assert.assertNotNull(chain);
+        
+        RouterHandler handler = (RouterHandler)chain.getHandler();
+        Assert.assertNotNull(handler);
+        
+        Route route = handler.getRoute();
+        Assert.assertNotNull(route);
+        Assert.assertEquals(this.handlerName+".qsParamEmptyValueRequired", route.action);
+        
+        
+        // Not empty value should be accepted
+        params = new ArrayList<NameValuePair>();
+        param = new BasicNameValuePair("qsParamA", "abc");
+        params.add(param);
+        querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+    }    
+    
+    /**
+     * Test route:
+     * GET     /qsparamspecificvaluerequired [qsParamA=abc]           myTestController.qsParamSpecificValueRequired
+     * @throws Exception
+     */
+    @Test
+    public void qsParamSpecificValueRequired() throws Exception {
+        
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparamspecificvaluerequired");
+        request.addHeader("host", sampleHost);
+        
+        // expected value
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamA", "abc");
+        params.add(param);
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        HandlerExecutionChain chain = this.hm.getHandler(request);
+        Assert.assertNotNull(chain);
+        
+        RouterHandler handler = (RouterHandler)chain.getHandler();
+        Assert.assertNotNull(handler);
+        
+        Route route = handler.getRoute();
+        Assert.assertNotNull(route);
+        Assert.assertEquals(this.handlerName+".qsParamSpecificValueRequired", route.action);
+        
+        // wrong value
+        params = new ArrayList<NameValuePair>();
+        param = new BasicNameValuePair("qsParamA", "wrongvalue");
+        params.add(param);
+        querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+        
+        // empty value
+        params = new ArrayList<NameValuePair>();
+        param = new BasicNameValuePair("qsParamA", "");
+        params.add(param);
+        querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+    }    
+    
+    /**
+     * Test route:
+     * POST    /qsparamspecificvaluerequiredpost [qsParamA=abc]    myTestController.qsParamSpecificValueRequiredPost
+     * @throws Exception
+     */
+    @Test
+    public void qsParamSpecificValueRequiredPost() throws Exception {
+        
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/qsparamspecificvaluerequiredpost");
+        request.addHeader("host", sampleHost);
+        
+        // expected value
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamA", "abc");
+        params.add(param);
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        HandlerExecutionChain chain = this.hm.getHandler(request);
+        Assert.assertNotNull(chain);
+        
+        RouterHandler handler = (RouterHandler)chain.getHandler();
+        Assert.assertNotNull(handler);
+        
+        Route route = handler.getRoute();
+        Assert.assertNotNull(route);
+        Assert.assertEquals(this.handlerName+".qsParamSpecificValueRequiredPost", route.action);
+        
+        // wrong value
+        params = new ArrayList<NameValuePair>();
+        param = new BasicNameValuePair("qsParamA", "wrongvalue");
+        params.add(param);
+        querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+        
+        // empty value
+        params = new ArrayList<NameValuePair>();
+        param = new BasicNameValuePair("qsParamA", "");
+        params.add(param);
+        querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+    }    
+    
+    /**
+     * Test route:
+     * GET     /qsparamnegatespecificvalue [qsParamA!=abc]           myTestController.qsParamNegateSpecificValue
+     * @throws Exception
+     */
+    @Test
+    public void qsParamNegateSpecificValue() throws Exception {
+        
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparamnegatespecificvalue");
+        request.addHeader("host", sampleHost);
+        
+        // prohibited value
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamA", "abc");
+        params.add(param);
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        HandlerExecutionChain chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+        
+        // empty value : ok
+        params = new ArrayList<NameValuePair>();
+        param = new BasicNameValuePair("qsParamA", "");
+        params.add(param);
+        querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        chain = this.hm.getHandler(request);
+        Assert.assertNotNull(chain);
+        
+        RouterHandler handler = (RouterHandler)chain.getHandler();
+        Assert.assertNotNull(handler);
+        
+        Route route = handler.getRoute();
+        Assert.assertNotNull(route);
+        Assert.assertEquals(this.handlerName+".qsParamNegateSpecificValue", route.action);
+        
+        // random value : ok
+        params = new ArrayList<NameValuePair>();
+        param = new BasicNameValuePair("qsParamA", "someRandomValue");
+        params.add(param);
+        querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+
+        chain = this.hm.getHandler(request);
+        Assert.assertNotNull(chain);
+        
+        handler = (RouterHandler)chain.getHandler();
+        Assert.assertNotNull(handler);
+        
+        route = handler.getRoute();
+        Assert.assertNotNull(route);
+        Assert.assertEquals(this.handlerName+".qsParamNegateSpecificValue", route.action);
+        
+        // no param at all : should fail! 
+        // "qsParamA!=abc" mean qsParama *must exists* but not have a value of "abc"
+        request.setQueryString("");
+
+        chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+    }
+    
+    /**
+     * Test route:
+     * GET     /qsparamtwoparamsrequired [qsParamA=abc,qsParamB]     myTestController.qsParamTwoParamsRequired
+     * @throws Exception
+     */
+    @Test
+    public void qsParamTwoParamsRequired() throws Exception {
+        
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparamtwoparamsrequired");
+        request.addHeader("host", sampleHost);
+
+        // no param at all
+        HandlerExecutionChain chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+        
+        // one required param only
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamA", "abc");
+        params.add(param);
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+        
+        chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+        
+        // all required params but invalid values
+        params = new ArrayList<NameValuePair>();
+        param = new BasicNameValuePair("qsParamA", "wrongValue");
+        params.add(param);
+        param = new BasicNameValuePair("qsParamB", "");
+        params.add(param);
+        querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+        
+        chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+        
+        // all required params with valid values : ok
+        params = new ArrayList<NameValuePair>();
+        param = new BasicNameValuePair("qsParamA", "abc");
+        params.add(param);
+        param = new BasicNameValuePair("qsParamB", "");
+        params.add(param);
+        querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+        
+        chain = this.hm.getHandler(request);
+        Assert.assertNotNull(chain);
+        
+        RouterHandler handler = (RouterHandler)chain.getHandler();
+        Assert.assertNotNull(handler);
+        
+        Route route = handler.getRoute();
+        Assert.assertNotNull(route);
+        Assert.assertEquals(this.handlerName+".qsParamTwoParamsRequired", route.action);    
+    }
+        
+    /**
+     * Test route:
+     * GET     /qsparamencodedvalueandrandomspaces [ qsParamA=%20   qsParamB=a+b   qsParamC=%C3%A9t%C3%A9  ] myTestController.qsParamEncodedValueAndRandomSpaces
+     * @throws Exception
+     */
+    @Test
+    public void qsParamEncodedValueAndRandomSpaces() throws Exception {
+        
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparamencodedvalueandrandomspaces");
+        request.addHeader("host", sampleHost);
+        
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamA", " ");
+        params.add(param);
+        param = new BasicNameValuePair("qsParamB", "a b");
+        params.add(param);
+        param = new BasicNameValuePair("qsParamC", "été");
+        params.add(param);
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+        
+        HandlerExecutionChain chain = this.hm.getHandler(request);
+        Assert.assertNotNull(chain);
+        
+        RouterHandler handler = (RouterHandler)chain.getHandler();
+        Assert.assertNotNull(handler);
+        
+        Route route = handler.getRoute();
+        Assert.assertNotNull(route);
+        Assert.assertEquals(this.handlerName+".qsParamEncodedValueAndRandomSpaces", route.action);            
+    }
+    
+    /**
+     * Test route:
+     * GET     /qsparamplaynicewithotherroutingfeatures/name/{<[a-z]+>myName} [qsParamA=abc] bindTestController.qsParamPlayNiceWithOtherRoutingFeatures(myStaticArg:'So Long, and Thanks for All the Fish')
+     * @throws Exception
+     */
+    @Test
+    public void qsParamPlayNiceWithOtherRoutingFeatures() throws Exception {
+        
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparamplaynicewithotherroutingfeatures/name/stromgol");
+        request.addHeader("host", sampleHost);
+        
+        // no qsParam
+        HandlerExecutionChain chain = this.hm.getHandler(request);
+        Assert.assertNull(chain);
+        
+        // with qsParam
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        NameValuePair param = new BasicNameValuePair("qsParamA", "abc");
+        params.add(param);
+        String querystring = URLEncodedUtils.format(params, "utf-8");
+        request.setQueryString(querystring);
+        
+        chain = this.hm.getHandler(request);
+        Assert.assertNotNull(chain);
+        
+        RouterHandler handler = (RouterHandler)chain.getHandler();
+        Assert.assertNotNull(handler);
+        
+        Route route = handler.getRoute();
+        Assert.assertNotNull(route);
+        Assert.assertEquals(this.handlerName+".qsParamPlayNiceWithOtherRoutingFeatures", route.action);            
+    }
 
 }
