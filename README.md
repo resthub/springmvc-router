@@ -1,7 +1,7 @@
 SpringMVC Router
 ================
 
-[![Build Status](https://secure.travis-ci.org/bclozel/springmvc-router.png?branch=master)](http://travis-ci.org/bclozel/springmvc-router)
+[![Build Status](https://secure.travis-ci.org/resthub/springmvc-router.png?branch=master)](http://travis-ci.org/resthub/springmvc-router)
 
 Developers mailing list: resthub-dev@googlegroups.com
 
@@ -55,7 +55,7 @@ Warning: **this project is currently tested on Spring 3.1.x**, and is not compat
       <dependency>
         <groupId>org.resthub</groupId>
         <artifactId>springmvc-router</artifactId>
-        <version>0.7-SNAPSHOT</version>
+        <version>0.8-SNAPSHOT</version>
       </dependency>
     ...
     </dependencies>
