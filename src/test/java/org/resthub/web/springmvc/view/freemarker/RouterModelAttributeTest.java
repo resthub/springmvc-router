@@ -1,10 +1,10 @@
 package org.resthub.web.springmvc.view.freemarker;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import static org.fest.assertions.api.Assertions.*;
 import org.resthub.web.springmvc.router.Router;
 import org.springframework.web.servlet.ModelAndView;
+import org.testng.annotations.Test;
+
 
 public class RouterModelAttributeTest {
   @Test
@@ -18,8 +18,8 @@ public class RouterModelAttributeTest {
     rma.postHandle(null, null, null, mav);
     Object router = mav.getModel().get(name);
 
-    assertTrue(router instanceof Router);
-    assertNull(mav.getModel().get("route"));
+    assertThat(router).isInstanceOf(Router.class);
+    assertThat(mav.getModel().get("route")).isNull();
   }
 
   @Test
@@ -29,6 +29,6 @@ public class RouterModelAttributeTest {
     rma.postHandle(null, null, null, mav);
     Object router = mav.getModel().get("route");
 
-    assertTrue(router instanceof Router);
+    assertThat(router).isInstanceOf(Router.class);
   }
 }

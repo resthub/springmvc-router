@@ -7,7 +7,7 @@
     <version>0.8-SNAPSHOT</version>
     <name>springmvc-router</name>
     <description>Adds route mapping capacity to any "Spring MVC based" webapp.</description>
-    <url>https://github.com/bclozel/springmvc-router/</url>
+    <url>https://github.com/resthub/springmvc-router/</url>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -16,7 +16,6 @@
     </parent>
 
     <properties>
-        <junit.version>4.10</junit.version>
         <spring-version>3.1.0.RELEASE</spring-version>
         <spring-security-version>3.1.0.RELEASE</spring-security-version>
         <cglib-version>2.2.2</cglib-version>
@@ -24,6 +23,8 @@
         <velocity-version>1.7</velocity-version>
         <log4j.version>1.2.16</log4j.version>
         <slf4j.version>1.6.4</slf4j.version>
+        <testng.version>6.5.2</testng.version>
+        <fest.assert.version>2.0M7</fest.assert.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -156,6 +157,25 @@
             <version>${spring-version}</version>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+           <groupId>org.testng</groupId>
+           <artifactId>testng</artifactId>
+           <version>${testng.version}</version>
+           <scope>test</scope>
+           <exclusions>
+               <exclusion>
+                   <artifactId>junit</artifactId>
+                   <groupId>junit</groupId>
+               </exclusion>
+           </exclusions>
+       </dependency>
+       <dependency>
+           <groupId>org.easytesting</groupId>
+           <artifactId>fest-assert-core</artifactId>
+           <version>${fest.assert.version}</version>
+           <scope>test</scope>
+       </dependency>
 
         <!--
             Testing against Spring Security 3.0 AOP
@@ -191,12 +211,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>

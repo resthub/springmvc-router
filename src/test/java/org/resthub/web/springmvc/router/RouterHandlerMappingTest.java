@@ -1,33 +1,27 @@
 package org.resthub.web.springmvc.router;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.inject.Named;
-import junit.framework.Assert;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.fest.assertions.api.Assertions.*;
 import org.resthub.web.springmvc.router.Router.Route;
 import org.resthub.web.springmvc.router.support.RouterHandler;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath*:routerTestContext.xml" })
-public class RouterHandlerMappingTest {
+public class RouterHandlerMappingTest extends AbstractTestNGSpringContextTests {
 
 	private String LOCATION = "/routerTestContext.xml";
 	
@@ -46,7 +40,7 @@ public class RouterHandlerMappingTest {
 	/**
 	 * Setup a MockServletContext configured by routerTestContext.xml
 	 */
-	@Before
+	@BeforeClass
 	public void setUp() {
 
 		MockServletContext sc = new MockServletContext("");
@@ -71,11 +65,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".simpleAction", route.action);
+		assertThat(route).isNotNull();
+                assertThat(route.action).isEqualTo(this.handlerName+".simpleAction");
 	}
         
         /**
@@ -91,11 +85,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".additionalRouteFile", route.action);
+		assertThat(route).isNotNull();
+                assertThat(route.action).isEqualTo(this.handlerName+".additionalRouteFile");
 	}
         
         /**
@@ -111,11 +105,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertTrue((this.handlerName+".caseInsensitive").equalsIgnoreCase(route.action));
+		assertThat(route).isNotNull();
+                assertThat(route.action).isEqualToIgnoringCase(this.handlerName+".caseInsensitive");
 	}
         
         /**
@@ -132,22 +126,22 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".wildcardA", route.action);
+		assertThat(route).isNotNull();
+                assertThat(route.action).isEqualTo(this.handlerName+".wildcardA");
                 
 		request = new MockHttpServletRequest("GET", "/wildcard-b");
 		request.addHeader("host", sampleHost);
 		chain = this.hm.getHandler(request);
 		
 		handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".wildcardB", route.action);                
+		assertThat(route).isNotNull();
+                assertThat(route.action).isEqualTo(this.handlerName+".wildcardB");
 	}        
         
 	/**
@@ -163,11 +157,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".simpleAction", route.action);
+		assertThat(route).isNotNull();
+                assertThat(route.action).isEqualTo(this.handlerName+".simpleAction");
 	}
 	
 	/**
@@ -183,11 +177,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".paramAction", route.action);
+		assertThat(route).isNotNull();
+                assertThat(route.action).isEqualTo(this.handlerName+".paramAction");
 	}
 	
 	/**
@@ -203,11 +197,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".paramAction", route.action);
+		assertThat(route).isNotNull();
+                assertThat(route.action).isEqualTo(this.handlerName+".paramAction");
 	}	
 
 	/**
@@ -223,11 +217,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".httpAction", route.action);
+		assertThat(route).isNotNull();
+                assertThat(route.action).isEqualTo(this.handlerName+".httpAction");
 	}
 
 	/**
@@ -243,11 +237,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".httpAction", route.action);
+		assertThat(route).isNotNull();
+                assertThat(route.action).isEqualTo(this.handlerName+".httpAction");
 	}
 	
 	
@@ -264,11 +258,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".httpAction", route.action);
+		assertThat(route).isNotNull();
+		assertThat(route.action).isEqualTo(this.handlerName+".httpAction");
 	}
 
 	
@@ -285,11 +279,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".httpAction", route.action);
+		assertThat(route).isNotNull();
+		assertThat(route.action).isEqualTo(this.handlerName+".httpAction");
 	}
 
         /**
@@ -307,11 +301,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".httpAction", route.action);
+		assertThat(route).isNotNull();
+		assertThat(route.action).isEqualTo(this.handlerName+".httpAction");
 	}
         
         /**
@@ -329,11 +323,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".httpAction", route.action);
+		assertThat(route).isNotNull();
+		assertThat(route.action).isEqualTo(this.handlerName+".httpAction");
 	}        
         
 	
@@ -350,11 +344,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".regexNumberAction", route.action);
+		assertThat(route).isNotNull();
+                assertThat(route.action).isEqualTo(this.handlerName+".regexNumberAction");
 	}
 	
 	/**
@@ -370,11 +364,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".regexStringAction", route.action);
+		assertThat(route).isNotNull();
+                assertThat(route.action).isEqualTo(this.handlerName+".regexStringAction");
 	}
 	
 	
@@ -391,11 +385,11 @@ public class RouterHandlerMappingTest {
 		HandlerExecutionChain chain = this.hm.getHandler(request);
 		
 		RouterHandler handler = (RouterHandler)chain.getHandler();
-		Assert.assertNotNull(handler);
+		assertThat(handler).isNotNull();
 		
 		Route route = handler.getRoute();
-		Assert.assertNotNull(route);
-		Assert.assertEquals(this.handlerName+".hostAction", route.action);
+		assertThat(route).isNotNull();
+                assertThat(route.action).isEqualTo(this.handlerName+".hostAction");
 	}
     
     //--------------------------------
@@ -414,7 +408,7 @@ public class RouterHandlerMappingTest {
         
         // No querystring at all
         HandlerExecutionChain chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
         
         // Wrong parameter name
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -424,7 +418,7 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
         
         chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
     }
     
     /**
@@ -440,14 +434,14 @@ public class RouterHandlerMappingTest {
         
         // param not there, ok
         HandlerExecutionChain chain = this.hm.getHandler(request);
-        Assert.assertNotNull(chain);
+        assertThat(chain).isNotNull();
         
         RouterHandler handler = (RouterHandler)chain.getHandler();
-        Assert.assertNotNull(handler);
+        assertThat(handler).isNotNull();
         
         Route route = handler.getRoute();
-        Assert.assertNotNull(route);
-        Assert.assertEquals(this.handlerName+".qsParamNegatePresence", route.action);
+        assertThat(route).isNotNull();
+        assertThat(route.action).isEqualTo(this.handlerName+".qsParamNegatePresence");
         
         // param empty value
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -457,7 +451,7 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
         
         // param random value
         params = new ArrayList<NameValuePair>();
@@ -467,7 +461,7 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
     }
     
     /**
@@ -489,14 +483,14 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         HandlerExecutionChain chain = this.hm.getHandler(request);
-        Assert.assertNotNull(chain);
+        assertThat(chain).isNotNull();
         
         RouterHandler handler = (RouterHandler)chain.getHandler();
-        Assert.assertNotNull(handler);
+        assertThat(handler).isNotNull();
         
         Route route = handler.getRoute();
-        Assert.assertNotNull(route);
-        Assert.assertEquals(this.handlerName+".qsParamPresence", route.action);
+        assertThat(route).isNotNull();
+        assertThat(route.action).isEqualTo(this.handlerName+".qsParamPresence");
         
         // Empty value should be OK too
         params = new ArrayList<NameValuePair>();
@@ -506,14 +500,14 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         chain = this.hm.getHandler(request);
-        Assert.assertNotNull(chain);
+        assertThat(chain).isNotNull();
         
         handler = (RouterHandler)chain.getHandler();
-        Assert.assertNotNull(handler);
+        assertThat(handler).isNotNull();
         
         route = handler.getRoute();
-        Assert.assertNotNull(route);
-        Assert.assertEquals(this.handlerName+".qsParamPresence", route.action);
+        assertThat(route).isNotNull();
+        assertThat(route.action).isEqualTo(this.handlerName+".qsParamPresence");
     }
     
     /**
@@ -535,14 +529,14 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         HandlerExecutionChain chain = this.hm.getHandler(request);
-        Assert.assertNotNull(chain);
+        assertThat(chain).isNotNull();
         
         RouterHandler handler = (RouterHandler)chain.getHandler();
-        Assert.assertNotNull(handler);
+        assertThat(handler).isNotNull();
         
         Route route = handler.getRoute();
-        Assert.assertNotNull(route);
-        Assert.assertEquals(this.handlerName+".qsParamEmptyValueRequired", route.action);
+        assertThat(route).isNotNull();
+        assertThat(route.action).isEqualTo(this.handlerName+".qsParamEmptyValueRequired");
         
         
         // Not empty value should be accepted
@@ -553,7 +547,7 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
     }    
     
     /**
@@ -575,14 +569,14 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         HandlerExecutionChain chain = this.hm.getHandler(request);
-        Assert.assertNotNull(chain);
+        assertThat(chain).isNotNull();
         
         RouterHandler handler = (RouterHandler)chain.getHandler();
-        Assert.assertNotNull(handler);
+        assertThat(handler).isNotNull();
         
         Route route = handler.getRoute();
-        Assert.assertNotNull(route);
-        Assert.assertEquals(this.handlerName+".qsParamSpecificValueRequired", route.action);
+        assertThat(route).isNotNull();
+        assertThat(route.action).isEqualTo(this.handlerName+".qsParamSpecificValueRequired");
         
         // wrong value
         params = new ArrayList<NameValuePair>();
@@ -592,7 +586,7 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
         
         // empty value
         params = new ArrayList<NameValuePair>();
@@ -602,7 +596,7 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
     }    
     
     /**
@@ -624,14 +618,14 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         HandlerExecutionChain chain = this.hm.getHandler(request);
-        Assert.assertNotNull(chain);
+        assertThat(chain).isNotNull();
         
         RouterHandler handler = (RouterHandler)chain.getHandler();
-        Assert.assertNotNull(handler);
+        assertThat(handler).isNotNull();
         
         Route route = handler.getRoute();
-        Assert.assertNotNull(route);
-        Assert.assertEquals(this.handlerName+".qsParamSpecificValueRequiredPost", route.action);
+        assertThat(route).isNotNull();
+        assertThat(route.action).isEqualTo(this.handlerName+".qsParamSpecificValueRequiredPost");
         
         // wrong value
         params = new ArrayList<NameValuePair>();
@@ -641,7 +635,7 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
         
         // empty value
         params = new ArrayList<NameValuePair>();
@@ -651,7 +645,7 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
     }    
     
     /**
@@ -673,7 +667,7 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         HandlerExecutionChain chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
         
         // empty value : ok
         params = new ArrayList<NameValuePair>();
@@ -683,14 +677,14 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         chain = this.hm.getHandler(request);
-        Assert.assertNotNull(chain);
+        assertThat(chain).isNotNull();
         
         RouterHandler handler = (RouterHandler)chain.getHandler();
-        Assert.assertNotNull(handler);
+        assertThat(handler).isNotNull();
         
         Route route = handler.getRoute();
-        Assert.assertNotNull(route);
-        Assert.assertEquals(this.handlerName+".qsParamNegateSpecificValue", route.action);
+        assertThat(route).isNotNull();
+        assertThat(route.action).isEqualTo(this.handlerName+".qsParamNegateSpecificValue");
         
         // random value : ok
         params = new ArrayList<NameValuePair>();
@@ -700,21 +694,21 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
 
         chain = this.hm.getHandler(request);
-        Assert.assertNotNull(chain);
+        assertThat(chain).isNotNull();
         
         handler = (RouterHandler)chain.getHandler();
-        Assert.assertNotNull(handler);
+        assertThat(handler).isNotNull();
         
         route = handler.getRoute();
-        Assert.assertNotNull(route);
-        Assert.assertEquals(this.handlerName+".qsParamNegateSpecificValue", route.action);
+        assertThat(route).isNotNull();
+        assertThat(route.action).isEqualTo(this.handlerName+".qsParamNegateSpecificValue");
         
         // no param at all : should fail! 
         // "qsParamA!=abc" mean qsParama *must exists* but not have a value of "abc"
         request.setQueryString("");
 
         chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
     }
     
     /**
@@ -730,7 +724,7 @@ public class RouterHandlerMappingTest {
 
         // no param at all
         HandlerExecutionChain chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
         
         // one required param only
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -740,7 +734,7 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
         
         chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
         
         // all required params but invalid values
         params = new ArrayList<NameValuePair>();
@@ -752,7 +746,7 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
         
         chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
         
         // all required params with valid values : ok
         params = new ArrayList<NameValuePair>();
@@ -764,14 +758,14 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
         
         chain = this.hm.getHandler(request);
-        Assert.assertNotNull(chain);
+        assertThat(chain).isNotNull();
         
         RouterHandler handler = (RouterHandler)chain.getHandler();
-        Assert.assertNotNull(handler);
+        assertThat(handler).isNotNull();
         
         Route route = handler.getRoute();
-        Assert.assertNotNull(route);
-        Assert.assertEquals(this.handlerName+".qsParamTwoParamsRequired", route.action);    
+        assertThat(route).isNotNull();
+        assertThat(route.action).isEqualTo(this.handlerName+".qsParamTwoParamsRequired");
     }
         
     /**
@@ -796,14 +790,14 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
         
         HandlerExecutionChain chain = this.hm.getHandler(request);
-        Assert.assertNotNull(chain);
+        assertThat(chain).isNotNull();
         
         RouterHandler handler = (RouterHandler)chain.getHandler();
-        Assert.assertNotNull(handler);
+        assertThat(handler).isNotNull();
         
         Route route = handler.getRoute();
-        Assert.assertNotNull(route);
-        Assert.assertEquals(this.handlerName+".qsParamEncodedValueAndRandomSpaces", route.action);            
+        assertThat(route).isNotNull();
+        assertThat(route.action).isEqualTo(this.handlerName+".qsParamEncodedValueAndRandomSpaces");
     }
     
     /**
@@ -819,7 +813,7 @@ public class RouterHandlerMappingTest {
         
         // no qsParam
         HandlerExecutionChain chain = this.hm.getHandler(request);
-        Assert.assertNull(chain);
+        assertThat(chain).isNull();
         
         // with qsParam
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -829,14 +823,14 @@ public class RouterHandlerMappingTest {
         request.setQueryString(querystring);
         
         chain = this.hm.getHandler(request);
-        Assert.assertNotNull(chain);
+        assertThat(chain).isNotNull();
         
         RouterHandler handler = (RouterHandler)chain.getHandler();
-        Assert.assertNotNull(handler);
+        assertThat(handler).isNotNull();
         
         Route route = handler.getRoute();
-        Assert.assertNotNull(route);
-        Assert.assertEquals(this.handlerName+".qsParamPlayNiceWithOtherRoutingFeatures", route.action);            
+        assertThat(route).isNotNull();
+        assertThat(route.action).isEqualTo(this.handlerName+".qsParamPlayNiceWithOtherRoutingFeatures");
     }
 
 }

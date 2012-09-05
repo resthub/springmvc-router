@@ -2,35 +2,29 @@ package org.resthub.web.springmvc.router;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
-import junit.framework.Assert;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.fest.assertions.api.Assertions.*;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:routerTestContext.xml"})
-public class RouterHandlerAdapterTest {
+public class RouterHandlerAdapterTest extends AbstractTestNGSpringContextTests {
 
     private String ROUTERCONTEXT_LOCATION = "/routerTestContext.xml";
     private String SECURITYCONTEXT_LOCATION = "/securityContext.xml";
@@ -46,11 +40,11 @@ public class RouterHandlerAdapterTest {
     private static final String TEST_SLUG = "my-slug-number-1";
     private static final String TEST_SLUG_HASH = "slughash";
     private static final String TEST_HOST = "example.org";
-    
+
     /**
      * Setup a MockServletContext configured by routerTestContext.xml
      */
-    @Before
+    @BeforeClass
     public void setUp() {
 
         MockServletContext sc = new MockServletContext("");
@@ -69,7 +63,7 @@ public class RouterHandlerAdapterTest {
 
         // map request on handler
         HandlerExecutionChain chain = this.hm.getHandler(request);
-        Assert.assertNotNull("No handler found for this request", chain);
+        assertThat(chain).isNotNull();
 
         HandlerMethod handler = (HandlerMethod) chain.getHandler();
 
@@ -80,8 +74,9 @@ public class RouterHandlerAdapterTest {
     }
 
     /**
-     * Test route handling:
-     * GET     /bind/string/{myName}    bindTestController.bindStringAction
+     * Test route handling: GET /bind/string/{myName}
+     * bindTestController.bindStringAction
+     *
      * @throws Exception
      */
     @Test
@@ -92,14 +87,15 @@ public class RouterHandlerAdapterTest {
 
         ModelAndView mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
-        Assert.assertEquals(TEST_STRING, mv.getModel().get("name"));
+        assertThat(mv).isNotNull();
+        assertThat(mv.getModel().get("name")).isEqualTo(TEST_STRING);
 
     }
 
     /**
-     * Test route handling:
-     * POST    /bind/id/{<[0-9]+>myId}     bindTestController.bindIdAction
+     * Test route handling: POST /bind/id/{<[0-9]+>myId}
+     * bindTestController.bindIdAction
+     *
      * @throws Exception
      */
     @Test
@@ -110,14 +106,15 @@ public class RouterHandlerAdapterTest {
 
         ModelAndView mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
-        Assert.assertEquals(TEST_LONG, mv.getModel().get("id"));
+        assertThat(mv).isNotNull();
+        assertThat(mv.getModel().get("id")).isEqualTo(TEST_LONG);
 
     }
 
     /**
-     * Test route handling:
-     * DELETE  /bind/slug/{<[a-z0-9-]+>slug}  bindTestController.bindSlugAction
+     * Test route handling: DELETE /bind/slug/{<[a-z0-9-]+>slug}
+     * bindTestController.bindSlugAction
+     *
      * @throws Exception
      */
     @Test
@@ -129,15 +126,15 @@ public class RouterHandlerAdapterTest {
 
         ModelAndView mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
-        Assert.assertEquals(TEST_SLUG, mv.getModel().get("slug"));
-        Assert.assertEquals(TEST_SLUG_HASH, mv.getModel().get("hash"));
+        assertThat(mv).isNotNull();
+        assertThat(mv.getModel().get("slug")).isEqualTo(TEST_SLUG);
+        assertThat(mv.getModel().get("hash")).isEqualTo(TEST_SLUG_HASH);
 
     }
 
     /**
-     * Test route handling:
-     * GET     /bind/host                bindTestController.bindHostAction
+     * Test route handling: GET /bind/host bindTestController.bindHostAction
+     *
      * @throws Exception
      */
     @Test
@@ -148,15 +145,15 @@ public class RouterHandlerAdapterTest {
 
         ModelAndView mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
-        Assert.assertEquals(TEST_HOST, mv.getModel().get("hostname"));
-        Assert.assertEquals(TEST_SLUG, mv.getModel().get("slug"));
+        assertThat(mv).isNotNull();
+        assertThat(mv.getModel().get("slug")).isEqualTo(TEST_SLUG);
+        assertThat(mv.getModel().get("hostname")).isEqualTo(TEST_HOST);
 
-    }    
-    
+    }
+
     /**
-     * Test route handling:
-     * GET     /bind/host                bindTestController.bindHostAction
+     * Test route handling: GET /bind/host bindTestController.bindHostAction
+     *
      * @throws Exception
      */
     @Test
@@ -167,22 +164,23 @@ public class RouterHandlerAdapterTest {
 
         ModelAndView mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
-        Assert.assertEquals(TEST_HOST, mv.getModel().get("host"));
+        assertThat(mv).isNotNull();
+        assertThat(mv.getModel().get("host")).isEqualTo(TEST_HOST);
 
         request = new MockHttpServletRequest("GET", "/bind/host");
-        request.addHeader("host", "www."+TEST_HOST);
+        request.addHeader("host", "www." + TEST_HOST);
 
         mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
-        Assert.assertEquals("www."+TEST_HOST, mv.getModel().get("host"));
-        
+        assertThat(mv).isNotNull();
+        assertThat(mv.getModel().get("host")).isEqualTo("www." + TEST_HOST);
+
     }
 
     /**
-     * Test route handling:
-     * GET     myhost.com/bind/specifichost     bindTestController.bindSpecificHostAction
+     * Test route handling: GET myhost.com/bind/specifichost
+     * bindTestController.bindSpecificHostAction
+     *
      * @throws Exception
      */
     @Test
@@ -193,20 +191,21 @@ public class RouterHandlerAdapterTest {
 
         ModelAndView mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
-        Assert.assertEquals("specific", mv.getModel().get("host"));
+        assertThat(mv).isNotNull();
+        assertThat(mv.getModel().get("host")).isEqualTo("specific");
 
         request = new MockHttpServletRequest("GET", "/bind/specifichost");
         request.addHeader("host", "myotherhost.com");
 
         HandlerExecutionChain chain = this.hm.getHandler(request);
-
-        Assert.assertNull("No handler should match this request", chain);
+        // No handler should mathc this request
+        assertThat(chain).isNull();
     }
 
     /**
-     * Test route handling:
-     * GET     {host}.domain.org/bind/regexphost    bindTestController.bindRegexpHostAction
+     * Test route handling: GET {host}.domain.org/bind/regexphost
+     * bindTestController.bindRegexpHostAction
+     *
      * @throws Exception
      */
     @Test
@@ -217,13 +216,14 @@ public class RouterHandlerAdapterTest {
 
         ModelAndView mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
-        Assert.assertEquals("myhost", mv.getModel().get("subdomain"));
+        assertThat(mv).isNotNull();
+        assertThat(mv.getModel().get("subdomain")).isEqualTo("myhost");
     }
-    
+
     /**
-     * Test route handling:
-     * GET     /bind/modelattribute        bindTestController.bindModelAttributeOnMethodsAction
+     * Test route handling: GET /bind/modelattribute
+     * bindTestController.bindModelAttributeOnMethodsAction
+     *
      * @throws Exception
      */
     @Test
@@ -234,18 +234,19 @@ public class RouterHandlerAdapterTest {
 
         ModelAndView mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
-        Assert.assertEquals(true, mv.getModel().get("simpleModelAttributeOnMethod"));
-        Assert.assertEquals(true, mv.getModel().get("firstModelAttributeOnMethod"));
-        Assert.assertEquals(true, mv.getModel().get("secondModelAttributeOnMethod"));
+        assertThat(mv).isNotNull();
+        assertThat(mv.getModel().get("simpleModelAttributeOnMethod")).isEqualTo(true);
+        assertThat(mv.getModel().get("firstModelAttributeOnMethod")).isEqualTo(true);
+        assertThat(mv.getModel().get("secondModelAttributeOnMethod")).isEqualTo(true);
+
     }
 
     /**
-     * Test route:
-     * GET   /security/{name}         bindTestController.securityAction
+     * Test route: GET /security/{name} bindTestController.securityAction
+     *
      * @throws Exception
      */
-    @Test(expected = AuthenticationCredentialsNotFoundException.class)
+    @Test(expectedExceptions = AuthenticationCredentialsNotFoundException.class)
     public void testBindSecurity() throws Exception {
 
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/security/test");
@@ -253,22 +254,20 @@ public class RouterHandlerAdapterTest {
 
         ModelAndView mv = handleRequest(request);
     }
-    
-    
+
     //--------------------------------
     // querystring params tests
-    
-    
     /**
-     * Test route handling:
-     * GET     /qsparampresence [qsParamA=abc%20def]       bindTestController.qsParamSimpleBind
+     * Test route handling: GET /qsparampresence [qsParamA=abc%20def]
+     * bindTestController.qsParamSimpleBind
+     *
      * @throws Exception
      */
     @Test
     public void qsParamSimpleBind() throws Exception {
 
         String TEST_VALUE = "abc def";
-        
+
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/qsparamsimplebind");
         request.addHeader("host", TEST_HOST);
 
@@ -276,20 +275,21 @@ public class RouterHandlerAdapterTest {
         NameValuePair param = new BasicNameValuePair("qsParamA", TEST_VALUE);
         params.add(param);
         request.addParameter("qsParamA", TEST_VALUE);
-        
+
         String querystring = URLEncodedUtils.format(params, "utf-8");
         request.setQueryString(querystring);
-        
+
         ModelAndView mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
-        Assert.assertEquals(TEST_VALUE, mv.getModel().get("qsParamA"));
+        assertThat(mv).isNotNull();
+        assertThat(mv.getModel().get("qsParamA")).isEqualTo(TEST_VALUE);
     }
-    
-    
+
     /**
-     * Test route handling:
-     * GET     /qsparamAnddifferentkeystaticparam [qsParamA=abc]         bindTestController.qsParamAndDifferentKeyStaticParam(myStaticArg:'someStaticVal')
+     * Test route handling: GET /qsparamAnddifferentkeystaticparam
+     * [qsParamA=abc]
+     * bindTestController.qsParamAndDifferentKeyStaticParam(myStaticArg:'someStaticVal')
+     *
      * @throws Exception
      */
     @Test
@@ -302,21 +302,22 @@ public class RouterHandlerAdapterTest {
         NameValuePair param = new BasicNameValuePair("qsParamA", "abc");
         params.add(param);
         request.addParameter("qsParamA", "abc");
-        
+
         String querystring = URLEncodedUtils.format(params, "utf-8");
         request.setQueryString(querystring);
-        
+
         ModelAndView mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
-        
-        Assert.assertEquals("abc", mv.getModel().get("qsParamA"));
-        Assert.assertEquals("someStaticVal", mv.getModel().get("myStaticArg")); 
+        assertThat(mv).isNotNull();
+
+        assertThat(mv.getModel().get("qsParamA")).isEqualTo("abc");
+        assertThat(mv.getModel().get("myStaticArg")).isEqualTo("someStaticVal");
     }
-    
+
     /**
-     * Test route handling:
-     * GET     /qsparamAndsamekeystaticparam [qsParamA=abc]             bindTestController.qsParamAndSameKeyStaticParam(qsParamA:'someStaticVal')
+     * Test route handling: GET /qsparamAndsamekeystaticparam [qsParamA=abc]
+     * bindTestController.qsParamAndSameKeyStaticParam(qsParamA:'someStaticVal')
+     *
      * @throws Exception
      */
     @Test
@@ -329,24 +330,25 @@ public class RouterHandlerAdapterTest {
         NameValuePair param = new BasicNameValuePair("qsParamA", "abc");
         params.add(param);
         request.addParameter("qsParamA", "abc");
-        
+
         String querystring = URLEncodedUtils.format(params, "utf-8");
         request.setQueryString(querystring);
-        
+
         ModelAndView mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
-        
+        assertThat(mv).isNotNull();
+
         // Both should be available!
         // qsParamA as : @RequestParam(value = "qsParamA") String qsParamA
         // myStaticArg as : @PathVariable(value = "qsParamA") String qsParamAStaticArg
-        Assert.assertEquals("abc", mv.getModel().get("qsParamA"));
-        Assert.assertEquals("someStaticVal", mv.getModel().get("qsParamAStaticArg"));
+        assertThat(mv.getModel().get("qsParamA")).isEqualTo("abc");
+        assertThat(mv.getModel().get("qsParamAStaticArg")).isEqualTo("someStaticVal");
     }
-    
+
     /**
-     * Test route handling:
-     * GET     /qsparamemptyandsamekeystaticparam         [qsParamA=]             bindTestController.qsParamEmptyAndSameKeyStaticParam(qsParamA:'someStaticVal')
+     * Test route handling: GET /qsparamemptyandsamekeystaticparam [qsParamA=]
+     * bindTestController.qsParamEmptyAndSameKeyStaticParam(qsParamA:'someStaticVal')
+     *
      * @throws Exception
      */
     @Test
@@ -359,24 +361,26 @@ public class RouterHandlerAdapterTest {
         NameValuePair param = new BasicNameValuePair("qsParamA", "");
         params.add(param);
         request.addParameter("qsParamA", "");
-        
+
         String querystring = URLEncodedUtils.format(params, "utf-8");
         request.setQueryString(querystring);
-        
+
         ModelAndView mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
-        
+        assertThat(mv).isNotNull();
+
         // Both should be available!
         // qsParamA as : @RequestParam(value = "qsParamA") String qsParamA
         // myStaticArg as : @PathVariable(value = "qsParamA") String qsParamAStaticArg
-        Assert.assertEquals("", mv.getModel().get("qsParamA"));
-        Assert.assertEquals("someStaticVal", mv.getModel().get("qsParamAStaticArg"));
+        assertThat(mv.getModel().get("qsParamA")).isEqualTo("");
+        assertThat(mv.getModel().get("qsParamAStaticArg")).isEqualTo("someStaticVal");
+
     }
-    
+
     /**
-     * Test route handling:
-     * GET     /qsparamnullAndsamekeystaticparam         [qsParamA]                 bindTestController.qsParamNullAndSameKeyStaticParam(qsParamA:'someStaticVal')
+     * Test route handling: GET /qsparamnullAndsamekeystaticparam [qsParamA]
+     * bindTestController.qsParamNullAndSameKeyStaticParam(qsParamA:'someStaticVal')
+     *
      * @throws Exception
      */
     @Test
@@ -389,24 +393,27 @@ public class RouterHandlerAdapterTest {
         NameValuePair param = new BasicNameValuePair("qsParamA", "abc");
         params.add(param);
         request.addParameter("qsParamA", "abc");
-        
+
         String querystring = URLEncodedUtils.format(params, "utf-8");
         request.setQueryString(querystring);
-        
+
         ModelAndView mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
-        
+        assertThat(mv).isNotNull();
+
         // Both should be available!
         // qsParamA as : @RequestParam(value = "qsParamA") String qsParamA
         // myStaticArg as : @PathVariable(value = "qsParamA") String qsParamAStaticArg
-        Assert.assertEquals("abc", mv.getModel().get("qsParamA"));
-        Assert.assertEquals("someStaticVal", mv.getModel().get("qsParamAStaticArg"));
+        assertThat(mv.getModel().get("qsParamA")).isEqualTo("abc");
+        assertThat(mv.getModel().get("qsParamAStaticArg")).isEqualTo("someStaticVal");
+
     }
-    
+
     /**
-     * Test route handling:
-     * GET     /qsparambindencodedvalueandrandomspaces [   qsParamA=%20   qsParamB=a+b   qsParamC=%C3%A9t%C3%A9    ] bindTestController.qsParamBindEncodedValueAndRandomSpaces
+     * Test route handling: GET /qsparambindencodedvalueandrandomspaces [
+     * qsParamA=%20 qsParamB=a+b qsParamC=%C3%A9t%C3%A9 ]
+     * bindTestController.qsParamBindEncodedValueAndRandomSpaces
+     *
      * @throws Exception
      */
     @Test
@@ -416,29 +423,29 @@ public class RouterHandlerAdapterTest {
         request.addHeader("host", TEST_HOST);
 
         List<NameValuePair> params = new ArrayList<NameValuePair>();
-        
+
         NameValuePair param = new BasicNameValuePair("qsParamA", " ");
         params.add(param);
         request.addParameter("qsParamA", " ");
-        
+
         param = new BasicNameValuePair("qsParamB", "a b");
         params.add(param);
         request.addParameter("qsParamB", "a b");
-        
+
         param = new BasicNameValuePair("qsParamC", "été");
         params.add(param);
         request.addParameter("qsParamC", "été");
-        
+
         String querystring = URLEncodedUtils.format(params, "utf-8");
         request.setQueryString(querystring);
-        
+
         ModelAndView mv = handleRequest(request);
 
-        Assert.assertNotNull(mv);
+        assertThat(mv).isNotNull();
+
+        assertThat(mv.getModel().get("qsParamA")).isEqualTo(" ");
+        assertThat(mv.getModel().get("qsParamB")).isEqualTo("a b");
+        assertThat(mv.getModel().get("qsParamC")).isEqualTo("été");
         
-        Assert.assertEquals(" ", mv.getModel().get("qsParamA"));
-        Assert.assertEquals("a b", mv.getModel().get("qsParamB"));
-        Assert.assertEquals("été", mv.getModel().get("qsParamC")); 
     }
-    
 }
