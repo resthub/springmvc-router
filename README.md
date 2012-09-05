@@ -270,8 +270,6 @@ Tools
 
 [springmvc-router-ide](https://github.com/bradhouse/springmvc-router-ide) is a Maven plugin to generate template files that assist IDEs in autocompleting reverse routing with this project.
 
-### Embedded resources maven plugin
+### RESThub framework
 
-With the [embedded resources maven plugin](http://bitbucket.org/bmeurant/embedded-resources/overview), you can copy static resources from classpath jars to your webapp resources directory at compile time.
-
-Great for integrating maven modules coming with their own resources.
+This project can be used as an addon to [RESThub framework](http://resthub.org/2).
