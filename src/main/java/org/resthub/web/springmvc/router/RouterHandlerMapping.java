@@ -69,6 +69,7 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
     private static final Logger logger = LoggerFactory.getLogger(RouterHandlerMapping.class);
     private List<String> routeFiles;
     private String servletPrefix;
+    private boolean autoReloadEnabled = false;
     private RouterHandlerResolver methodResolver;
 
     public RouterHandlerMapping() {
@@ -88,7 +89,7 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
     }
 
     /**
-     * Routes configuration Files names< Injected by bean configuration (in
+     * Routes configuration Files names Injected by bean configuration (in
      * servlet.xml)
      */
     public List<String> getRouteFiles() {
@@ -100,17 +101,29 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
     }
 
     /**
+     * Route files auto-reloading
+     * Injected by bean configuration (in servlet.xml)
+     */
+    public boolean isAutoReloadEnabled() {
+        return autoReloadEnabled;
+    }
+
+    public void setAutoReloadEnabled(boolean autoReloadEnabled) {
+        this.autoReloadEnabled = autoReloadEnabled;
+    }
+    
+    /**
      * Reload routes configuration at runtime. No-op if configuration files
      * didn't change since last reload.
      */
     public void reloadRoutesConfiguration() {
-         List<Resource> fileResources = new ArrayList<Resource>();
-
-        for (String fileName : this.routeFiles) {
-            fileResources.add(getApplicationContext().getResource(fileName));
-        }
+        List<Resource> fileResources = new ArrayList<Resource>();
         
         try {
+            for (String fileName : this.routeFiles) {
+                fileResources.addAll(Arrays.asList(getApplicationContext().getResources(fileName)));
+            }
+            
             Router.detectChanges(fileResources, servletPrefix);
         } catch (IOException ex) {
             throw new RouteFileParsingException(
@@ -154,6 +167,12 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
             throws Exception {
 
         HandlerMethod handler;
+        
+        // reload routes files if configured in servlet-context
+        if(this.autoReloadEnabled) {
+            this.reloadRoutesConfiguration();
+        }
+        
         try {
             // Adapt HTTPServletRequest for Router
             HTTPRequestAdapter rq = HTTPRequestAdapter.parseRequest(request);

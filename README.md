@@ -132,6 +132,13 @@ In your *-servlet.xml file, add the following beans:
                     </list>
                 </property>
     		<property name="servletPrefix" value="" />
+                <!-- 
+                    Uncomment the following configuration line
+                    if you want routes to be dynamically reloaded when
+                    route files are modified.
+                    Can be a good idea in dev mode, not so much in production!
+                -->
+                <!-- <property name="autoReloadEnabled" value="true" /> -->
         </bean>
     
     </beans>
