@@ -49,6 +49,10 @@ public class Router {
     public static long lastLoading = -1;
     private static final Logger logger = LoggerFactory.getLogger(Router.class);
 
+    public static void clear() {
+        routes.clear();
+    }
+
     /**
      * Parse the routes file. This is called at startup.
      *
