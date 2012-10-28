@@ -13,10 +13,10 @@ Feature: Reverse routing support
 
   Scenario: Reverse routing an URL with params
     Given I have routes:
-      | method | path             | action                       | params          |
-      | GET    | /param           | myTestController.paramAction |                 |
-      | GET    | /param/{param}   | myTestController.paramAction | param:'default' |
+      | method | path             | action                       | params            |
+      | GET    | /param           | myTestController.paramAction |                   |
+      | GET    | /param/{param}   | myTestController.paramAction | (param:'default') |
     When I try to reverse route "myTestController.paramAction" with params:
       | key   | value     |
       | param | testparam |
-    Then I should get an action with path "/param?param=testparam"
+    Then I should get an action with path "/param/testparam"
