@@ -736,7 +736,7 @@ public class Router {
                 if (matcher.matches()) {
                     staticArgs.put(matcher.group(1), matcher.group(2));
                 } else {
-                    logger.warn("Ignoring %s (static params must be specified as key:'value',...)", params);
+                    logger.warn("Ignoring "+param+" (static params must be specified as key:'value',...)");
                 }
             }
         }
