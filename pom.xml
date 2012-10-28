@@ -23,8 +23,9 @@
         <velocity-version>1.7</velocity-version>
         <log4j.version>1.2.16</log4j.version>
         <slf4j.version>1.6.4</slf4j.version>
-        <testng.version>6.5.2</testng.version>
-        <fest.assert.version>2.0M7</fest.assert.version>
+        <junit.version>4.10</junit.version>
+        <fest.assert.version>2.0M8</fest.assert.version>
+        <cucumber.jvm.version>1.1.1</cucumber.jvm.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -157,25 +158,33 @@
             <version>${spring-version}</version>
             <scope>test</scope>
         </dependency>
-        
-        <dependency>
-           <groupId>org.testng</groupId>
-           <artifactId>testng</artifactId>
-           <version>${testng.version}</version>
-           <scope>test</scope>
-           <exclusions>
-               <exclusion>
-                   <artifactId>junit</artifactId>
-                   <groupId>junit</groupId>
-               </exclusion>
-           </exclusions>
-       </dependency>
+
        <dependency>
            <groupId>org.easytesting</groupId>
            <artifactId>fest-assert-core</artifactId>
            <version>${fest.assert.version}</version>
            <scope>test</scope>
        </dependency>
+
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-picocontainer</artifactId>
+            <version>${cucumber.jvm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>${cucumber.jvm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <!--
             Testing against Spring Security 3.0 AOP
