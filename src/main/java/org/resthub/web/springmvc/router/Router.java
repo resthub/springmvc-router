@@ -167,7 +167,7 @@ public class Router {
         route.addParams(params);
         route.addQsParams(qsParams);
         route.compute();
-        if (logger.isTraceEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug("Adding [" + route.toString() + "] with params [" + params + "] and headers [" + headers + "]");
         }
 
