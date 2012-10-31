@@ -5,16 +5,20 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.runtime.PendingException;
+import org.resthub.web.springmvc.router.exceptions.NoHandlerFoundException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.fest.assertions.api.Assertions.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 public class ReverseRoutingStepdefs {
 
     private Router.ActionDefinition resolvedAction;
+
+    private Exception thrownException;
 
     @Given("^an empty Router$")
     public void an_empty_Router() throws Throwable {
@@ -39,8 +43,11 @@ public class ReverseRoutingStepdefs {
         for(ParamItem param : params) {
               routeParams.put(param.key,param.value);
         }
-
-        resolvedAction = Router.reverse(path,routeParams);
+        try {
+            resolvedAction = Router.reverse(path,routeParams);
+        } catch(Exception exc) {
+            this.thrownException = exc;
+        }
     }
 
     @When("^I try to reverse route \"([^\"]*)\"$")
@@ -51,6 +58,17 @@ public class ReverseRoutingStepdefs {
     @Then("^I should get an action with path \"([^\"]*)\"$")
     public void I_should_get_an_action_with_URL(String path) throws Throwable {
          assertThat(path).isEqualTo(resolvedAction.url);
+    }
+
+    @Then("^I should get an action with path \"([^\"]*)\" and host \"([^\"]*)\"$")
+    public void I_should_get_an_action_with_path_and_host(String path, String host) throws Throwable {
+        assertThat(path).isEqualTo(resolvedAction.url);
+        assertThat(host).isEqualTo(resolvedAction.host);
+    }
+
+    @Then("^no action should match$")
+    public void no_action_should_match() throws Throwable {
+        assertThat(this.thrownException).isNotNull().isInstanceOf(NoHandlerFoundException.class);
     }
 
     public static class RouteItem {
