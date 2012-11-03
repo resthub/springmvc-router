@@ -1,0 +1,98 @@
+package org.resthub.web.springmvc.router;
+
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import org.resthub.web.springmvc.router.support.RouterHandler;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.web.context.support.XmlWebApplicationContext;
+import org.springframework.web.servlet.HandlerAdapter;
+import org.springframework.web.servlet.HandlerExecutionChain;
+import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.List;
+
+import static org.fest.assertions.api.Assertions.assertThat;
+
+public class HandlersStepdefs {
+
+    private XmlWebApplicationContext wac;
+    private HandlerMapping hm;
+    private HandlerAdapter ha;
+
+    private MockHttpServletRequest request;
+
+    private String defaultHost = "example.org";
+
+    private RouterHandler handler;
+
+    @Given("^I have a web applications with the config locations \"([^\"]*)\"$")
+    public void I_have_a_web_applications_with_the_config_locations(String locations) throws Throwable {
+        MockServletContext sc = new MockServletContext("");
+        this.wac = new XmlWebApplicationContext();
+        this.wac.setServletContext(sc);
+        this.wac.setConfigLocations(locations.split(","));
+        this.wac.refresh();
+
+        this.hm = (HandlerMapping) this.wac.getBean("handlerMapping");
+        this.ha = (HandlerAdapter) this.wac.getBean("handlerAdapter");
+    }
+
+    @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\"$")
+    public void I_send_the_HTTP_request(String method, String url) throws Throwable {
+
+        request = new MockHttpServletRequest(method, url);
+        request.addHeader("host", defaultHost);
+
+        HandlerExecutionChain chain = this.hm.getHandler(request);
+
+        handler = (RouterHandler) chain.getHandler();
+    }
+
+    @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" with headers:$")
+    public void I_send_the_HTTP_request_with_headers(String method, String url, List<HTTPHeader> headers) throws Throwable {
+        MockHttpServletRequest request = new MockHttpServletRequest(method, url);
+
+        for (HTTPHeader header : headers) {
+            request.addHeader(header.name, header.value);
+        }
+
+        if (request.getHeader("host") == null) {
+            request.addHeader("host", defaultHost);
+        }
+
+        HandlerExecutionChain chain = this.hm.getHandler(request);
+        handler = (RouterHandler) chain.getHandler();
+    }
+
+
+    @Then("^the request should be handled by \"([^\"]*)\"$")
+    public void the_request_should_be_handled_by(String controllerAction) throws Throwable {
+        assertThat(handler).isNotNull();
+        assertThat(handler.getRoute()).isNotNull();
+        assertThat(handler.getRoute().action).isNotNull().isEqualToIgnoringCase(controllerAction);
+    }
+
+    @Then("^the controller should respond with a ModelAndView containing:$")
+    public void the_controller_should_respond_with_a_ModelAndView_containing(List<MaVParams> mavparams) throws Throwable {
+        ModelAndView mv = ha.handle(request, new MockHttpServletResponse(), handler);
+
+        for (MaVParams param : mavparams) {
+            assertThat(param.value).isEqualTo(mv.getModel().get(param.key).toString());
+        }
+    }
+
+    public static class HTTPHeader {
+        public String name;
+        public String value;
+    }
+
+    public static class MaVParams {
+        public String key;
+        public String value;
+    }
+
+}
