@@ -35,6 +35,5 @@ It now supports multiple configuration files. Even if your application uses only
         -->
       </list>
       </property>
-      <property name="servletPrefix" value="" />
     </bean>
 
