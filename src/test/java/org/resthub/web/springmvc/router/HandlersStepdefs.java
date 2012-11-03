@@ -65,7 +65,7 @@ public class HandlersStepdefs {
 
     @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" with query params:$")
     public void I_send_the_HTTP_request_with_query_params(String method, String url, List<HTTPParam> queryParams) throws Throwable {
-        MockHttpServletRequest request = new MockHttpServletRequest(method, url);
+        request = new MockHttpServletRequest(method, url);
 
         for (HTTPParam param : queryParams) {
             request.addParameter(param.name, param.value);
@@ -77,7 +77,7 @@ public class HandlersStepdefs {
 
     @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" with headers:$")
     public void I_send_the_HTTP_request_with_headers(String method, String url, List<HTTPHeader> headers) throws Throwable {
-        MockHttpServletRequest request = new MockHttpServletRequest(method, url);
+        request = new MockHttpServletRequest(method, url);
 
         for (HTTPHeader header : headers) {
             request.addHeader(header.name, header.value);

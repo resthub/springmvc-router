@@ -58,12 +58,12 @@ Feature: Handler adapter support
     When I send the HTTP request "GET" "/security/test" to host "myotherhost.com"
     Then the handler should raise a security exception
 
-#  Scenario: Binding a regexp and queryParam within the HTTP request
-#    Given I have a web application with the config locations "/bindingTestContext.xml"
-#    When I send the HTTP request "DELETE" "/bind/slug/my-slug-number-1" with query params:
-#      | name  | value               |
-#      | hash  | slughash            |
-#    Then the controller should respond with a ModelAndView containing:
-#      | key   | value               |
-#      | slug  | my-slug-number-1    |
-#      | hash  | slughash            |
+  Scenario: Binding a regexp and queryParam within the HTTP request
+    Given I have a web application with the config locations "/bindingTestContext.xml"
+    When I send the HTTP request "DELETE" "/bind/slug/my-slug-number-1" with query params:
+      | name  | value               |
+      | hash  | slughash            |
+    Then the controller should respond with a ModelAndView containing:
+      | key   | value               |
+      | slug  | my-slug-number-1    |
+      | hash  | slughash            |
