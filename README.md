@@ -82,19 +82,15 @@ If you want to use SNAPSHOTs, add oss.sonatype.org as a repository.
 In your *-servlet.xml file, add the following beans:
 
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <beans  xmlns="http://www.springframework.org/schema/beans"
-                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    xmlns:context="http://www.springframework.org/schema/context"
-                    xmlns:tx="http://www.springframework.org/schema/tx"
-                    xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-                    xmlns:p="http://www.springframework.org/schema/p"
-                    xsi:schemaLocation="http://www.springframework.org/schema/beans
-                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-                        http://www.springframework.org/schema/context
-                        http://www.springframework.org/schema/context/spring-context-3.1.xsd
-                        http://www.springframework.org/schema/tx
-                        http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+     <?xml version="1.0" encoding="UTF-8"?>
+     <beans  xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:context="http://www.springframework.org/schema/context"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans
+             http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+             http://www.springframework.org/schema/context
+             http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
     
       <!--
         Enable bean declaration by annotations, update base package according to your project
@@ -131,7 +127,14 @@ In your *-servlet.xml file, add the following beans:
                     -->
                     </list>
                 </property>
-    		<property name="servletPrefix" value="" />
+
+                <!--
+                    Uncomment the following configuration line
+                    if you want routes to be automatically prefixed
+                    with servletPrefix.
+                    Default value is ""
+                -->
+    		    <!-- <property name="servletPrefix" value="" /> -->
                 <!-- 
                     Uncomment the following configuration line
                     if you want routes to be dynamically reloaded when
