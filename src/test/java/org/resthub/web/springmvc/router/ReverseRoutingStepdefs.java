@@ -1,17 +1,14 @@
 package org.resthub.web.springmvc.router;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import cucumber.runtime.PendingException;
 import org.resthub.web.springmvc.router.exceptions.NoHandlerFoundException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.fest.assertions.api.Assertions.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class ReverseRoutingStepdefs {
