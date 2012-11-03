@@ -29,7 +29,7 @@ public class HandlersStepdefs {
 
     private HandlerExecutionChain chain;
 
-    @Given("^I have a web applications with the config locations \"([^\"]*)\"$")
+    @Given("^I have a web application with the config locations \"([^\"]*)\"$")
     public void I_have_a_web_applications_with_the_config_locations(String locations) throws Throwable {
         MockServletContext sc = new MockServletContext("");
         this.wac = new XmlWebApplicationContext();
@@ -47,6 +47,26 @@ public class HandlersStepdefs {
         request = new MockHttpServletRequest(method, url);
         request.addHeader("host", defaultHost);
 
+        chain = this.hm.getHandler(request);
+    }
+
+    @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" to host \"([^\"]*)\"$")
+    public void I_send_the_HTTP_request_to_host(String method, String url, String host) throws Throwable {
+        request = new MockHttpServletRequest(method, url);
+        request.addHeader("host", host);
+
+        chain = this.hm.getHandler(request);
+    }
+
+    @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" with query params:$")
+    public void I_send_the_HTTP_request_with_query_params(String method, String url, List<HTTPParam> queryParams) throws Throwable {
+        MockHttpServletRequest request = new MockHttpServletRequest(method, url);
+
+        for (HTTPParam param : queryParams) {
+            request.addParameter(param.name, param.value);
+        }
+
+        request.addHeader("host", defaultHost);
         chain = this.hm.getHandler(request);
     }
 
@@ -96,6 +116,11 @@ public class HandlersStepdefs {
     }
 
     public static class HTTPHeader {
+        public String name;
+        public String value;
+    }
+
+    public static class HTTPParam {
         public String name;
         public String value;
     }
