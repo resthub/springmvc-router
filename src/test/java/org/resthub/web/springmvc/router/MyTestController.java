@@ -23,6 +23,9 @@ public class MyTestController {
     public void caseInsensitive() {
     }
 
+    public void overrideMethod() {
+    }
+
     public void paramAction(@PathVariable(value = "param") String param) {
     }
 
