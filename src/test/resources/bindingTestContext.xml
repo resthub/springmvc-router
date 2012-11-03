@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans  xmlns="http://www.springframework.org/schema/beans"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:context="http://www.springframework.org/schema/context"
+                xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+        <!-- Enable bean declaration by annotations, update base package according to your project -->
+        <context:annotation-config/>
+
+
+	<!--
+		Package to scan for Controllers.
+		All Controllers with @Controller annotation are loaded as such.
+	-->
+	<context:component-scan base-package="org.resthub.web.springmvc.router" />
+
+	<!--
+		Using Spring's RequestMappingHandlerAdapter helps us testing
+                our HandlerMapping class
+	-->	
+	<bean id="handlerAdapter"
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter" />
+	
+	
+	<!-- 
+		Choose HandlerMapping.
+		RouterHandlerMapping loads routes configuration from a file.
+		Router adapted from Play! Framework.
+		
+		@see http://www.playframework.org/documentation/1.0.3/routes#syntax
+		for route configuration syntax.
+		Example:
+		GET    /home          PageController.showPage(id:'home')
+		GET    /page/{id}     PageController.showPage
+	-->
+		 
+	<bean id="handlerMapping"
+          class="org.resthub.web.springmvc.router.RouterHandlerMapping">
+		<property name="routeFiles">
+            <list>
+                <value>bindingroutes.conf</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>
