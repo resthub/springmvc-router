@@ -34,7 +34,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMapping;
  * class="org.resthub.web.springmvc.router.RouterHandlerMapping"&gt;
  * &lt;property name="routeFiles"&gt; 
  * &lt;list&gt;
- *   &lt;value&gt;routes.conf&lt;/value&gt;
+ *   &lt;value&gt;bindingroutes.conf&lt;/value&gt;
  *   &lt;value&gt;addroutes.conf&lt;/value&gt;
  * &lt;/list&gt;
  * &lt;/property&gt;
@@ -142,6 +142,11 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
         // Scan beans for Controllers
         this.methodResolver.setCachedControllers(getApplicationContext().getBeansWithAnnotation(Controller.class));
         List<Resource> fileResources = new ArrayList<Resource>();
+
+        // Set servletPrefix to "" if none provided
+        if(this.servletPrefix == null) {
+            this.servletPrefix = "";
+        }
 
         try {
             for(String fileName : this.routeFiles) {
