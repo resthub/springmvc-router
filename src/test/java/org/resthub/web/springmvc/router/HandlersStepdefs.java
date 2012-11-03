@@ -7,6 +7,7 @@ import org.resthub.web.springmvc.router.support.RouterHandler;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExecutionChain;
@@ -100,6 +101,24 @@ public class HandlersStepdefs {
         assertThat(handler).isNotNull();
         assertThat(handler.getRoute()).isNotNull();
         assertThat(handler.getRoute().action).isNotNull().isEqualToIgnoringCase(controllerAction);
+    }
+
+
+    @Then("^the handler should raise a security exception$")
+    public void the_handler_should_raise_a_security_exception() throws Throwable {
+
+        assertThat(chain).isNotNull();
+        RouterHandler handler = (RouterHandler) chain.getHandler();
+
+        Exception securityException = null;
+
+        try {
+            ha.handle(request, new MockHttpServletResponse(), handler);
+        } catch(Exception exc) {
+            securityException = exc;
+        }
+
+        assertThat(securityException).isNotNull().isInstanceOf(AuthenticationCredentialsNotFoundException.class);
     }
 
     @Then("^the controller should respond with a ModelAndView containing:$")

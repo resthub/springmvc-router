@@ -37,6 +37,27 @@ Feature: Handler adapter support
     When I send the HTTP request "GET" "/bind/specifichost" to host "myotherhost.com"
     Then no handler should be found
 
+  Scenario: Binding a subdomain within the HTTP request
+    Given I have a web application with the config locations "/bindingTestContext.xml"
+    When I send the HTTP request "GET" "/bind/regexphost" to host "myhost.domain.org"
+    Then the controller should respond with a ModelAndView containing:
+      | key          | value      |
+      | subdomain    | myhost     |
+
+  Scenario: Binding modelattributes within the HTTP request
+    Given I have a web application with the config locations "/bindingTestContext.xml"
+    When I send the HTTP request "GET" "/bind/modelattribute" to host "myhost.domain.org"
+    Then the controller should respond with a ModelAndView containing:
+      | key                             | value      |
+      | simpleModelAttributeOnMethod    | true       |
+      | firstModelAttributeOnMethod     | true       |
+      | secondModelAttributeOnMethod    | true       |
+
+  Scenario: Checking that secured routes are protected
+    Given I have a web application with the config locations "/bindingTestContext.xml,/securityContext.xml"
+    When I send the HTTP request "GET" "/security/test" to host "myotherhost.com"
+    Then the handler should raise a security exception
+
 #  Scenario: Binding a regexp and queryParam within the HTTP request
 #    Given I have a web application with the config locations "/bindingTestContext.xml"
 #    When I send the HTTP request "DELETE" "/bind/slug/my-slug-number-1" with query params:
