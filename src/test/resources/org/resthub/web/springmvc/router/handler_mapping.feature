@@ -4,6 +4,11 @@ Feature: Handler mapping support
   In order to implement Controller behaviour accordingly
 
 
+  Scenario: No route defined for a request
+    Given I have a web applications with the config locations "/simpleTestContext.xml"
+    When I send the HTTP request "GET" "/noroute"
+    Then no handler should be found
+
   Scenario: Mapping a simple request
     Given I have a web applications with the config locations "/simpleTestContext.xml"
     When I send the HTTP request "GET" "/simpleaction"

@@ -27,7 +27,7 @@ public class HandlersStepdefs {
 
     private String defaultHost = "example.org";
 
-    private RouterHandler handler;
+    private HandlerExecutionChain chain;
 
     @Given("^I have a web applications with the config locations \"([^\"]*)\"$")
     public void I_have_a_web_applications_with_the_config_locations(String locations) throws Throwable {
@@ -47,9 +47,7 @@ public class HandlersStepdefs {
         request = new MockHttpServletRequest(method, url);
         request.addHeader("host", defaultHost);
 
-        HandlerExecutionChain chain = this.hm.getHandler(request);
-
-        handler = (RouterHandler) chain.getHandler();
+        chain = this.hm.getHandler(request);
     }
 
     @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" with headers:$")
@@ -64,13 +62,21 @@ public class HandlersStepdefs {
             request.addHeader("host", defaultHost);
         }
 
-        HandlerExecutionChain chain = this.hm.getHandler(request);
-        handler = (RouterHandler) chain.getHandler();
+        chain = this.hm.getHandler(request);
     }
 
+    @Then("^no handler should be found$")
+    public void no_handler_should_be_found() throws Throwable {
+
+        assertThat(chain).isNull();
+    }
 
     @Then("^the request should be handled by \"([^\"]*)\"$")
     public void the_request_should_be_handled_by(String controllerAction) throws Throwable {
+
+        assertThat(chain).isNotNull();
+        RouterHandler handler = (RouterHandler) chain.getHandler();
+
         assertThat(handler).isNotNull();
         assertThat(handler.getRoute()).isNotNull();
         assertThat(handler.getRoute().action).isNotNull().isEqualToIgnoringCase(controllerAction);
@@ -78,6 +84,10 @@ public class HandlersStepdefs {
 
     @Then("^the controller should respond with a ModelAndView containing:$")
     public void the_controller_should_respond_with_a_ModelAndView_containing(List<MaVParams> mavparams) throws Throwable {
+
+        assertThat(chain).isNotNull();
+        RouterHandler handler = (RouterHandler) chain.getHandler();
+
         ModelAndView mv = ha.handle(request, new MockHttpServletResponse(), handler);
 
         for (MaVParams param : mavparams) {
