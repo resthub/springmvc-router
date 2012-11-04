@@ -1,7 +1,7 @@
 SpringMVC Router
 ================
 
-[![Build Status](https://secure.travis-ci.org/bclozel/springmvc-router.png?branch=master)](http://travis-ci.org/bclozel/springmvc-router)
+[![Build Status](https://secure.travis-ci.org/resthub/springmvc-router.png?branch=master)](http://travis-ci.org/resthub/springmvc-router)
 
 Developers mailing list: resthub-dev@googlegroups.com
 
@@ -55,7 +55,7 @@ Warning: **this project is currently tested on Spring 3.1.x**, and is not compat
       <dependency>
         <groupId>org.resthub</groupId>
         <artifactId>springmvc-router</artifactId>
-        <version>0.7-SNAPSHOT</version>
+        <version>0.8-SNAPSHOT</version>
       </dependency>
     ...
     </dependencies>
@@ -82,19 +82,15 @@ If you want to use SNAPSHOTs, add oss.sonatype.org as a repository.
 In your *-servlet.xml file, add the following beans:
 
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <beans  xmlns="http://www.springframework.org/schema/beans"
-                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    xmlns:context="http://www.springframework.org/schema/context"
-                    xmlns:tx="http://www.springframework.org/schema/tx"
-                    xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-                    xmlns:p="http://www.springframework.org/schema/p"
-                    xsi:schemaLocation="http://www.springframework.org/schema/beans
-                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-                        http://www.springframework.org/schema/context
-                        http://www.springframework.org/schema/context/spring-context-3.1.xsd
-                        http://www.springframework.org/schema/tx
-                        http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+     <?xml version="1.0" encoding="UTF-8"?>
+     <beans  xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:context="http://www.springframework.org/schema/context"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans
+             http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+             http://www.springframework.org/schema/context
+             http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
     
       <!--
         Enable bean declaration by annotations, update base package according to your project
@@ -131,7 +127,21 @@ In your *-servlet.xml file, add the following beans:
                     -->
                     </list>
                 </property>
-    		<property name="servletPrefix" value="" />
+
+                <!--
+                    Uncomment the following configuration line
+                    if you want routes to be automatically prefixed
+                    with servletPrefix.
+                    Default value is ""
+                -->
+    		    <!-- <property name="servletPrefix" value="" /> -->
+                <!-- 
+                    Uncomment the following configuration line
+                    if you want routes to be dynamically reloaded when
+                    route files are modified.
+                    Can be a good idea in dev mode, not so much in production!
+                -->
+                <!-- <property name="autoReloadEnabled" value="true" /> -->
         </bean>
     
     </beans>
@@ -270,8 +280,6 @@ Tools
 
 [springmvc-router-ide](https://github.com/bradhouse/springmvc-router-ide) is a Maven plugin to generate template files that assist IDEs in autocompleting reverse routing with this project.
 
-### Embedded resources maven plugin
+### RESThub framework
 
-With the [embedded resources maven plugin](http://bitbucket.org/bmeurant/embedded-resources/overview), you can copy static resources from classpath jars to your webapp resources directory at compile time.
-
-Great for integrating maven modules coming with their own resources.
+This project can be used as an addon to [RESThub framework](http://resthub.org/2).
