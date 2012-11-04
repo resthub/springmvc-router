@@ -3,10 +3,16 @@ package org.resthub.web.springmvc.router;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import jregex.Matcher;
 import jregex.Pattern;
 import jregex.REFlags;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.resthub.web.springmvc.router.exceptions.NoHandlerFoundException;
@@ -20,29 +26,33 @@ import org.springframework.core.io.Resource;
  * <p>The router matches HTTP requests to action invocations.
  * <p>Courtesy of Play! Framework Router
  *
- * @see org.resthub.web.springmvc.router.RouterHandlerMapping
  * @author Play! Framework developers
  * @author Brian Clozel
+ * @see org.resthub.web.springmvc.router.RouterHandlerMapping
  */
 public class Router {
 
     static Pattern routePattern = new Pattern("^({method}GET|POST|PUT|DELETE|OPTIONS|HEAD|\\*)[(]?({headers}[^)]*)(\\))?\\s+({path}.*/[^\\s]*)\\s+({action}[^\\s(]+)({params}.+)?(\\s*)$");
     /**
-     * Pattern used to locate a method override instruction in
-     * request.querystring
+     * Pattern used to locate a method override instruction
      */
     static Pattern methodOverride = new Pattern("^.*x-http-method-override=({method}GET|PUT|POST|DELETE).*$");
+
     /**
      * Timestamp the routes file was last loaded at.
      */
     public static long lastLoading = -1;
     private static final Logger logger = LoggerFactory.getLogger(Router.class);
 
+    public static void clear() {
+        routes.clear();
+    }
+
     /**
      * Parse the routes file. This is called at startup.
      *
      * @param prefix The prefix that the path of all routes in this route file
-     * start with. This prefix should not end with a '/' character.
+     *               start with. This prefix should not end with a '/' character.
      */
     public static void load(List<Resource> fileResources, String prefix) throws IOException {
         routes.clear();
@@ -51,7 +61,6 @@ public class Router {
         }
 
         lastLoading = System.currentTimeMillis();
-        // TODO: load multiple route files
     }
 
     /**
@@ -138,7 +147,7 @@ public class Router {
         route.addFormat(headers);
         route.addParams(params);
         route.compute();
-        if (logger.isTraceEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug("Adding [" + route.toString() + "] with params [" + params + "] and headers [" + headers + "]");
         }
 
@@ -156,8 +165,8 @@ public class Router {
      * Parse a route file.
      *
      * @param fileResource
-     * @param prefix The prefix that the path of all routes in this route file
-     * start with. This prefix should not end with a '/' character.
+     * @param prefix       The prefix that the path of all routes in this route file
+     *                     start with. This prefix should not end with a '/' character.
      * @throws IOException
      */
     static void parse(Resource fileResource, String prefix) throws IOException {
@@ -178,8 +187,8 @@ public class Router {
             }
             Matcher matcher = routePattern.matcher(line);
             if (matcher.matches()) {
-                String action = matcher.group("action");
 
+                String action = matcher.group("action");
                 String method = matcher.group("method");
                 String path = prefix + matcher.group("path");
                 String params = matcher.group("params");
@@ -206,6 +215,7 @@ public class Router {
             load(fileResources, prefix);
         }
     }
+
     public static List<Route> routes = new ArrayList<Route>(500);
 
     public static Route route(HTTPRequestAdapter request) {
@@ -222,10 +232,12 @@ public class Router {
                 request.method = matcher.group("method");
             }
         }
+
         for (Route route : routes) {
             String format = request.format;
             String host = request.host;
             Map<String, String> args = route.matches(request.method, request.path, format, host);
+
             if (args != null) {
                 request.routeArgs = args;
                 request.action = route.action;
@@ -426,6 +438,40 @@ public class Router {
         throw new NoHandlerFoundException(action, args);
     }
 
+    private static void addToQuerystring(StringBuilder queryString, String key, Object value) {
+        if (List.class.isAssignableFrom(value.getClass())) {
+            @SuppressWarnings("unchecked")
+            List<Object> vals = (List<Object>) value;
+            for (Object object : vals) {
+                try {
+                    queryString.append(URLEncoder.encode(key, "utf-8"));
+                    queryString.append("=");
+                    if (object.toString().startsWith(":")) {
+                        queryString.append(object.toString());
+                    } else {
+                        queryString.append(URLEncoder.encode(object.toString() + "", "utf-8"));
+                    }
+                    queryString.append("&");
+                } catch (UnsupportedEncodingException ex) {
+                }
+            }
+//        } else if (value.getClass().equals(Default.class)) {
+//            // Skip defaults in queryString
+        } else {
+            try {
+                queryString.append(URLEncoder.encode(key, "utf-8"));
+                queryString.append("=");
+                if (value.toString().startsWith(":")) {
+                    queryString.append(value.toString());
+                } else {
+                    queryString.append(URLEncoder.encode(value.toString() + "", "utf-8"));
+                }
+                queryString.append("&");
+            } catch (UnsupportedEncodingException ex) {
+            }
+        }
+    }
+
     public static class ActionDefinition {
 
         /**
@@ -514,6 +560,7 @@ public class Router {
         public List<Arg> getArgs() {
             return args;
         }
+
         /**
          * HTTP method, e.g. "GET".
          */
@@ -612,7 +659,7 @@ public class Router {
                 if (matcher.matches()) {
                     staticArgs.put(matcher.group(1), matcher.group(2));
                 } else {
-                    logger.warn("Ignoring %s (static params must be specified as key:'value',...)", params);
+                    logger.warn("Ignoring " + param + " (static params must be specified as key:'value',...)");
                 }
             }
         }
@@ -654,10 +701,10 @@ public class Router {
          * Check if the parts of a HTTP request equal this Route.
          *
          * @param method GET/POST/etc.
-         * @param path Part after domain and before query-string. Starts with a
-         * "/".
+         * @param path   Part after domain and before query-string. Starts with a
+         *               "/".
          * @param accept Format, e.g. html.
-         * @param host AKA the domain.
+         * @param domain the domain.
          * @return ???
          */
         public Map<String, String> matches(String method, String path, String accept, String domain) {
@@ -673,6 +720,7 @@ public class Router {
                 }
                 // Extract the host variable
                 if (matcher.matches() && contains(accept) && hostMatches) {
+
                     Map<String, String> localArgs = new HashMap<String, String>();
                     for (Arg arg : args) {
                         // FIXME: Careful with the arguments that are not matching as they are part of the hostname
@@ -715,4 +763,5 @@ public class Router {
             return method + " " + path + " -> " + action;
         }
     }
+
 }

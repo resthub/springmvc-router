@@ -60,14 +60,6 @@ public class BindTestController {
         return mav;
     }
 
-    public ModelAndView bindHostAction(@PathVariable(value = "host") String myHost) {
-
-        ModelAndView mav = new ModelAndView("testView");
-        mav.addObject("host", myHost);
-
-        return mav;
-    }
-
     public ModelAndView bindSpecificHostAction() {
 
         ModelAndView mav = new ModelAndView("testView");
@@ -98,4 +90,5 @@ public class BindTestController {
 
         return mav;
     }
+    
 }
