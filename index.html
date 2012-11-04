@@ -112,15 +112,10 @@ POST    /user/add/?             userController.createUser
 &lt;beans  xmlns="http://www.springframework.org/schema/beans"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xmlns:context="http://www.springframework.org/schema/context"
-                xmlns:tx="http://www.springframework.org/schema/tx"
-                xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-                xmlns:p="http://www.springframework.org/schema/p"
                 xsi:schemaLocation="http://www.springframework.org/schema/beans
                     http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
                     http://www.springframework.org/schema/context
-                    http://www.springframework.org/schema/context/spring-context-3.1.xsd
-                    http://www.springframework.org/schema/tx
-                    http://www.springframework.org/schema/tx/spring-tx-3.1.xsd"&gt;
+                    http://www.springframework.org/schema/context/spring-context-3.1.xsd"&gt;
 
   &lt;!--
     Enable bean declaration by annotations, update base package according to your project
@@ -157,7 +152,13 @@ POST    /user/add/?             userController.createUser
                 --&gt;
                 &lt;/list&gt;
             &lt;/property&gt;
-        &lt;property name="servletPrefix" value="" /&gt;
+            &lt;!-- 
+                Uncomment the following configuration line
+                if you want routes to be automatically prefixed
+                with servletPrefix.
+                Default value is ""
+            --&gt;
+        &lt;!-- &lt;property name="servletPrefix" value="" /&gt; --&gt;
             &lt;!-- 
                 Uncomment the following configuration line
                 if you want routes to be dynamically reloaded when
