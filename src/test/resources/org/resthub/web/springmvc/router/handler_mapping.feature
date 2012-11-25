@@ -80,3 +80,8 @@ Feature: Handler mapping support
     Given I have a web application with the config locations "/multiplefilesTestContext.xml"
     When I send the HTTP request "GET" "/wildcard-b"
     Then the request should be handled by "myTestController.wildcardB"
+
+  Scenario: Mapping a simple request with a servlet path and a context path
+    Given I have a web application configured locations "/simpleTestContext.xml" servletPath "servlet" contextPath "context"
+    When I send the HTTP request "GET" "/context/servlet/simpleaction"
+    Then the request should be handled by "myTestController.simpleAction"
