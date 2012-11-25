@@ -72,3 +72,9 @@ Feature: Reverse routing support
       | key        | value  |
       | subdomain  | sub    |
     Then I should get an action with path "/bind/regexphost" and host "sub.domain.org"
+
+  Scenario: Reverse routing a simple URL with a servlet path and context path
+    Given I have a route with method "GET" path "/simpleaction" action "myTestController.simpleAction"
+    And the current request is processed within a context path "context" and servlet path "servlet"
+    When I try to reverse route "myTestController.simpleAction"
+    Then I should get an action with path "/context/servlet/simpleaction"
