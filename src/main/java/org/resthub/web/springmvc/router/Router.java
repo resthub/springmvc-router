@@ -51,13 +51,11 @@ public class Router {
     /**
      * Parse the routes file. This is called at startup.
      *
-     * @param prefix The prefix that the path of all routes in this route file
-     *               start with. This prefix should not end with a '/' character.
      */
-    public static void load(List<Resource> fileResources, String prefix) throws IOException {
+    public static void load(List<Resource> fileResources) throws IOException {
         routes.clear();
         for (Resource res : fileResources) {
-            parse(res, prefix);
+            parse(res);
         }
 
         lastLoading = System.currentTimeMillis();
@@ -165,19 +163,17 @@ public class Router {
      * Parse a route file.
      *
      * @param fileResource
-     * @param prefix       The prefix that the path of all routes in this route file
-     *                     start with. This prefix should not end with a '/' character.
      * @throws IOException
      */
-    static void parse(Resource fileResource, String prefix) throws IOException {
+    static void parse(Resource fileResource) throws IOException {
 
         String fileAbsolutePath = fileResource.getFile().getAbsolutePath();
         String content = IOUtils.toString(fileResource.getInputStream());
 
-        parse(content, prefix, fileAbsolutePath);
+        parse(content, fileAbsolutePath);
     }
 
-    static void parse(String content, String prefix, String fileAbsolutePath) throws IOException {
+    static void parse(String content, String fileAbsolutePath) throws IOException {
         int lineNumber = 0;
         for (String line : content.split("\n")) {
             lineNumber++;
@@ -190,7 +186,7 @@ public class Router {
 
                 String action = matcher.group("action");
                 String method = matcher.group("method");
-                String path = prefix + matcher.group("path");
+                String path = matcher.group("path");
                 String params = matcher.group("params");
                 String headers = matcher.group("headers");
                 appendRoute(method, path, action, params, headers, fileAbsolutePath, lineNumber);
@@ -200,7 +196,7 @@ public class Router {
         }
     }
 
-    public static void detectChanges(List<Resource> fileResources, String prefix) throws IOException {
+    public static void detectChanges(List<Resource> fileResources) throws IOException {
 
         boolean hasChanged = false;
 
@@ -212,7 +208,7 @@ public class Router {
         }
 
         if (hasChanged) {
-            load(fileResources, prefix);
+            load(fileResources);
         }
     }
 
@@ -359,6 +355,16 @@ public class Router {
                     if (allRequiredArgsAreHere) {
                         StringBuilder queryString = new StringBuilder();
                         String path = route.path;
+                        //add contextPath and servletPath if set in the current request
+                        if( HTTPRequestAdapter.current.get() != null) {
+
+                            if(!HTTPRequestAdapter.current.get().servletPath.isEmpty()) {
+                                path = "/" + HTTPRequestAdapter.current.get().servletPath + path;
+                            }
+                            if(!HTTPRequestAdapter.current.get().contextPath.isEmpty()) {
+                                path = "/" + HTTPRequestAdapter.current.get().contextPath +path;
+                            }
+                        }
                         String host = route.host;
                         if (path.endsWith("/?")) {
                             path = path.substring(0, path.length() - 2);

@@ -16,6 +16,7 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -26,17 +27,32 @@ public class HandlersStepdefs {
     private HandlerMapping hm;
     private HandlerAdapter ha;
 
+    private String servletPath = "";
+    private String contextPath = "";
+    private List<HTTPParam> queryParams = new ArrayList<HTTPParam>();
+    private List<HTTPHeader> headers = new ArrayList<HTTPHeader>();
+
     private MockHttpServletRequest request;
 
-    private String defaultHost = "example.org";
+    private String host = "example.org";
 
     private HandlerExecutionChain chain;
 
-    private Logger logger = LoggerFactory.getLogger(HandlersStepdefs.class);
-
     @Given("^I have a web application with the config locations \"([^\"]*)\"$")
     public void I_have_a_web_applications_with_the_config_locations(String locations) throws Throwable {
-        MockServletContext sc = new MockServletContext("");
+        I_have_a_web_application_configured_locations_servletPath_contextPath(locations,"","");
+    }
+
+
+    @Given("^I have a web application configured locations \"([^\"]*)\" servletPath \"([^\"]*)\" contextPath \"([^\"]*)\"$")
+    public void I_have_a_web_application_configured_locations_servletPath_contextPath(String locations, String servletPath, String contextPath) throws Throwable {
+
+        this.servletPath = servletPath;
+        this.contextPath = contextPath;
+
+        MockServletContext sc = new MockServletContext();
+        sc.setContextPath(contextPath);
+
         this.wac = new XmlWebApplicationContext();
         this.wac.setServletContext(sc);
         this.wac.setConfigLocations(locations.split(","));
@@ -46,48 +62,56 @@ public class HandlersStepdefs {
         this.ha = (HandlerAdapter) this.wac.getBean("handlerAdapter");
     }
 
+
+
     @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\"$")
     public void I_send_the_HTTP_request(String method, String url) throws Throwable {
 
-        request = new MockHttpServletRequest(method, url);
-        request.addHeader("host", defaultHost);
-
-        chain = this.hm.getHandler(request);
-    }
-
-    @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" to host \"([^\"]*)\"$")
-    public void I_send_the_HTTP_request_to_host(String method, String url, String host) throws Throwable {
-        request = new MockHttpServletRequest(method, url);
-        request.addHeader("host", host);
-
-        chain = this.hm.getHandler(request);
-    }
-
-    @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" with query params:$")
-    public void I_send_the_HTTP_request_with_query_params(String method, String url, List<HTTPParam> queryParams) throws Throwable {
-        request = new MockHttpServletRequest(method, url);
-
-        for (HTTPParam param : queryParams) {
-            request.addParameter(param.name, param.value);
+        int pathLength = 0;
+        if(this.contextPath.length() > 0) {
+            pathLength += this.contextPath.length() + 1;
         }
 
-        request.addHeader("host", defaultHost);
-        chain = this.hm.getHandler(request);
-    }
+        if(this.servletPath.length() > 0) {
+            pathLength += this.servletPath.length() + 1;
+        }
 
-    @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" with headers:$")
-    public void I_send_the_HTTP_request_with_headers(String method, String url, List<HTTPHeader> headers) throws Throwable {
-        request = new MockHttpServletRequest(method, url);
+        request = new MockHttpServletRequest(this.wac.getServletContext(),method, url);
+        request.setContextPath(this.contextPath);
+        request.setServletPath(this.servletPath);
+        request.addHeader("host", host);
 
         for (HTTPHeader header : headers) {
             request.addHeader(header.name, header.value);
         }
 
-        if (request.getHeader("host") == null) {
-            request.addHeader("host", defaultHost);
+        for (HTTPParam param : queryParams) {
+            request.addParameter(param.name, param.value);
         }
 
+        request.setPathInfo(url.substring(pathLength));
         chain = this.hm.getHandler(request);
+    }
+
+    @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" to host \"([^\"]*)\"$")
+    public void I_send_the_HTTP_request_to_host(String method, String url, String host) throws Throwable {
+
+        this.host = host;
+        I_send_the_HTTP_request(method,url);
+    }
+
+    @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" with query params:$")
+    public void I_send_the_HTTP_request_with_query_params(String method, String url, List<HTTPParam> queryParams) throws Throwable {
+
+        this.queryParams = queryParams;
+        I_send_the_HTTP_request(method,url);
+    }
+
+    @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" with headers:$")
+    public void I_send_the_HTTP_request_with_headers(String method, String url, List<HTTPHeader> headers) throws Throwable {
+
+        this.headers = headers;
+        I_send_the_HTTP_request(method,url);
     }
 
     @Then("^no handler should be found$")

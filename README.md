@@ -128,13 +128,6 @@ In your *-servlet.xml file, add the following beans:
                     </list>
                 </property>
 
-                <!--
-                    Uncomment the following configuration line
-                    if you want routes to be automatically prefixed
-                    with servletPrefix.
-                    Default value is ""
-                -->
-    		    <!-- <property name="servletPrefix" value="" /> -->
                 <!-- 
                     Uncomment the following configuration line
                     if you want routes to be dynamically reloaded when

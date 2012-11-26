@@ -27,6 +27,14 @@ public class HTTPRequestAdapter {
      */
     public String path;
     /**
+     * Context path
+     */
+    public String contextPath;
+    /**
+     * Servlet path
+     */
+    public String servletPath;
+    /**
      * QueryString
      */
     public String querystring;
@@ -158,12 +166,14 @@ public class HTTPRequestAdapter {
 
         URI uri = new URI(httpServletRequest.getRequestURI());
         request.method = httpServletRequest.getMethod().intern();
-        request.path = uri.getPath();
+        request.path = httpServletRequest.getPathInfo();
+        request.servletPath = httpServletRequest.getServletPath() != null ? httpServletRequest.getServletPath() : "";
+        request.contextPath = httpServletRequest.getContextPath() != null ? httpServletRequest.getContextPath() : "";
         request.setQueryString(httpServletRequest.getQueryString() == null ? ""
                 : httpServletRequest.getQueryString());
 
-        logger.trace("httpServletRequest.getContextPath(): "
-                + httpServletRequest.getContextPath());
+        logger.trace("contextPath: "
+                + request.contextPath," servletPath: " + request.servletPath);
         logger.trace("request.path: " + request.path
                 + ", request.querystring: " + request.getQueryString());
 
@@ -180,7 +190,7 @@ public class HTTPRequestAdapter {
 
         request.setSecure(httpServletRequest.isSecure());
 
-        request.url = uri.toString();
+        request.url = httpServletRequest.getRequestURI();
         request.host = httpServletRequest.getHeader("host");
         if (request.host.contains(":")) {
             request.port = Integer.parseInt(request.host.split(":")[1]);
