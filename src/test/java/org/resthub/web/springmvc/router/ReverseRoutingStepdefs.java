@@ -4,6 +4,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.resthub.web.springmvc.router.exceptions.NoHandlerFoundException;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,13 +14,18 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class ReverseRoutingStepdefs {
 
+    private HTTPRequestAdapter requestAdapter;
+
     private Router.ActionDefinition resolvedAction;
 
     private Exception thrownException;
 
     @Given("^an empty Router$")
     public void an_empty_Router() throws Throwable {
+        // clear routes from the static Router
         Router.clear();
+        // make sure no current HTTPRequestAdapter is tied to the current thread
+        HTTPRequestAdapter.current.remove();
     }
 
     @Given("^I have a route with method \"([^\"]*)\" path \"([^\"]*)\" action \"([^\"]*)\"$")
@@ -32,6 +38,17 @@ public class ReverseRoutingStepdefs {
         for(RouteItem item : routes) {
             Router.addRoute(item.method,item.path,item.action,item.params,null);
         }
+    }
+
+    @Given("^the current request is processed within a context path \"([^\"]*)\" and servlet path \"([^\"]*)\"$")
+    public void the_current_request_is_processed_within_a_context_path_and_servlet_path(String contextPath, String servletPath) throws Throwable {
+
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/reverse-routing");
+        request.addHeader("host","example.org");
+        request.setContextPath(contextPath);
+        request.setServletPath(servletPath);
+
+        this.requestAdapter = HTTPRequestAdapter.parseRequest(request);
     }
 
     @When("^I try to reverse route \"([^\"]*)\" with params:$")

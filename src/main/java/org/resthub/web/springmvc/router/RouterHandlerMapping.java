@@ -37,9 +37,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMapping;
  *   &lt;value&gt;bindingroutes.conf&lt;/value&gt;
  *   &lt;value&gt;addroutes.conf&lt;/value&gt;
  * &lt;/list&gt;
- * &lt;/property&gt;
- * &lt;property
- * name="servletPrefix" value="/myservlet" /&gt; &lt;property
+ * &lt;/property&gt; &lt;property
  * name="interceptors" &gt; ... &lt;/property&gt; &lt;/bean&gt;
  * </pre>
  *
@@ -68,24 +66,11 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
 
     private static final Logger logger = LoggerFactory.getLogger(RouterHandlerMapping.class);
     private List<String> routeFiles;
-    private String servletPrefix;
     private boolean autoReloadEnabled = false;
     private RouterHandlerResolver methodResolver;
 
     public RouterHandlerMapping() {
         this.methodResolver = new RouterHandlerResolver();
-    }
-
-    /**
-     * Servlet Prefix to be added in front of all routes Injected by bean
-     * configuration (in servlet.xml)
-     */
-    public String getServletPrefix() {
-        return servletPrefix;
-    }
-
-    public void setServletPrefix(String servletPrefix) {
-        this.servletPrefix = servletPrefix;
     }
 
     /**
@@ -124,7 +109,7 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
                 fileResources.addAll(Arrays.asList(getApplicationContext().getResources(fileName)));
             }
             
-            Router.detectChanges(fileResources, servletPrefix);
+            Router.detectChanges(fileResources);
         } catch (IOException ex) {
             throw new RouteFileParsingException(
                     "Could not read route configuration files", ex);
@@ -143,16 +128,11 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
         this.methodResolver.setCachedControllers(getApplicationContext().getBeansWithAnnotation(Controller.class));
         List<Resource> fileResources = new ArrayList<Resource>();
 
-        // Set servletPrefix to "" if none provided
-        if(this.servletPrefix == null) {
-            this.servletPrefix = "";
-        }
-
         try {
             for(String fileName : this.routeFiles) {
                 fileResources.addAll(Arrays.asList(getApplicationContext().getResources(fileName)));
             }
-            Router.load(fileResources, this.servletPrefix);
+            Router.load(fileResources);
 
         } catch (IOException e) {
             throw new RouteFileParsingException(
