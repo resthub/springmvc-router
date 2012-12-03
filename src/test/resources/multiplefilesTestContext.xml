@@ -15,7 +15,7 @@
 		Package to scan for Controllers.
 		All Controllers with @Controller annotation are loaded as such.
 	-->
-	<context:component-scan base-package="org.resthub.web.springmvc.router" />
+	<context:component-scan base-package="org.resthub.web.springmvc.router.controllers" />
 
 	<!--
 		Using Spring's RequestMappingHandlerAdapter helps us testing

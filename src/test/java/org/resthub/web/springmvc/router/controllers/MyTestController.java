@@ -1,4 +1,4 @@
-package org.resthub.web.springmvc.router;
+package org.resthub.web.springmvc.router.controllers;
 
 import javax.inject.Named;
 import org.springframework.stereotype.Controller;

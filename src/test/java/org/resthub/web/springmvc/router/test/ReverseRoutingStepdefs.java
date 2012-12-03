@@ -1,8 +1,10 @@
-package org.resthub.web.springmvc.router;
+package org.resthub.web.springmvc.router.test;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.resthub.web.springmvc.router.HTTPRequestAdapter;
+import org.resthub.web.springmvc.router.Router;
 import org.resthub.web.springmvc.router.exceptions.NoHandlerFoundException;
 import org.springframework.mock.web.MockHttpServletRequest;
 

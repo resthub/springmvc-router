@@ -1,10 +1,5 @@
 package org.resthub.web.springmvc.router;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import org.resthub.web.springmvc.router.exceptions.NoRouteFoundException;
 import org.resthub.web.springmvc.router.exceptions.RouteFileParsingException;
 import org.resthub.web.springmvc.router.support.RouterHandlerResolver;
@@ -13,10 +8,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.AbstractHandlerMapping;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Implementation of the {@link org.springframework.web.servlet.HandlerMapping}
@@ -56,7 +58,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMapping;
  * <pre class="code"> GET /home PageController.showPage(id:'home') GET
  * /page/{id} PageController.showPage POST /customer/{<[0-9]+>customerid}
  * CustomerController.createCustomer
- * </pre> <p> The {@link RouterHandlerAdapter} is responsible for choosing and
+ * </pre> <p> The {@link org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter} is responsible for choosing and
  * invoking the right controller method, as mapped by this HandlerMapping.
  *
  * @author Brian Clozel
@@ -82,6 +84,7 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
     }
 
     public void setRouteFiles(List<String> routeFiles) {
+        Assert.notEmpty(routeFiles,"routes configuration files list should not be empty");
         this.routeFiles = routeFiles;
     }
 
