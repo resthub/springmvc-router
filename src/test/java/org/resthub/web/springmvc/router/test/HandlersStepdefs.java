@@ -1,8 +1,9 @@
-package org.resthub.web.springmvc.router;
+package org.resthub.web.springmvc.router.test;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.resthub.web.springmvc.router.RouterHandlerMapping;
 import org.resthub.web.springmvc.router.support.RouterHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,20 +11,21 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.web.context.support.AbstractRefreshableWebApplicationContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
-import org.springframework.web.servlet.HandlerAdapter;
-import org.springframework.web.servlet.HandlerExecutionChain;
-import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.*;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class HandlersStepdefs {
 
-    private XmlWebApplicationContext wac;
+    private AbstractRefreshableWebApplicationContext wac;
     private HandlerMapping hm;
     private HandlerAdapter ha;
 
@@ -58,8 +60,22 @@ public class HandlersStepdefs {
         this.wac.setConfigLocations(locations.split(","));
         this.wac.refresh();
 
-        this.hm = (HandlerMapping) this.wac.getBean("handlerMapping");
-        this.ha = (HandlerAdapter) this.wac.getBean("handlerAdapter");
+        this.hm = (HandlerMapping) this.wac.getBean(RouterHandlerMapping.class);
+        this.ha = (HandlerAdapter) this.wac.getBean(RequestMappingHandlerAdapter.class);
+    }
+
+    @Given("^I have a web application with javaconfig in package \"([^\"]*)\"$")
+    public void I_have_a_web_application_with_javaconfig_in_package(String scanPackage) throws Throwable {
+        MockServletContext sc = new MockServletContext("");
+        AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
+        appContext.scan(scanPackage);
+        appContext.setServletContext(sc);
+        appContext.refresh();
+
+        this.wac = appContext;
+
+        this.hm = (HandlerMapping) appContext.getBean(RouterHandlerMapping.class);
+        this.ha = (HandlerAdapter) appContext.getBean(RequestMappingHandlerAdapter.class);
     }
 
 
@@ -160,6 +176,26 @@ public class HandlersStepdefs {
         for (MaVParams param : mavparams) {
             assertThat(param.value).isEqualTo(mv.getModel().get(param.key).toString());
         }
+    }
+
+    @Then("^the server should send an HTTP response with status \"([^\"]*)\"$")
+    public void the_server_should_send_an_HTTP_response_with_status(int status) throws Throwable {
+
+        RouterHandler handler = null;
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        if(chain != null) {
+            handler = (RouterHandler) chain.getHandler();
+        }
+
+        HandlerInterceptor[] interceptors = chain.getInterceptors();
+
+        for(HandlerInterceptor interceptor : Arrays.asList(interceptors)) {
+            interceptor.preHandle(request,response, handler);
+        }
+
+        ha.handle(request, response, handler);
+        assertThat(response.getStatus()).isEqualTo(status);
     }
 
     public static class HTTPHeader {
