@@ -90,13 +90,11 @@ In your *-servlet.xml file, add the following beans:
              http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
              http://www.springframework.org/schema/context
              http://www.springframework.org/schema/context/spring-context-3.1.xsd">
-
     
-      <!--
-        Enable bean declaration by annotations, update base package according to your project
-      -->
-      <context:annotation-config/>
-    
+        <!--
+          Enable bean declaration by annotations, update base package according to your project
+        -->
+        <context:annotation-config/>
     
     	<!--
     		Package to scan for Controllers.
@@ -114,8 +112,7 @@ In your *-servlet.xml file, add the following beans:
     		Example:
     		GET    /home          PageController.showPage(id:'home')
     		GET    /page/{id}     PageController.showPage
-    	-->
-    		 
+    	-->		 
     	<bean id="handlerMapping"
               class="org.resthub.web.springmvc.router.RouterHandlerMapping">
                 <property name="routeFiles">
@@ -139,6 +136,21 @@ In your *-servlet.xml file, add the following beans:
     
     </beans>
 
+Or you can achieve the same thing with a Javaconfig class like this:
+
+    @Configuration
+    @ComponentScan(basePackages = "com.example.yourproject.controllers")
+    // You should not use the @EnableWebMvc annotation
+    public class WebAppConfig extends RouterConfigurationSupport {
+
+      @Override
+      public List<String> listRouteFiles() {
+
+        List<String> routeFiles = new ArrayList<String>();
+        routeFiles.add("routes.conf");
+        return routeFiles;
+      }
+    }    
 
 ### Create your route configuration file
 
