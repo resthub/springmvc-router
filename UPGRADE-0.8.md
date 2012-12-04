@@ -9,3 +9,11 @@ RouterHandlerMapping declaration has changed.
     <property name="servletPrefix" value="foobar" />
 
 This is now done automatically for you at runtime, for the context path and the servlet path.
+
+### Javaconfig support
+
+If you want full Javaconfig support - for example, adding interceptors by implementing [WebMvcConfigurer](http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/web/servlet/config/annotation/WebMvcConfigurer.html) methods:
+
+* you SHOULD NOT use the [@EnableWebMvc](http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/web/servlet/config/annotation/EnableWebMvc.html) annotation
+* you SHOULD make your javaconfig class extend RouterConfigurationSupport
+* no need to declare springmvc-router related beans in XMLs :-D
