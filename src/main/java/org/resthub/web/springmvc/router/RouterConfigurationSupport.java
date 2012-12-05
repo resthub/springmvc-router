@@ -52,9 +52,19 @@ public abstract class RouterConfigurationSupport extends WebMvcConfigurationSupp
 
         RouterHandlerMapping handlerMapping = new RouterHandlerMapping();
         handlerMapping.setRouteFiles(listRouteFiles());
+        handlerMapping.setAutoReloadEnabled(isHandlerMappingReloadEnabled());
         handlerMapping.setInterceptors(getInterceptors());
         handlerMapping.setOrder(0);
         return handlerMapping;
+    }
+
+    /**
+     * By default, route configuration files auto-reload is not enabled.
+     * You can override this method to enable this feature.
+     * @see RouterHandlerMapping
+     */
+    protected boolean isHandlerMappingReloadEnabled() {
+        return false;
     }
 
     /**
