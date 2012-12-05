@@ -1,5 +1,5 @@
-UPGRADE FROM 0.7 to 0.8
-=======================
+UPGRADE FROM 0.7 to 1.0.0
+=========================
 
 ### Spring MVC configuration
 
