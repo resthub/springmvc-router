@@ -55,7 +55,7 @@ Warning: **this project is currently tested on Spring 3.1.x**, and is not compat
       <dependency>
         <groupId>org.resthub</groupId>
         <artifactId>springmvc-router</artifactId>
-        <version>0.8-SNAPSHOT</version>
+        <version>1.0.0</version>
       </dependency>
     ...
     </dependencies>
