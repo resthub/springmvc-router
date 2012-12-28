@@ -4,6 +4,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.resthub.web.springmvc.router.RouterHandlerMapping;
+import org.resthub.web.springmvc.router.hateoas.RouterLinkBuilder;
 import org.resthub.web.springmvc.router.support.RouterHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,8 @@ public class HandlersStepdefs {
     private AbstractRefreshableWebApplicationContext wac;
     private HandlerMapping hm;
     private HandlerAdapter ha;
+
+    private RouterLinkBuilder linkBuilder;
 
     private String servletPath = "";
     private String contextPath = "";
@@ -130,6 +133,22 @@ public class HandlersStepdefs {
         I_send_the_HTTP_request(method,url);
     }
 
+    @When("^I build a link for controller \"([^\"]*)\" and action \"([^\"]*)\"$")
+    public void I_build_a_link_for_controller_and_action(String controller, String action) throws Throwable {
+
+         linkBuilder = RouterLinkBuilder.linkTo(controller,action);
+    }
+
+    @When("^I add an argument named \"([^\"]*)\" with value \"([^\"]*)\"$")
+    public void I_add_a_argument_named_with_value(String name, String value) throws Throwable {
+        linkBuilder = linkBuilder.slash(name, value);
+    }
+
+    @When("^I add an argument \"([^\"]*)\"$")
+    public void I_add_a_argument(String argument) throws Throwable {
+        linkBuilder = linkBuilder.slash(argument);
+    }
+
     @Then("^no handler should be found$")
     public void no_handler_should_be_found() throws Throwable {
 
@@ -196,6 +215,18 @@ public class HandlersStepdefs {
 
         ha.handle(request, response, handler);
         assertThat(response.getStatus()).isEqualTo(status);
+    }
+
+    @Then("^the raw link should be \"([^\"]*)\"$")
+    public void the_raw_link_should_be(String link) throws Throwable {
+
+        assertThat(linkBuilder.toString()).isEqualTo(link);
+    }
+
+    @Then("^the self rel link should be \"([^\"]*)\"$")
+    public void the_self_rel_link_should_be(String link) throws Throwable {
+
+        assertThat(linkBuilder.withSelfRel().toString()).isEqualTo(link);
     }
 
     public static class HTTPHeader {
