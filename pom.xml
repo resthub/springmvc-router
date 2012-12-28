@@ -137,6 +137,14 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Spring HATEOAS support -->
+        <dependency>
+            <groupId>org.springframework.hateoas</groupId>
+            <artifactId>spring-hateoas</artifactId>
+            <version>0.3.0.RELEASE</version>
+            <optional>true</optional>
+        </dependency>
+
         <!-- Serlvet dependency provided -->
         <dependency>
             <groupId>javax.servlet</groupId>

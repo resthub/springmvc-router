@@ -3,11 +3,7 @@ package org.resthub.web.springmvc.router;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import jregex.Matcher;
 import jregex.Pattern;
@@ -291,6 +287,22 @@ public class Router {
     public static String getFullUrl(String action) {
         // Note the map is not <code>Collections.EMPTY_MAP</code> because it will be copied and changed.
         return getFullUrl(action, new HashMap<String, Object>(16));
+    }
+
+    public static Collection<Route> resolveActions(String action) {
+
+        List<Route> candidateRoutes = new ArrayList<Route>(3);
+
+        for (Route route : routes) {
+            if (route.actionPattern != null) {
+                Matcher matcher = route.actionPattern.matcher(action);
+                if (matcher.matches()) {
+                    candidateRoutes.add(route);
+                }
+            }
+        }
+
+        return candidateRoutes;
     }
 
     public static ActionDefinition reverse(String action, Map<String, Object> args) {
