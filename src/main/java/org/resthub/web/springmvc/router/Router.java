@@ -11,6 +11,7 @@ import jregex.REFlags;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.resthub.web.springmvc.router.exceptions.NoHandlerFoundException;
 import org.resthub.web.springmvc.router.exceptions.NoRouteFoundException;
 import org.resthub.web.springmvc.router.exceptions.RouteFileParsingException;
@@ -371,10 +372,12 @@ public class Router {
                         if( HTTPRequestAdapter.current.get() != null) {
 
                             if(!HTTPRequestAdapter.current.get().servletPath.isEmpty()) {
-                                path = "/" + HTTPRequestAdapter.current.get().servletPath + path;
+                            	String servletPath = HTTPRequestAdapter.current.get().servletPath;
+                                path = (StringUtils.startsWith(servletPath, "/") ?  servletPath : "/" + servletPath) + path;
                             }
                             if(!HTTPRequestAdapter.current.get().contextPath.isEmpty()) {
-                                path = "/" + HTTPRequestAdapter.current.get().contextPath +path;
+                            	String contextPath = HTTPRequestAdapter.current.get().contextPath; 
+                                path = (StringUtils.startsWith(contextPath, "/") ? contextPath : "/" + contextPath) + path;
                             }
                         }
                         String host = route.host;
