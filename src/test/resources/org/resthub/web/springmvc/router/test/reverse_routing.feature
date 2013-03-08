@@ -78,3 +78,9 @@ Feature: Reverse routing support
     And the current request is processed within a context path "context" and servlet path "servlet"
     When I try to reverse route "myTestController.simpleAction"
     Then I should get an action with path "/context/servlet/simpleaction"
+
+  Scenario: Reverse routing a simple URL with servlet and context paths prepended by slash
+    Given I have a route with method "GET" path "/simpleaction" action "myTestController.simpleAction"
+    And the current request is processed within a context path "/context" and servlet path "/servlet"
+    When I try to reverse route "myTestController.simpleAction"
+    Then I should get an action with path "/context/servlet/simpleaction"
