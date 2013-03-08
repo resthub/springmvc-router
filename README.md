@@ -278,6 +278,12 @@ Then use the Router instance within your .ftl files:
     <#assign params = {"id":42}/>
     <a href="${route.reverse('userController.showUser', params)}">Show user 42</a>
 
+Spring HATEOAS support
+----------------------
+
+SpringMVC Router has its own [LinkBuilder implementation](https://github.com/resthub/springmvc-router/blob/master/src/main/java/org/resthub/web/springmvc/router/hateoas/RouterLinkBuilder.java) to work with [Spring HATEOAS](https://github.com/SpringSource/spring-hateoas).
+
+
 Tools
 -----
 
