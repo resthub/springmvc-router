@@ -81,7 +81,7 @@ POST    /user/add/?             userController.createUser
   &lt;dependency&gt;
     &lt;groupId&gt;org.resthub&lt;/groupId&gt;
     &lt;artifactId&gt;springmvc-router&lt;/artifactId&gt;
-    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;version&gt;1.1.0&lt;/version&gt;
   &lt;/dependency&gt;
 ...
 &lt;/dependencies&gt;
@@ -301,6 +301,10 @@ property "attributeName".</p>
 &lt;#assign params = {"id":42}/&gt;
 &lt;a href="${route.reverse('userController.showUser', params)}"&gt;Show user 42&lt;/a&gt;
 </code></pre>
+
+<h2>Spring HATEOAS support</h2>
+
+<p>SpringMVC Router has its own <a href="https://github.com/resthub/springmvc-router/blob/master/src/main/java/org/resthub/web/springmvc/router/hateoas/RouterLinkBuilder.java">LinkBuilder implementation</a> to work with <a href="https://github.com/SpringSource/spring-hateoas">Spring HATEOAS</a>.</p>
 
 <h2>Tools</h2>
 
