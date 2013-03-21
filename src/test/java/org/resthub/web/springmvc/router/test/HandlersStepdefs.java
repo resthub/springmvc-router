@@ -6,8 +6,6 @@ import cucumber.api.java.en.When;
 import org.resthub.web.springmvc.router.RouterHandlerMapping;
 import org.resthub.web.springmvc.router.hateoas.RouterLinkBuilder;
 import org.resthub.web.springmvc.router.support.RouterHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -63,8 +61,8 @@ public class HandlersStepdefs {
         this.wac.setConfigLocations(locations.split(","));
         this.wac.refresh();
 
-        this.hm = (HandlerMapping) this.wac.getBean(RouterHandlerMapping.class);
-        this.ha = (HandlerAdapter) this.wac.getBean(RequestMappingHandlerAdapter.class);
+        this.hm = this.wac.getBean(RouterHandlerMapping.class);
+        this.ha = this.wac.getBean(RequestMappingHandlerAdapter.class);
     }
 
     @Given("^I have a web application with javaconfig in package \"([^\"]*)\"$")
@@ -77,8 +75,8 @@ public class HandlersStepdefs {
 
         this.wac = appContext;
 
-        this.hm = (HandlerMapping) appContext.getBean(RouterHandlerMapping.class);
-        this.ha = (HandlerAdapter) appContext.getBean(RequestMappingHandlerAdapter.class);
+        this.hm = appContext.getBean(RouterHandlerMapping.class);
+        this.ha = appContext.getBean(RequestMappingHandlerAdapter.class);
     }
 
 
@@ -111,6 +109,28 @@ public class HandlersStepdefs {
         request.setPathInfo(url.substring(pathLength));
         chain = this.hm.getHandler(request);
     }
+
+    @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" with a null pathInfo$")
+    public void I_send_the_HTTP_request_with_a_null_pathInfo(String method, String url) throws Throwable {
+
+        request = new MockHttpServletRequest(this.wac.getServletContext(),method, url);
+        request.setContextPath(this.contextPath);
+        request.setServletPath(this.servletPath);
+        request.addHeader("host", host);
+
+        for (HTTPHeader header : headers) {
+            request.addHeader(header.name, header.value);
+        }
+
+        for (HTTPParam param : queryParams) {
+            request.addParameter(param.name, param.value);
+        }
+
+        request.setPathInfo(null);
+        chain = this.hm.getHandler(request);
+    }
+
+
 
     @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" to host \"([^\"]*)\"$")
     public void I_send_the_HTTP_request_to_host(String method, String url, String host) throws Throwable {

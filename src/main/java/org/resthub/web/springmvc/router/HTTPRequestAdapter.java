@@ -1,11 +1,12 @@
 package org.resthub.web.springmvc.router;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.*;
-import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Adapter class for HTTP class defined in Play! Framework Maps
@@ -166,7 +167,7 @@ public class HTTPRequestAdapter {
 
         URI uri = new URI(httpServletRequest.getRequestURI());
         request.method = httpServletRequest.getMethod().intern();
-        request.path = httpServletRequest.getPathInfo();
+        request.path = httpServletRequest.getPathInfo() != null ? httpServletRequest.getPathInfo() : "/" ;
         request.servletPath = httpServletRequest.getServletPath() != null ? httpServletRequest.getServletPath() : "";
         request.contextPath = httpServletRequest.getContextPath() != null ? httpServletRequest.getContextPath() : "";
         request.setQueryString(httpServletRequest.getQueryString() == null ? ""
@@ -237,26 +238,26 @@ public class HTTPRequestAdapter {
 
         String accept = headers.get("accept").value();
 
-        if (accept.indexOf("application/xhtml") != -1
-                || accept.indexOf("text/html") != -1
+        if (accept.contains("application/xhtml")
+                || accept.contains("text/html")
                 || accept.startsWith("*/*")) {
             format = "html".intern();
             return;
         }
 
-        if (accept.indexOf("application/xml") != -1
-                || accept.indexOf("text/xml") != -1) {
+        if (accept.contains("application/xml")
+                || accept.contains("text/xml")) {
             format = "xml".intern();
             return;
         }
 
-        if (accept.indexOf("text/plain") != -1) {
+        if (accept.contains("text/plain")) {
             format = "txt".intern();
             return;
         }
 
-        if (accept.indexOf("application/json") != -1
-                || accept.indexOf("text/javascript") != -1) {
+        if (accept.contains("application/json")
+                || accept.contains("text/javascript")) {
             format = "json".intern();
             return;
         }

@@ -85,3 +85,8 @@ Feature: Handler mapping support
     Given I have a web application configured locations "/simpleTestContext.xml" servletPath "servlet" contextPath "context"
     When I send the HTTP request "GET" "/context/servlet/simpleaction"
     Then the request should be handled by "myTestController.simpleAction"
+
+  Scenario: Mapping a request to the index with a null pathInfo
+    Given I have a web application configured locations "/simpleTestContext.xml" servletPath "servlet" contextPath "context"
+    When I send the HTTP request "GET" "/context/servlet" with a null pathInfo
+    Then the request should be handled by "myTestController.indexAction"
