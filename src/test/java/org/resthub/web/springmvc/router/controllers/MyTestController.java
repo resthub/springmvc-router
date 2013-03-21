@@ -9,9 +9,6 @@ import javax.inject.Named;
 @Named("myTestController")
 public class MyTestController {
 
-    public void indexAction() {
-    }
-
     public void simpleAction() {
     }
 

@@ -3,6 +3,7 @@ package org.resthub.web.springmvc.router.test;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.resthub.web.springmvc.router.HTTPRequestAdapter;
 import org.resthub.web.springmvc.router.RouterHandlerMapping;
 import org.resthub.web.springmvc.router.hateoas.RouterLinkBuilder;
 import org.resthub.web.springmvc.router.support.RouterHandler;
@@ -79,6 +80,31 @@ public class HandlersStepdefs {
         this.ha = appContext.getBean(RequestMappingHandlerAdapter.class);
     }
 
+    @Given("^a current request \"([^\"]*)\" \"([^\"]*)\" with servlet path \"([^\"]*)\" and context path \"([^\"]*)\"$")
+    public void a_current_request_with_servlet_path_and_context_path(String method, String url, String servletPath, String contextPath) throws Throwable {
+
+        MockServletContext sc = new MockServletContext();
+        sc.setContextPath(contextPath);
+
+        int pathLength = 0;
+        if(contextPath.length() > 0) {
+            pathLength += contextPath.length();
+        }
+
+        if(servletPath.length() > 0) {
+            pathLength += servletPath.length();
+        }
+
+        request = new MockHttpServletRequest(sc, method, url);
+        request.setContextPath(contextPath);
+        request.setServletPath(servletPath);
+        request.addHeader("host", host);
+
+        request.setPathInfo(url.substring(pathLength));
+
+        HTTPRequestAdapter.parseRequest(request);
+    }
+
 
 
     @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\"$")
@@ -86,11 +112,11 @@ public class HandlersStepdefs {
 
         int pathLength = 0;
         if(this.contextPath.length() > 0) {
-            pathLength += this.contextPath.length() + 1;
+            pathLength += this.contextPath.length();
         }
 
         if(this.servletPath.length() > 0) {
-            pathLength += this.servletPath.length() + 1;
+            pathLength += this.servletPath.length();
         }
 
         request = new MockHttpServletRequest(this.wac.getServletContext(),method, url);
@@ -113,9 +139,10 @@ public class HandlersStepdefs {
     @When("^I send the HTTP request \"([^\"]*)\" \"([^\"]*)\" with a null pathInfo$")
     public void I_send_the_HTTP_request_with_a_null_pathInfo(String method, String url) throws Throwable {
 
-        request = new MockHttpServletRequest(this.wac.getServletContext(),method, url);
+        request = new MockHttpServletRequest(this.wac.getServletContext());
+        request.setMethod(method);
         request.setContextPath(this.contextPath);
-        request.setServletPath(this.servletPath);
+        request.setServletPath(url.replaceFirst(this.contextPath,""));
         request.addHeader("host", host);
 
         for (HTTPHeader header : headers) {
