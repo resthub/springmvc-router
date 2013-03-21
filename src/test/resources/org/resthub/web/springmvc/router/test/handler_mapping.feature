@@ -82,11 +82,12 @@ Feature: Handler mapping support
     Then the request should be handled by "myTestController.wildcardB"
 
   Scenario: Mapping a simple request with a servlet path and a context path
-    Given I have a web application configured locations "/simpleTestContext.xml" servletPath "servlet" contextPath "context"
+    Given I have a web application configured locations "/simpleTestContext.xml" servletPath "/servlet" contextPath "/context"
     When I send the HTTP request "GET" "/context/servlet/simpleaction"
     Then the request should be handled by "myTestController.simpleAction"
 
+  # Testing issue https://github.com/resthub/springmvc-router/issues/41
   Scenario: Mapping a request to the index with a null pathInfo
-    Given I have a web application configured locations "/simpleTestContext.xml" servletPath "servlet" contextPath "context"
-    When I send the HTTP request "GET" "/context/servlet" with a null pathInfo
-    Then the request should be handled by "myTestController.indexAction"
+    Given I have a web application configured locations "/simpleTestContext.xml" servletPath "/" contextPath "/context"
+    When I send the HTTP request "GET" "/context/simpleaction" with a null pathInfo
+    Then the request should be handled by "myTestController.simpleAction"

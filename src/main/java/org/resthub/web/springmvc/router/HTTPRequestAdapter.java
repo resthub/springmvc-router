@@ -167,7 +167,7 @@ public class HTTPRequestAdapter {
 
         URI uri = new URI(httpServletRequest.getRequestURI());
         request.method = httpServletRequest.getMethod().intern();
-        request.path = httpServletRequest.getPathInfo() != null ? httpServletRequest.getPathInfo() : "/" ;
+        request.path = httpServletRequest.getPathInfo() != null ? httpServletRequest.getPathInfo() : httpServletRequest.getServletPath() ;
         request.servletPath = httpServletRequest.getServletPath() != null ? httpServletRequest.getServletPath() : "";
         request.contextPath = httpServletRequest.getContextPath() != null ? httpServletRequest.getContextPath() : "";
         request.setQueryString(httpServletRequest.getQueryString() == null ? ""

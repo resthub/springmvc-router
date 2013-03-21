@@ -371,11 +371,11 @@ public class Router {
                         //add contextPath and servletPath if set in the current request
                         if( HTTPRequestAdapter.current.get() != null) {
 
-                            if(!HTTPRequestAdapter.current.get().servletPath.isEmpty()) {
+                            if(!HTTPRequestAdapter.current.get().servletPath.isEmpty() && !HTTPRequestAdapter.current.get().servletPath.equals("/")) {
                             	String servletPath = HTTPRequestAdapter.current.get().servletPath;
                                 path = (StringUtils.startsWith(servletPath, "/") ?  servletPath : "/" + servletPath) + path;
                             }
-                            if(!HTTPRequestAdapter.current.get().contextPath.isEmpty()) {
+                            if(!HTTPRequestAdapter.current.get().contextPath.isEmpty() && !HTTPRequestAdapter.current.get().contextPath.equals("/")) {
                             	String contextPath = HTTPRequestAdapter.current.get().contextPath; 
                                 path = (StringUtils.startsWith(contextPath, "/") ? contextPath : "/" + contextPath) + path;
                             }
