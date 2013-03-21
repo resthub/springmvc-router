@@ -1,12 +1,16 @@
 package org.resthub.web.springmvc.router.controllers;
 
-import javax.inject.Named;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+
+import javax.inject.Named;
 
 @Controller
 @Named("myTestController")
 public class MyTestController {
+
+    public void indexAction() {
+    }
 
     public void simpleAction() {
     }
