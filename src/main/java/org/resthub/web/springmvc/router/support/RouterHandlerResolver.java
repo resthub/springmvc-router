@@ -1,15 +1,18 @@
 package org.resthub.web.springmvc.router.support;
 
+import org.resthub.web.springmvc.router.HTTPRequestAdapter;
+import org.resthub.web.springmvc.router.Router;
+import org.resthub.web.springmvc.router.exceptions.ActionNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.core.BridgeMethodResolver;
+import org.springframework.web.method.HandlerMethod;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.resthub.web.springmvc.router.HTTPRequestAdapter;
-import org.resthub.web.springmvc.router.Router;
-import org.resthub.web.springmvc.router.exceptions.ActionNotFoundException;
-import org.springframework.aop.support.AopUtils;
-import org.springframework.core.BridgeMethodResolver;
-import org.springframework.web.method.HandlerMethod;
 
 /**
  * Resolve Controller and Action for the given route (that contains the
@@ -22,6 +25,8 @@ public class RouterHandlerResolver {
     private Map<String, Object> cachedControllers = new LinkedHashMap<String, Object>();
     
     private final Map<String, HandlerMethod> cachedHandlers = new LinkedHashMap<String, HandlerMethod>();
+
+    private static final Logger logger = LoggerFactory.getLogger(RouterHandlerResolver.class);
     
     public void setCachedControllers(Map<String, Object> controllers) {
         
@@ -62,6 +67,7 @@ public class RouterHandlerResolver {
         controllerObject = cachedControllers.get(controller);
 
         if (controllerObject == null) {
+            logger.debug("Did not find handler {} for [{} {}]", controller, route.method, route.path);
             throw new ActionNotFoundException(fullAction, new Exception("Controller " + controller + " not found"));
         }
 
@@ -69,6 +75,7 @@ public class RouterHandlerResolver {
         actionMethod = findActionMethod(action, controllerObject);
 
         if (actionMethod == null) {
+            logger.debug("Did not find handler method {}.{} for [{} {}]", controller, action, route.method, route.path);
             throw new ActionNotFoundException(fullAction, new Exception("No method public static void " + action + "() was found in class " + controller));
         }
         
