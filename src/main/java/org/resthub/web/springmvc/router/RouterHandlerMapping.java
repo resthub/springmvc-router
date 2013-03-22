@@ -166,6 +166,7 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
             HTTPRequestAdapter rq = HTTPRequestAdapter.parseRequest(request);
             // Route request and resolve format
             Router.Route route = Router.route(rq);
+            logger.debug("Looking up handler method for path {} ({} {} {})", route.path, route.method, route.path, route.action);
             handler = this.methodResolver.resolveHandler(route, rq.action, rq);
             // Add resolved route arguments to the request
             request.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, rq.routeArgs);
