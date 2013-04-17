@@ -164,7 +164,7 @@ The router maps HTTP request to a specific action (i.e. a public method of a Con
 
 ### Get your first Controller ready!
 
-Controllers can use [Spring MVC annotations and conventions](http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/mvc.html) - only the `@RequestParam` annotation is useless.
+Controllers can use [Spring MVC annotations and conventions](http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/mvc.html) - only the `@RequestMapping` annotation is useless.
 
 
     @Controller
