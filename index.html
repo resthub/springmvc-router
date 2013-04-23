@@ -37,7 +37,7 @@
 
 <h2>Route mapping with SpringMVC Router</h2>
 
-<p>Spring MVC 3.1 <a href="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/mvc.html">handles requests mapping</a> with <code>RequestMappingHandlerMapping</code> and <code>RequestMappingHandlerAdapter</code> beans (that's the "out-of-the-box" configuration that comes with your springmvc application).</p>
+<p>Spring MVC 3.2 <a href="http://static.springsource.org/spring/docs/3.2.x/spring-framework-reference/html/mvc.html">handles requests mapping</a> with <code>RequestMappingHandlerMapping</code> and <code>RequestMappingHandlerAdapter</code> beans (that's the "out-of-the-box" configuration that comes with your springmvc application).</p>
 
 <p>But you may want to use a request Router for your application:</p>
 
@@ -58,7 +58,7 @@ POST    /user/add/?             userController.createUser
 
 <h3>Add the dependency to your maven pom.xml</h3>
 
-<p>Warning: <strong>this project is currently tested on Spring 3.1.x</strong>, and is not compatible with Spring 3.0.x - your project needs these dependencies.</p>
+<p>Warning: <strong>this project is currently tested on Spring 3.2.x</strong>, and is not compatible with Spring 3.0.x - your project needs these dependencies.</p>
 
 <pre><code>&lt;dependencies&gt;
 ...
@@ -81,7 +81,7 @@ POST    /user/add/?             userController.createUser
   &lt;dependency&gt;
     &lt;groupId&gt;org.resthub&lt;/groupId&gt;
     &lt;artifactId&gt;springmvc-router&lt;/artifactId&gt;
-    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;version&gt;1.1.1&lt;/version&gt;
   &lt;/dependency&gt;
 ...
 &lt;/dependencies&gt;
@@ -113,9 +113,9 @@ POST    /user/add/?             userController.createUser
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xmlns:context="http://www.springframework.org/schema/context"
                 xsi:schemaLocation="http://www.springframework.org/schema/beans
-                    http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                    http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
                     http://www.springframework.org/schema/context
-                    http://www.springframework.org/schema/context/spring-context-3.1.xsd"&gt;
+                    http://www.springframework.org/schema/context/spring-context-3.2.xsd"&gt;
 
     &lt;!--
       Enable bean declaration by annotations, update base package according to your project
@@ -189,7 +189,7 @@ public class WebAppConfig extends RouterConfigurationSupport {
 
 <h3>Get your first Controller ready!</h3>
 
-<p>Controllers can use <a href="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/mvc.html">Spring MVC annotations and conventions</a> - only the <code>@RequestParam</code> annotation is useless.</p>
+<p>Controllers can use <a href="http://static.springsource.org/spring/docs/3.2.x/spring-framework-reference/html/mvc.html">Spring MVC annotations and conventions</a> - only the <code>@RequestParam</code> annotation is useless.</p>
 
 <pre><code>@Controller
 public class HelloController {
