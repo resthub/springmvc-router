@@ -8,7 +8,7 @@ Developers mailing list: resthub-dev@googlegroups.com
 Route mapping with SpringMVC Router
 -----------------------------------
 
-Spring MVC 3.1 [handles requests mapping](http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/mvc.html) with `RequestMappingHandlerMapping` and `RequestMappingHandlerAdapter` beans (that's the "out-of-the-box" configuration that comes with your springmvc application).
+Spring MVC 3.2 [handles requests mapping](http://static.springsource.org/spring/docs/3.2.x/spring-framework-reference/html/mvc.html) with `RequestMappingHandlerMapping` and `RequestMappingHandlerAdapter` beans (that's the "out-of-the-box" configuration that comes with your springmvc application).
 
 But you may want to use a request Router for your application:
 
@@ -31,7 +31,7 @@ Configuring the SpringMVC Router for your project
 
 ### Add the dependency to your maven pom.xml
 
-Warning: **this project is currently tested on Spring 3.1.x**, and is not compatible with Spring 3.0.x - your project needs these dependencies.
+Warning: **this project is currently tested on Spring 3.2.x**, and is not compatible with Spring 3.0.x - your project needs these dependencies.
   
 
     <dependencies>
@@ -55,7 +55,7 @@ Warning: **this project is currently tested on Spring 3.1.x**, and is not compat
       <dependency>
         <groupId>org.resthub</groupId>
         <artifactId>springmvc-router</artifactId>
-        <version>1.1.0</version>
+        <version>1.1.1</version>
       </dependency>
     ...
     </dependencies>
