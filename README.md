@@ -87,9 +87,9 @@ In your *-servlet.xml file, add the following beans:
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns:context="http://www.springframework.org/schema/context"
          xsi:schemaLocation="http://www.springframework.org/schema/beans
-             http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+             http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
              http://www.springframework.org/schema/context
-             http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+             http://www.springframework.org/schema/context/spring-context-3.2.xsd">
     
         <!--
           Enable bean declaration by annotations, update base package according to your project
@@ -164,7 +164,7 @@ The router maps HTTP request to a specific action (i.e. a public method of a Con
 
 ### Get your first Controller ready!
 
-Controllers can use [Spring MVC annotations and conventions](http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/mvc.html) - only the `@RequestMapping` annotation is useless.
+Controllers can use [Spring MVC annotations and conventions](http://static.springsource.org/spring/docs/3.2.x/spring-framework-reference/html/mvc.html) - only the `@RequestMapping` annotation is useless.
 
 
     @Controller
