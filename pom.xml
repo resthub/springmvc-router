@@ -131,6 +131,14 @@
             <version>1</version>
         </dependency>
 
+        <!-- JSP template engine -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.0</version>
+            <optional>true</optional>
+        </dependency>
+
         <!-- Velocity template engine -->
         <dependency>
             <groupId>org.apache.velocity</groupId>
