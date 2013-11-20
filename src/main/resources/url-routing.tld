@@ -6,6 +6,7 @@
     <tlibversion>1.0</tlibversion>
     <jspversion>1.1</jspversion>
     <shortname>URLRouteTags</shortname>
+    <uri>/springmvc-router</uri>
     <info>Tags to assist with generating URLs with the SpringMVC router plugin.</info>
 
     <tag>
