@@ -278,6 +278,21 @@ Then use the Router instance within your .ftl files:
     <#assign params = {"id":42}/>
     <a href="${route.reverse('userController.showUser', params)}">Show user 42</a>
 
+### Integrating with JSP
+
+In your JSP, declare the taglib:
+
+    <%@ taglib prefix="route" uri="/springmvc-router" %>
+
+Then use the ```reverse``` method to generate URLs:
+
+    <a href="<route:reverse action="userController.listAll" />">List all users.</a>
+    
+Dynamic parameters can also be used:
+
+	<a href="<route:reverse action="userController.showUser" userId="42" />">List all users.</a>
+	
+	
 Spring HATEOAS support
 ----------------------
 
