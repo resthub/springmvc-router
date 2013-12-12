@@ -270,7 +270,7 @@ public class HandlersStepdefs {
         assertThat(linkBuilder.toString()).isEqualTo(link);
     }
 
-    @Then("^the self rel link should be \"([^\"]*)\"$")
+    @Then("^the self rel link should be \"(.*)\"$")
     public void the_self_rel_link_should_be(String link) throws Throwable {
 
         assertThat(linkBuilder.withSelfRel().toString()).isEqualTo(link);

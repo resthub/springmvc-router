@@ -14,7 +14,7 @@ Feature: HATEOAS support
   Scenario: Build a self rel link to a simple route
     Given I have a web application with the config locations "/simpleTestContext.xml"
     When I build a link for controller "myTestController" and action "simpleAction"
-    Then the self rel link should be "<http://example.org/simpleaction>;rel=\"self\""
+    Then the self rel link should be "<http://example.org/simpleaction>;rel="self""
 
   Scenario: Build a self rel link to a route with a named argument
     Given I have a web application with the config locations "/simpleTestContext.xml"
