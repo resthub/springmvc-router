@@ -44,6 +44,11 @@ Feature: Handler mapping support
     When I send the HTTP request "DELETE" "/http"
     Then the request should be handled by "myTestController.httpAction"
 
+  Scenario: Mapping a PATCH request
+    Given I have a web application with the config locations "/simpleTestContext.xml"
+    When I send the HTTP request "PATCH" "/http"
+    Then the request should be handled by "myTestController.httpAction"
+
   Scenario: Mapping a HEAD request
     Given I have a web application with the config locations "/simpleTestContext.xml"
     When I send the HTTP request "HEAD" "/http"

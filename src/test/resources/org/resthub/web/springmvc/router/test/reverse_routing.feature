@@ -11,6 +11,11 @@ Feature: Reverse routing support
     When I try to reverse route "myTestController.simpleAction"
     Then I should get an action with path "/simpleaction"
 
+  Scenario: Reverse routing a simple URL with PATCH method
+    Given I have a route with method "PATCH" path "/simpleaction" action "myTestController.simpleAction"
+    When I try to reverse route "myTestController.simpleAction"
+    Then I should get an action with path "/simpleaction"
+
   Scenario: Reverse routing an URL with params
     Given I have routes:
       | method | path             | action                       | params            |
