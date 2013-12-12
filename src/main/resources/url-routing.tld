@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN"
+        "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_2_0.dtd">
+
+<taglib>
+    <tlibversion>1.0</tlibversion>
+    <jspversion>1.1</jspversion>
+    <shortname>URLRouteTags</shortname>
+    <uri>/springmvc-router</uri>
+    <info>Tags to assist with generating URLs with the SpringMVC router plugin.</info>
+
+    <tag>
+        <name>reverse</name>
+        <tagclass>org.resthub.web.springmvc.view.jsp.URLRouteTag</tagclass>
+        <bodycontent></bodycontent>
+        <info>Generates a URL based on a controller and action name</info>
+        <attribute>
+            <name>action</name>
+            <required>true</required>
+        </attribute>
+        <dynamic-attributes>true</dynamic-attributes>
+    </tag>
+</taglib>
