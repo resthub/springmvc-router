@@ -1,6 +1,7 @@
 package org.resthub.web.springmvc.router;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -41,7 +42,7 @@ import java.util.List;
  *
  * @author Brian Clozel
  */
-public abstract class RouterConfigurationSupport extends WebMvcConfigurationSupport {
+public abstract class RouterConfigurationSupport extends DelegatingWebMvcConfiguration {
 
     /**
      * Return a {@link RouterHandlerMapping} ordered at 0 for mapping
@@ -74,14 +75,11 @@ public abstract class RouterConfigurationSupport extends WebMvcConfigurationSupp
     @Bean
     @Override
     public RequestMappingHandlerMapping requestMappingHandlerMapping() {
-        RequestMappingHandlerMapping handlerMapping = new RequestMappingHandlerMapping();
-        handlerMapping.setOrder(3);
-        // TODO: uncomment for Spring 3.2 support
-        //handlerMapping.setRemoveSemicolonContent(false);
-        handlerMapping.setInterceptors(getInterceptors());
-        // TODO: uncomment for Spring 3.2 support
-        //handlerMapping.setContentNegotiationManager(mvcContentNegotiationManager());
-        return handlerMapping;
+	    RequestMappingHandlerMapping handlerMapping = new RequestMappingHandlerMapping();
+	    handlerMapping.setOrder(3);
+	    handlerMapping.setInterceptors(getInterceptors());
+	    handlerMapping.setContentNegotiationManager(mvcContentNegotiationManager());
+	    return handlerMapping;
     }
 
     /**
