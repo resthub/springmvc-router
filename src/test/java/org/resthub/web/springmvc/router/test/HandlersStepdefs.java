@@ -11,6 +11,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.support.AbstractRefreshableWebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
@@ -102,6 +104,9 @@ public class HandlersStepdefs {
 
         request.setPathInfo(url.substring(pathLength));
 
+	    ServletRequestAttributes requestAttributes = new ServletRequestAttributes(request);
+	    RequestContextHolder.setRequestAttributes(requestAttributes);
+
         HTTPRequestAdapter.parseRequest(request);
     }
 
@@ -123,6 +128,9 @@ public class HandlersStepdefs {
         request.setContextPath(this.contextPath);
         request.setServletPath(this.servletPath);
         request.addHeader("host", host);
+
+	    ServletRequestAttributes requestAttributes = new ServletRequestAttributes(request);
+	    RequestContextHolder.setRequestAttributes(requestAttributes);
 
         for (HTTPHeader header : headers) {
             request.addHeader(header.name, header.value);
@@ -154,6 +162,10 @@ public class HandlersStepdefs {
         }
 
         request.setPathInfo(null);
+
+	    ServletRequestAttributes requestAttributes = new ServletRequestAttributes(request);
+	    RequestContextHolder.setRequestAttributes(requestAttributes);
+
         chain = this.hm.getHandler(request);
     }
 

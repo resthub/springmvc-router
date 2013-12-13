@@ -281,7 +281,7 @@ public class Router {
     }
 
     public static String getFullUrl(String action, Map<String, Object> args) {
-        return HTTPRequestAdapter.current.get().getBase() + reverse(action, args);
+        return HTTPRequestAdapter.getCurrent().getBase() + reverse(action, args);
     }
 
     public static String getFullUrl(String action) {
@@ -306,6 +306,8 @@ public class Router {
     }
 
     public static ActionDefinition reverse(String action, Map<String, Object> args) {
+
+	    HTTPRequestAdapter currentRequest = HTTPRequestAdapter.getCurrent();
 
         Map<String, Object> argsbackup = new HashMap<String, Object>(args);
         for (Route route : routes) {
@@ -352,7 +354,7 @@ public class Router {
                     // les parametres codes en dur dans la route matchent-ils ?
                     for (String staticKey : route.staticArgs.keySet()) {
                         if (staticKey.equals("format")) {
-                            if (!HTTPRequestAdapter.current.get().format.equals(route.staticArgs.get("format"))) {
+                            if (!currentRequest.format.equals(route.staticArgs.get("format"))) {
                                 allRequiredArgsAreHere = false;
                                 break;
                             }
@@ -368,14 +370,14 @@ public class Router {
                         StringBuilder queryString = new StringBuilder();
                         String path = route.path;
                         //add contextPath and servletPath if set in the current request
-                        if( HTTPRequestAdapter.current.get() != null) {
+                        if( currentRequest != null) {
 
-                            if(!HTTPRequestAdapter.current.get().servletPath.isEmpty() && !HTTPRequestAdapter.current.get().servletPath.equals("/")) {
-                            	String servletPath = HTTPRequestAdapter.current.get().servletPath;
+                            if(!currentRequest.servletPath.isEmpty() && !currentRequest.servletPath.equals("/")) {
+                            	String servletPath = currentRequest.servletPath;
                                 path = (servletPath.startsWith("/") ?  servletPath : "/" + servletPath) + path;
                             }
-                            if(!HTTPRequestAdapter.current.get().contextPath.isEmpty() && !HTTPRequestAdapter.current.get().contextPath.equals("/")) {
-                            	String contextPath = HTTPRequestAdapter.current.get().contextPath; 
+                            if(!currentRequest.contextPath.isEmpty() && !currentRequest.contextPath.equals("/")) {
+                            	String contextPath = currentRequest.contextPath; 
                                 path = (contextPath.startsWith("/") ? contextPath : "/" + contextPath) + path;
                             }
                         }
@@ -541,11 +543,12 @@ public class Router {
         }
 
         public void absolute() {
+	        HTTPRequestAdapter currentRequest = HTTPRequestAdapter.getCurrent();
             if (!url.startsWith("http")) {
                 if (host == null || host.isEmpty()) {
-                    url = HTTPRequestAdapter.current.get().getBase() + url;
+                    url = currentRequest.getBase() + url;
                 } else {
-                    url = (HTTPRequestAdapter.current.get().secure ? "https://" : "http://") + host + url;
+                    url = (currentRequest.secure ? "https://" : "http://") + host + url;
                 }
             }
         }

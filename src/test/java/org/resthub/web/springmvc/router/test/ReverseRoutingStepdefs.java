@@ -7,6 +7,8 @@ import org.resthub.web.springmvc.router.HTTPRequestAdapter;
 import org.resthub.web.springmvc.router.Router;
 import org.resthub.web.springmvc.router.exceptions.NoHandlerFoundException;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +28,11 @@ public class ReverseRoutingStepdefs {
     public void an_empty_Router() throws Throwable {
         // clear routes from the static Router
         Router.clear();
-        // make sure no current HTTPRequestAdapter is tied to the current thread
-        HTTPRequestAdapter.current.remove();
+	    // clear RequestContextHolder from previous tests
+	    MockHttpServletRequest request = new MockHttpServletRequest("GET","http://localhost/");
+	    request.addHeader("host", "localhost");
+	    ServletRequestAttributes requestAttributes = new ServletRequestAttributes(request);
+	    RequestContextHolder.setRequestAttributes(requestAttributes);
     }
 
     @Given("^I have a route with method \"([^\"]*)\" path \"([^\"]*)\" action \"([^\"]*)\"$")
@@ -49,6 +54,9 @@ public class ReverseRoutingStepdefs {
         request.addHeader("host","example.org");
         request.setContextPath(contextPath);
         request.setServletPath(servletPath);
+
+	    ServletRequestAttributes requestAttributes = new ServletRequestAttributes(request);
+	    RequestContextHolder.setRequestAttributes(requestAttributes);
 
         this.requestAdapter = HTTPRequestAdapter.parseRequest(request);
     }

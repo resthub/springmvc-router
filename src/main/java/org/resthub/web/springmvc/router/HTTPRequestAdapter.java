@@ -2,6 +2,10 @@ package org.resthub.web.springmvc.router;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
@@ -107,12 +111,8 @@ public class HTTPRequestAdapter {
      * is HTTPS ?
      */
     public Boolean secure = false;
-    /**
-     * Bind to thread
-     */
-    public static ThreadLocal<HTTPRequestAdapter> current = new ThreadLocal<HTTPRequestAdapter>();
 
-    public HTTPRequestAdapter(HttpServletRequest _request) {
+    public HTTPRequestAdapter() {
 
         this.headers = new HashMap<String, Header>();
     }
@@ -160,12 +160,9 @@ public class HTTPRequestAdapter {
     }
 
     public static HTTPRequestAdapter parseRequest(
-            HttpServletRequest httpServletRequest) throws Exception {
-        HTTPRequestAdapter request = new HTTPRequestAdapter(httpServletRequest);
+            HttpServletRequest httpServletRequest) {
+        HTTPRequestAdapter request = new HTTPRequestAdapter();
 
-        HTTPRequestAdapter.current.set(request);
-
-        URI uri = new URI(httpServletRequest.getRequestURI());
         request.method = httpServletRequest.getMethod().intern();
         request.path = httpServletRequest.getPathInfo() != null ? httpServletRequest.getPathInfo() : httpServletRequest.getServletPath() ;
         request.servletPath = httpServletRequest.getServletPath() != null ? httpServletRequest.getServletPath() : "";
@@ -220,6 +217,14 @@ public class HTTPRequestAdapter {
 
         return request;
     }
+
+	public static HTTPRequestAdapter getCurrent() {
+		RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
+		Assert.notNull(requestAttributes, "Could not find current request via RequestContextHolder");
+		HttpServletRequest servletRequest = ((ServletRequestAttributes) requestAttributes).getRequest();
+		Assert.state(servletRequest != null, "Could not find current HttpServletRequest");
+		return HTTPRequestAdapter.parseRequest(servletRequest);
+	}
 
     /**
      * Automatically resolve request format from the Accept header (in this
