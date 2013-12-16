@@ -286,11 +286,11 @@ In your JSP, declare the taglib:
 
 Then use the ```reverse``` method to generate URLs:
 
-    <a href="<route:reverse action="userController.listAll" />">List all users.</a>
+    <a href="<route:reverse action="userController.listAll" />">List all users</a>
     
 Dynamic parameters can also be used:
 
-	<a href="<route:reverse action="userController.showUser" userId="42" />">List all users.</a>
+	<a href="<route:reverse action="userController.showUser" userId="42" />">Show user 42</a>
 	
 	
 Spring HATEOAS support
