@@ -81,7 +81,7 @@ POST    /user/add/?             userController.createUser
   &lt;dependency&gt;
     &lt;groupId&gt;org.resthub&lt;/groupId&gt;
     &lt;artifactId&gt;springmvc-router&lt;/artifactId&gt;
-    &lt;version&gt;1.1.1&lt;/version&gt;
+    &lt;version&gt;1.2.0&lt;/version&gt;
   &lt;/dependency&gt;
 ...
 &lt;/dependencies&gt;
@@ -113,9 +113,9 @@ POST    /user/add/?             userController.createUser
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xmlns:context="http://www.springframework.org/schema/context"
                 xsi:schemaLocation="http://www.springframework.org/schema/beans
-                    http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
                     http://www.springframework.org/schema/context
-                    http://www.springframework.org/schema/context/spring-context-3.2.xsd"&gt;
+                    http://www.springframework.org/schema/context/spring-context.xsd"&gt;
 
     &lt;!--
       Enable bean declaration by annotations, update base package according to your project
@@ -301,6 +301,20 @@ property "attributeName".</p>
 &lt;#assign params = {"id":42}/&gt;
 &lt;a href="${route.reverse('userController.showUser', params)}"&gt;Show user 42&lt;/a&gt;
 </code></pre>
+
+<h3>Integrating with JSP</h3>
+
+<p>In your JSP, declare the taglib:</p>
+
+<pre><code>&lt;%@ taglib prefix=&quot;route&quot; uri=&quot;/springmvc-router&quot; %&gt;</code></pre>
+
+<p>Then use the <code>reverse</code> method to generate URLs:</p>
+
+<pre><code>&lt;a href=&quot;&lt;route:reverse action=&quot;userController.listAll&quot; /&gt;&quot;&gt;List all users&lt;/a&gt;</code></pre>
+
+<p>Dynamic parameters can also be used:</p>
+
+<pre><code>&lt;a href=&quot;&lt;route:reverse action=&quot;userController.showUser&quot; userId=&quot;42&quot; /&gt;&quot;&gt;Show user 42&lt;/a&gt;</code></pre>
 
 <h2>Spring HATEOAS support</h2>
 
