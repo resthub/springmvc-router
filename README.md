@@ -55,7 +55,7 @@ Warning: **this project is currently tested on Spring 3.2.x**, and is not compat
       <dependency>
         <groupId>org.resthub</groupId>
         <artifactId>springmvc-router</artifactId>
-        <version>1.1.1</version>
+        <version>1.2.0</version>
       </dependency>
     ...
     </dependencies>
@@ -87,9 +87,9 @@ In your *-servlet.xml file, add the following beans:
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns:context="http://www.springframework.org/schema/context"
          xsi:schemaLocation="http://www.springframework.org/schema/beans
-             http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+             http://www.springframework.org/schema/beans/spring-beans.xsd
              http://www.springframework.org/schema/context
-             http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+             http://www.springframework.org/schema/context/spring-context.xsd">
     
         <!--
           Enable bean declaration by annotations, update base package according to your project
