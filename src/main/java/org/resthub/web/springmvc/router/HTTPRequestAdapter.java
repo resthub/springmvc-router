@@ -190,7 +190,7 @@ public class HTTPRequestAdapter {
 
         request.url = httpServletRequest.getRequestURI();
         request.host = httpServletRequest.getHeader("host");
-        if (request.host.contains(":")) {
+        if (request.host != null && request.host.contains(":")) {
             request.port = Integer.parseInt(request.host.split(":")[1]);
             request.domain = request.host.split(":")[0];
         } else {
