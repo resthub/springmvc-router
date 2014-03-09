@@ -8,7 +8,8 @@ Developers mailing list: resthub-dev@googlegroups.com
 Route mapping with SpringMVC Router
 -----------------------------------
 
-Spring MVC 3.2 [handles requests mapping](http://static.springsource.org/spring/docs/3.2.x/spring-framework-reference/html/mvc.html) with `RequestMappingHandlerMapping` and `RequestMappingHandlerAdapter` beans (that's the "out-of-the-box" configuration that comes with your springmvc application).
+Spring MVC 4 [handles requests mapping](http://docs.spring.io/spring/docs/4.0.x/spring-framework-reference/html/mvc.html)
+with `RequestMappingHandlerMapping` and `RequestMappingHandlerAdapter` beans (that's the "out-of-the-box" configuration that comes with your springmvc application).
 
 But you may want to use a request Router for your application:
 
@@ -31,25 +32,39 @@ Configuring the SpringMVC Router for your project
 
 ### Add the dependency to your maven pom.xml
 
-Warning: **this project is currently tested on Spring 3.2.x**, and is not compatible with Spring 3.0.x - your project needs these dependencies.
-  
+Warning: **this project is currently tested on Spring 4.0.x**, should work on 3.2.x
+but is not compatible with Spring 3.0.x.
+
+Your project needs these dependencies
+(Hint: the [new "Bill of materials"](http://docs.spring.io/spring/docs/4.0.x/spring-framework-reference/html/overview.html#overview-maven-bom))
+is really handy:
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>4.0.2.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
     ...
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-aop</artifactId>
-        <version>${spring-version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
-        <version>${spring-version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
-        <version>${spring-version}</version>
       </dependency>
     ...
       <dependency>
@@ -308,4 +323,4 @@ Tools
 
 ### RESThub framework
 
-This project can be used as an addon to [RESThub framework](http://resthub.org/2).
+This project can be used as an addon to [RESThub framework](http://resthub.org/).

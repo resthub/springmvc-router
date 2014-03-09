@@ -16,7 +16,6 @@ import org.springframework.web.method.HandlerMethod;
  * <li>the HTTPRequestAdapter, containing the actual request</li>
  * 
  * @see HandlerMethod
- * @see RequestMappingHandlerAdapter
  * @author Brian Clozel
  */
 public class RouterHandler extends HandlerMethod {

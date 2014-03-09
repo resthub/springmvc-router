@@ -4,7 +4,7 @@
     <groupId>org.resthub</groupId>
     <artifactId>springmvc-router</artifactId>
     <packaging>jar</packaging>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
     <name>springmvc-router</name>
     <description>Adds route mapping capacity to any "Spring MVC based" webapp.</description>
     <url>https://github.com/resthub/springmvc-router/</url>
@@ -16,19 +16,18 @@
     </parent>
 
     <properties>
-        <spring-version>3.2.6.RELEASE</spring-version>
-        <spring-security-version>3.1.4.RELEASE</spring-security-version>
+        <spring-version>4.0.2.RELEASE</spring-version>
+        <spring-security-version>3.2.1.RELEASE</spring-security-version>
         <cglib-version>3.1</cglib-version>
         <apache-commons-io-version>2.4</apache-commons-io-version>
         <velocity-version>1.7</velocity-version>
         <log4j.version>1.2.17</log4j.version>
-        <slf4j.version>1.7.5</slf4j.version>
+        <slf4j.version>1.7.6</slf4j.version>
         <junit.version>4.11</junit.version>
-        <fest.assert.version>2.0M10</fest.assert.version>
+        <assertj.version>1.5.0</assertj.version>
         <cucumber.jvm.version>1.1.5</cucumber.jvm.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
 
     <licenses>
         <license>
@@ -66,8 +65,8 @@
         <url>https://github.com/bclozel/springmvc-router/issues</url>
     </issueManagement>
 
-    <dependencies>
-        <!-- 
+        <dependencies>
+        <!--
             Spring Framework Web MVC
             marked as optional, but mandatory in your app!
         -->
@@ -151,15 +150,15 @@
         <dependency>
             <groupId>org.springframework.hateoas</groupId>
             <artifactId>spring-hateoas</artifactId>
-            <version>0.8.0.RELEASE</version>
+            <version>0.9.0.RELEASE</version>
             <optional>true</optional>
         </dependency>
 
         <!-- Serlvet dependency provided -->
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -172,9 +171,9 @@
         </dependency>
 
        <dependency>
-           <groupId>org.easytesting</groupId>
-           <artifactId>fest-assert-core</artifactId>
-           <version>${fest.assert.version}</version>
+           <groupId>org.assertj</groupId>
+           <artifactId>assertj-core</artifactId>
+           <version>${assertj.version}</version>
            <scope>test</scope>
        </dependency>
 
