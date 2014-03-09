@@ -170,6 +170,7 @@ public class RouterHandlerMapping extends AbstractHandlerMapping {
             handler = this.methodResolver.resolveHandler(route, rq.action, rq);
             // Add resolved route arguments to the request
             request.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, rq.routeArgs);
+            request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, route.pattern.toString());
 
         } catch (NoRouteFoundException nrfe) {
             handler = null;

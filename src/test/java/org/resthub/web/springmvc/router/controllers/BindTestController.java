@@ -1,12 +1,15 @@
 package org.resthub.web.springmvc.router.controllers;
 
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -79,6 +82,15 @@ public class BindTestController {
         
         ModelAndView mav = new ModelAndView("testView");
         
+        return mav;
+    }
+
+    public ModelAndView addBestMatchingPatternAction(@PathVariable("value") String value, HttpServletRequest request) {
+
+        ModelAndView mav = new ModelAndView("testView");
+        mav.addObject("pattern", (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE));
+        mav.addObject("value", value);
+
         return mav;
     }
     

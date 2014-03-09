@@ -53,6 +53,14 @@ Feature: Handler adapter support
       | firstModelAttributeOnMethod     | true       |
       | secondModelAttributeOnMethod    | true       |
 
+  Scenario: Adding the best matched pattern to the request
+    Given I have a web application with the config locations "/bindingTestContext.xml"
+    When I send the HTTP request "GET" "/bestpattern/55"
+    Then the controller should respond with a ModelAndView containing:
+      | key      | value                           |
+      | pattern  | /bestpattern/({value}[0-9]+)    |
+      | value    | 55                              |
+
   Scenario: Checking that secured routes are protected
     Given I have a web application with the config locations "/bindingTestContext.xml,/securityContext.xml"
     When I send the HTTP request "GET" "/security/test" to host "myotherhost.com"
