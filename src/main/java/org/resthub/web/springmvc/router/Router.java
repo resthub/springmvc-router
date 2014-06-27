@@ -584,6 +584,12 @@ public class Router {
             return args;
         }
 
+        public Map<String, String> getStaticArgs() {
+            return staticArgs;
+        }
+
+
+
         /**
          * HTTP method, e.g. "GET".
          */
@@ -603,7 +609,7 @@ public class Router {
         public String routesFile;
         static Pattern customRegexPattern = new Pattern("\\{([a-zA-Z_0-9]+)\\}");
         static Pattern argsPattern = new Pattern("\\{<([^>]+)>([a-zA-Z_0-9]+)\\}");
-        static Pattern paramPattern = new Pattern("([a-zA-Z_0-9]+):'(.*)'");
+        static Pattern paramPattern = new Pattern("\\s*([a-zA-Z_0-9]+)\\s*:\\s*'(.*)'\\s*");
 
         public void compute() {
             this.host = "";
