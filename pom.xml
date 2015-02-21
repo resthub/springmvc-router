@@ -12,20 +12,20 @@
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
-        <version>7</version>
+        <version>9</version>
     </parent>
 
     <properties>
-        <spring-version>3.2.6.RELEASE</spring-version>
-        <spring-security-version>3.1.4.RELEASE</spring-security-version>
+        <spring-version>3.2.11.RELEASE</spring-version>
+        <spring-security-version>3.1.6.RELEASE</spring-security-version>
         <cglib-version>3.1</cglib-version>
         <apache-commons-io-version>2.4</apache-commons-io-version>
         <velocity-version>1.7</velocity-version>
         <log4j.version>1.2.17</log4j.version>
-        <slf4j.version>1.7.5</slf4j.version>
-        <junit.version>4.11</junit.version>
+        <slf4j.version>1.7.10</slf4j.version>
+        <junit.version>4.12</junit.version>
         <fest.assert.version>2.0M10</fest.assert.version>
-        <cucumber.jvm.version>1.1.5</cucumber.jvm.version>
+        <cucumber.jvm.version>1.2.2</cucumber.jvm.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -125,12 +125,6 @@
             <version>${apache-commons-io-version}</version>
         </dependency>
         
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
-        </dependency>
-
         <!-- JSP template engine -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -151,7 +145,7 @@
         <dependency>
             <groupId>org.springframework.hateoas</groupId>
             <artifactId>spring-hateoas</artifactId>
-            <version>0.8.0.RELEASE</version>
+            <version>0.16.0.RELEASE</version>
             <optional>true</optional>
         </dependency>
 
@@ -199,7 +193,7 @@
 
 
         <!--
-            Testing against Spring Security 3.0 AOP
+            Testing against Spring Security 3.1 AOP
         -->
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -240,7 +234,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
+                    <version>3.2</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <source>1.6</source>
@@ -259,7 +253,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.6.4.201312101107</version>
+                    <version>0.7.3.201502191951</version>
                     <executions>
                         <execution>
                             <id>prepare-agent</id>
