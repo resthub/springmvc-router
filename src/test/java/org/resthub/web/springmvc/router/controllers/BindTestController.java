@@ -1,6 +1,5 @@
 package org.resthub.web.springmvc.router.controllers;
 
-import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.access.annotation.Secured;
@@ -13,7 +12,6 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@Named("bindTestController")
 public class BindTestController {
 
     @ModelAttribute("simpleModelAttributeOnMethod")
