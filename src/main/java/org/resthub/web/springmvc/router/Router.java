@@ -163,7 +163,7 @@ public class Router {
      */
     static void parse(Resource fileResource) throws IOException {
 
-        String fileAbsolutePath = fileResource.getFile().getAbsolutePath();
+        String fileAbsolutePath = fileResource.getURL().getPath();
         String content = IOUtils.toString(fileResource.getInputStream());
 
         parse(content, fileAbsolutePath);
