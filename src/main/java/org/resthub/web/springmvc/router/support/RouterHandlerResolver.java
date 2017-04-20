@@ -98,7 +98,7 @@ public class RouterHandlerResolver {
 
         while (!clazz.getName().equals("java.lang.Object")) {
             for (Method m : clazz.getDeclaredMethods()) {
-                if (m.getName().equalsIgnoreCase(name) && Modifier.isPublic(m.getModifiers())) {
+                if (m.getName().equalsIgnoreCase(name)) {
                     return BridgeMethodResolver.findBridgedMethod(m);
                 }
             }
